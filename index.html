@@ -386,12 +386,15 @@ async function sha256(str){
 }
 function clone(x){ return JSON.parse(JSON.stringify(x)); }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function meetFor(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return (b&&b.meetLink)||DB.INSTITUTE.meetLink||"#"; }
+function driveId(s){ s=(s||"").trim(); let m=s.match(/\/d\/([^/]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
 
 function seedDB(src){
   DB = {
     INSTITUTE: clone(src.INSTITUTE||{name:"Computech CEC",course:"",director:"",meetLink:"",verifyBase:"",idPrefix:"BA"}),
     adminHash: src.ADMIN_HASH || "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
     WELCOME: clone(src.WELCOME||{enabled:true,title:"",message:"",showMeet:true}),
+    BATCHES: clone(src.BATCHES||[]),
     STUDENTS: clone(src.STUDENTS||{}),
     SYLLABUS: clone(src.SYLLABUS||[]),
     RECORDINGS: clone(src.RECORDINGS||[]),
@@ -404,6 +407,7 @@ seedDB({
   INSTITUTE:(typeof INSTITUTE!=="undefined"?INSTITUTE:null),
   ADMIN_HASH:(typeof ADMIN_HASH!=="undefined"?ADMIN_HASH:null),
   WELCOME:(typeof WELCOME!=="undefined"?WELCOME:null),
+  BATCHES:(typeof BATCHES!=="undefined"?BATCHES:null),
   STUDENTS:(typeof STUDENTS!=="undefined"?STUDENTS:null),
   SYLLABUS:(typeof SYLLABUS!=="undefined"?SYLLABUS:null),
   RECORDINGS:(typeof RECORDINGS!=="undefined"?RECORDINGS:null),
@@ -516,7 +520,7 @@ function panelHome(){
       <span class="pill live desktop-only">Live batch</span></div>
     ${W.enabled?`<div class="card welcome-banner"><div class="wb-icon">📣</div>
       <div class="wb-body"><h3>${esc(W.title)}</h3><p>${esc(W.message)}</p></div>
-      ${W.showMeet?`<a class="btn btn-primary wb-btn" href="${esc(I.meetLink)}" target="_blank" rel="noopener">Join live class</a>`:""}</div>`:""}
+      ${W.showMeet?`<a class="btn btn-primary wb-btn" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join live class</a>`:""}</div>`:""}
     <div class="grid grid-3">
       <div class="card stat"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Course progress</div>
         <div class="v">${CURRENT.progress||0}<small>%</small></div>
@@ -529,14 +533,14 @@ function panelHome(){
     <div class="grid grid-2" style="margin-top:16px;align-items:start">
       <div class="card next-class"><div class="lbl">Next live class</div><h3>${esc(next.title)}</h3>
         <div class="when">${esc(next.day)} · ${esc(next.time)} · Google Meet</div>
-        <a class="btn btn-primary" href="${esc(I.meetLink)}" target="_blank" rel="noopener">Join class</a></div>
+        <a class="btn btn-primary" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join class</a></div>
       <div class="card"><div class="section-title">Announcements</div>
         ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
     </div></section>`;
 }
-function panelSyllabus(){
+function panelSyllabus(){ const bro=DB.INSTITUTE.brochureUrl;
   return `<section class="tab-panel" data-tab="syllabus">
-    <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${esc(DB.INSTITUTE.course)} · ${DB.SYLLABUS.length} modules</div></div></div>
+    <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${esc(DB.INSTITUTE.course)} · ${DB.SYLLABUS.length} modules</div></div>${bro?`<a class="pill" href="${esc(bro)}" target="_blank" rel="noopener">📄 Course brochure</a>`:""}</div>
     ${DB.SYLLABUS.map((m,i)=>`<div class="module ${i===0?'open':''}">
       <button class="module-head" onclick="this.parentElement.classList.toggle('open')">
         <div class="module-ico" style="background:${esc(m.color)}">${esc(m.code)}</div>
@@ -556,8 +560,8 @@ function panelVideos(){
 }
 function openVid(title,fileId){
   document.getElementById("vidTitle").textContent=title;
-  const f=document.getElementById("vidFrame");
-  f.innerHTML=fileId?`<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay" allowfullscreen></iframe>`
+  const f=document.getElementById("vidFrame"); const fid=driveId(fileId);
+  f.innerHTML=fid?`<iframe src="https://drive.google.com/file/d/${fid}/preview" allow="autoplay" allowfullscreen></iframe>`
     :`<div class="ph">This recording isn't linked yet.<br>Ask your instructor to add it.</div>`;
   document.getElementById("vidModal").classList.add("show");
 }
@@ -581,7 +585,7 @@ function panelSchedule(){
       <div class="sched-day"><div class="d">${esc(s.day)}</div><div class="dd">${esc(s.dd||"Live")}</div></div>
       <div class="sched-info"><h4>${esc(s.title)}</h4><p>${esc(DB.INSTITUTE.course)}</p></div>
       <div class="sched-time">${esc(s.time)}</div>
-      ${s.meet?`<a class="meet-btn" href="${esc(DB.INSTITUTE.meetLink)}" target="_blank" rel="noopener">Join</a>`:""}</div>`).join("")||'<div class="empty">No classes scheduled.</div>'}</div>
+      ${s.meet?`<a class="meet-btn" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join</a>`:""}</div>`).join("")||'<div class="empty">No classes scheduled.</div>'}</div>
   </section>`;
 }
 function panelCertificate(){
@@ -633,6 +637,7 @@ const SECTIONS=[
   {id:"recordings",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
   {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
   {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
+  {id:"batches",label:"Batches",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18M9 16l2 2 4-4"/>'},
   {id:"resources",label:"Resources",icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>'},
   {id:"syllabus",label:"Syllabus",icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>'},
   {id:"settings",label:"Settings",icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'}
@@ -649,7 +654,7 @@ function aBuildNav(){
 function aRender(sec){
   CURSEC=sec;
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
-  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,schedule:secSched,resources:secRes,syllabus:secSyl,settings:secSettings};
+  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
   window.scrollTo(0,0);
 }
@@ -705,12 +710,16 @@ function copyLogin(id){ const s=DB.STUDENTS[id];
 function resetPass(id){ const np=genPass(8); DB.STUDENTS[id].pass=np; markDirty(); aRender("students"); toast("New password: "+np); }
 function editStudent(id){
   const isNew=!id;
-  const s=isNew?{name:"",batch:(Object.values(DB.STUDENTS)[0]||{}).batch||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8)}:clone(DB.STUDENTS[id]);
+  const bNames=(DB.BATCHES||[]).map(b=>b.name);
+  const s=isNew?{name:"",batch:bNames[0]||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8)}:clone(DB.STUDENTS[id]);
   const sid=isNew?genId():id;
+  const batchField= bNames.length
+    ? {k:"batch",label:"Batch",type:"pick",val:(bNames.includes(s.batch)||!s.batch)?(s.batch||bNames[0]):s.batch,options:(bNames.includes(s.batch)||!s.batch)?bNames:[s.batch,...bNames],help:"Sets which batch Meet link this student joins. Manage in Batches."}
+    : {k:"batch",label:"Batch",type:"text",val:s.batch,ph:"Morning — Jul 2026"};
   openForm(isNew?"Add student":"Edit student",[
     {k:"__id",label:"Student ID (auto)",type:"text",mono:true,val:sid,disabled:!isNew},
     {k:"name",label:"Full name",type:"text",val:s.name},
-    {k:"batch",label:"Batch",type:"text",val:s.batch,ph:"BA — Jan 2026"},
+    batchField,
     {k:"pass",label:"Password (auto — you can edit)",type:"text",mono:true,val:s.pass,help:"Students use this to log in. Visible to you anytime."},
     {k:"email",label:"Email",type:"email",val:s.email},
     {k:"joined",label:"Joined on",type:"text",val:s.joined},
@@ -752,9 +761,9 @@ function editVideo(gi,vi){
     {k:"title",label:"Title",type:"text",val:v.title,ph:"Day 7 — Dashboards"},
     {k:"date",label:"Date",type:"text",val:v.date,ph:"22 Jan 2026"},
     {k:"dur",label:"Duration",type:"text",mono:true,val:v.dur,ph:"1:05:00"},
-    {k:"fileId",label:"Google Drive file ID",type:"text",mono:true,val:v.fileId,help:"From drive.google.com/file/d/<THIS>/view"}
+    {k:"fileId",label:"Google Drive link",type:"text",val:v.fileId,help:"Paste the full Drive share link (Share → Copy link). I'll extract the rest automatically."}
   ],val=>{ if(!val.title.trim())return toast("Title required");
-    const rec={title:val.title.trim(),date:val.date.trim(),dur:val.dur.trim(),fileId:val.fileId.trim()};
+    const rec={title:val.title.trim(),date:val.date.trim(),dur:val.dur.trim(),fileId:driveId(val.fileId)};
     if(isNew)DB.RECORDINGS[gi].items.push(rec); else DB.RECORDINGS[gi].items[vi]=rec;
     markDirty(); closeAModal(); aRender("recordings"); toast("Video saved"); });
 }
@@ -797,6 +806,27 @@ function editSched(i){ const isNew=i===null,s=isNew?{day:"",dd:"Live",title:"",t
     if(isNew)DB.SCHEDULE.push(rec); else DB.SCHEDULE[i]=rec;
     markDirty(); closeAModal(); aRender("schedule"); toast("Saved"); }); }
 function delSched(i){ confirmDel("Delete this class?",()=>{ DB.SCHEDULE.splice(i,1); markDirty(); aRender("schedule"); }); }
+
+function secBatches(){
+  const rows=DB.BATCHES.map((b,i)=>{const count=Object.values(DB.STUDENTS).filter(s=>s.batch===b.name).length; const linked=b.meetLink&&!/xxx-xxxx-xxx|yyy-yyyy-yyy/.test(b.meetLink);
+    return `<div class="row"><div class="rico" style="background:var(--accent-2)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="18"><path d="M15 10l4.5-2.5v9L15 14M4 6h9a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg></div>
+    <div class="rmain"><h4>${esc(b.name)} ${linked?'<span class="tagx ok">Meet set</span>':'<span class="tagx no">set Meet link</span>'}</h4>
+      <div class="credline"><span>${count} student${count===1?"":"s"}</span><span class="credchip" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.meetLink||"—")}</span></div></div>
+    <div class="ract"><button class="iconbtn" onclick="editBatch(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delBatch(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;}).join("")||'<div class="empty">No batches yet. Add one, then assign students to it.</div>';
+  return `<div class="page-head"><h1>Batches</h1><p>Each batch has its own Google Meet link. Students automatically get their batch's link on every Join button.</p></div>
+  <div class="sec-head"><h3>All batches</h3><button class="btn btn-primary btn-sm" onclick="editBatch(null)">+ Add batch</button></div>${rows}`;
+}
+function editBatch(i){ const isNew=i===null,b=isNew?{name:"",meetLink:""}:clone(DB.BATCHES[i]); const oldName=isNew?null:b.name;
+  openForm(isNew?"Add batch":"Edit batch",[
+    {k:"name",label:"Batch name",type:"text",val:b.name,ph:"Morning — Jul 2026"},
+    {k:"meetLink",label:"Google Meet link",type:"text",mono:true,val:b.meetLink,help:"This batch's own Meet link. Students in this batch join here."}
+  ],v=>{ if(!v.name.trim())return toast("Batch name required");
+    const rec={name:v.name.trim(),meetLink:v.meetLink.trim()};
+    if(isNew)DB.BATCHES.push(rec); else { DB.BATCHES[i]=rec;
+      if(oldName&&oldName!==rec.name) Object.values(DB.STUDENTS).forEach(s=>{ if(s.batch===oldName)s.batch=rec.name; }); }
+    markDirty(); closeAModal(); aRender("batches"); toast("Batch saved"); }); }
+function delBatch(i){ confirmDel(`Delete batch "${DB.BATCHES[i].name}"? Students keep the batch name but lose the linked Meet.`,()=>{ DB.BATCHES.splice(i,1); markDirty(); aRender("batches"); }); }
 
 /* RESOURCES */
 function secRes(){
@@ -848,8 +878,10 @@ function secSettings(){
     <div class="grid2">
       <div class="field"><label>Director / signatory</label><input value="${esc(t.director)}" oninput="DB.INSTITUTE.director=this.value;markDirty()"></div>
       <div class="field"><label>Student ID prefix</label><input class="mono" value="${esc(t.idPrefix||'BA')}" oninput="DB.INSTITUTE.idPrefix=this.value.toUpperCase();markDirty()"></div></div>
-    <div class="field"><label>Google Meet link</label><input class="mono" value="${esc(t.meetLink)}" oninput="DB.INSTITUTE.meetLink=this.value;markDirty()" placeholder="https://meet.google.com/xxx-xxxx-xxx">
-      <div class="help">Used by the welcome button, schedule and home page.</div></div>
+    <div class="field"><label>Fallback Meet link</label><input class="mono" value="${esc(t.meetLink)}" oninput="DB.INSTITUTE.meetLink=this.value;markDirty()" placeholder="https://meet.google.com/xxx-xxxx-xxx">
+      <div class="help">Used only if a student's batch has no Meet link. Per-batch links are set in the <b>Batches</b> tab.</div></div>
+    <div class="field"><label>Course brochure link</label><input class="mono" value="${esc(t.brochureUrl||'')}" oninput="DB.INSTITUTE.brochureUrl=this.value;markDirty()" placeholder="https://drive.google.com/file/d/.../view">
+      <div class="help">Shown as a button on the student Syllabus tab.</div></div>
     <div class="field"><label>Portal URL (for certificate QR &amp; shared logins)</label><input class="mono" value="${esc(t.verifyBase)}" oninput="DB.INSTITUTE.verifyBase=this.value;markDirty()" placeholder="https://you.github.io/CEC"></div>
   </div>
   <div class="card"><div class="sec-head"><h3>Admin password</h3></div>
@@ -882,6 +914,7 @@ function fieldHTML(f){
   if(f.type==="range") return `<div class="field"><label>${f.label}</label><div class="rangewrap"><input type="range" min="0" max="100" id="${id}" value="${f.val||0}" oninput="document.getElementById('${id}_v').textContent=this.value+'%'"><span class="rv" id="${id}_v">${f.val||0}%</span></div></div>`;
   if(f.type==="textarea") return `<div class="field"><label>${f.label}</label><textarea id="${id}">${esc(f.val)}</textarea>${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
   if(f.type==="select") return `<div class="field"><label>${f.label}</label><select id="${id}">${f.options.map(o=>`<option ${o===f.val?"selected":""} value="${o}">${o.toUpperCase()}</option>`).join("")}</select></div>`;
+  if(f.type==="pick") return `<div class="field"><label>${f.label}</label><select id="${id}">${f.options.map(o=>`<option ${o===f.val?"selected":""} value="${esc(o)}">${esc(o)}</option>`).join("")}</select>${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
   if(f.type==="color") return `<div class="field"><label>${f.label}</label><input type="color" id="${id}" value="${f.val||"#2a5db0"}" style="height:44px;padding:4px"></div>`;
   return `<div class="field"><label>${f.label}</label><input type="${f.type||"text"}" id="${id}" value="${esc(f.val)}" ${f.disabled?"disabled":""} ${f.mono?'class="mono"':""} placeholder="${f.ph||""}">${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
 }
@@ -911,6 +944,8 @@ const ADMIN_HASH = ${JSON.stringify(DB.adminHash)};
 
 const WELCOME = ${j(DB.WELCOME)};
 
+const BATCHES = ${j(DB.BATCHES)};
+
 const STUDENTS = ${j(DB.STUDENTS)};
 
 const SYLLABUS = ${j(DB.SYLLABUS)};
@@ -935,7 +970,7 @@ function exportData(){
 function importData(file){
   if(!file) return; const r=new FileReader();
   r.onload=()=>{ try{
-    const g=new Function(r.result+";return {INSTITUTE,ADMIN_HASH:(typeof ADMIN_HASH!=='undefined'?ADMIN_HASH:null),WELCOME:(typeof WELCOME!=='undefined'?WELCOME:null),STUDENTS,SYLLABUS,RECORDINGS,RESOURCES,SCHEDULE,ANNOUNCEMENTS};")();
+    const g=new Function(r.result+";return {INSTITUTE,ADMIN_HASH:(typeof ADMIN_HASH!=='undefined'?ADMIN_HASH:null),WELCOME:(typeof WELCOME!=='undefined'?WELCOME:null),BATCHES:(typeof BATCHES!=='undefined'?BATCHES:null),STUDENTS,SYLLABUS,RECORDINGS,RESOURCES,SCHEDULE,ANNOUNCEMENTS};")();
     seedDB(g); aRender(CURSEC); toast("data.js loaded");
   }catch(e){ toast("Couldn't read that file"); } };
   r.readAsText(file);
