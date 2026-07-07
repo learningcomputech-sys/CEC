@@ -359,6 +359,9 @@ a{color:inherit;text-decoration:none}
     <div class="export-bar" id="exportBar">
       <div class="note"><span class="dirty-dot"></span><span id="dirtyText"><b>All changes saved in memory.</b> Export &amp; upload to publish.</span></div>
       <div class="export-actions">
+        <input type="file" id="importFile" accept=".html,.js,.json" style="display:none" onchange="importData(this.files[0])">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Import data</button>
+        <button class="btn btn-ghost btn-sm" onclick="backupData()">Backup</button>
         <button class="btn btn-primary btn-sm" onclick="exportData()">⬇ Export index.html</button>
       </div>
     </div>
@@ -1302,6 +1305,36 @@ function exportData(){
 let toastT;
 function toast(msg){ const t=document.getElementById("toast"); document.getElementById("toastText").textContent=msg;
   t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400); }
+
+/* Import your data from an old index.html, a data.js, or a .json backup.
+   Use this to recover data or to carry your data into a new feature update. */
+function importData(file){
+  if(!file) return; const r=new FileReader();
+  r.onload=()=>{ try{
+    const txt=(r.result||"").trim(); let d=null;
+    if(txt.charAt(0)==="{"){ d=JSON.parse(txt); }                        // .json backup
+    else {
+      let m=txt.match(/window\.PORTAL_DATA\s*=\s*([\s\S]*?);\s*(?:\/\*DATA_END\*\/|<\/script>)/); // one-file
+      if(m){ d=new Function("return ("+m[1]+")")(); }
+      else {                                                              // old data.js (const ...)
+        const g=new Function(txt+";return {INSTITUTE:(typeof INSTITUTE!=='undefined'?INSTITUTE:null),ADMIN_HASH:(typeof ADMIN_HASH!=='undefined'?ADMIN_HASH:null),CERT:(typeof CERT!=='undefined'?CERT:null),WELCOME:(typeof WELCOME!=='undefined'?WELCOME:null),BATCHES:(typeof BATCHES!=='undefined'?BATCHES:null),STUDENTS:(typeof STUDENTS!=='undefined'?STUDENTS:null),SYLLABUS:(typeof SYLLABUS!=='undefined'?SYLLABUS:null),RECORDINGS:(typeof RECORDINGS!=='undefined'?RECORDINGS:null),RESOURCES:(typeof RESOURCES!=='undefined'?RESOURCES:null),SCHEDULE:(typeof SCHEDULE!=='undefined'?SCHEDULE:null),ANNOUNCEMENTS:(typeof ANNOUNCEMENTS!=='undefined'?ANNOUNCEMENTS:null),REVIEWS:(typeof REVIEWS!=='undefined'?REVIEWS:null),PRO:(typeof PRO!=='undefined'?PRO:null)};")();
+        d=g;
+      }
+    }
+    if(!d || (!d.STUDENTS && !d.INSTITUTE)) { toast("No portal data found in that file"); return; }
+    seedDB({INSTITUTE:d.INSTITUTE,ADMIN_HASH:d.adminHash||d.ADMIN_HASH,WELCOME:d.WELCOME,CERT:d.CERT,BATCHES:d.BATCHES,STUDENTS:d.STUDENTS,SYLLABUS:d.SYLLABUS,RECORDINGS:d.RECORDINGS,RESOURCES:d.RESOURCES,SCHEDULE:d.SCHEDULE,ANNOUNCEMENTS:d.ANNOUNCEMENTS,REVIEWS:d.REVIEWS,PRO:d.PRO});
+    const n=Object.keys(DB.STUDENTS).length; markDirty(); aRender(CURSEC);
+    toast("Imported "+n+" student"+(n===1?"":"s")+" — now Export to save");
+  }catch(e){ toast("Couldn't read that file"); } };
+  r.readAsText(file);
+}
+/* Download a small .json backup of all your data. Keep it safe. */
+function backupData(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"}), url=URL.createObjectURL(blob);
+  const d=new Date(), stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const a=document.createElement("a"); a.href=url; a.download="computech-backup-"+stamp+".json"; a.click(); URL.revokeObjectURL(url);
+  toast("Backup downloaded");
+}
 
 /* deep-link ?verify= */
 window.addEventListener("load",()=>{ const p=new URLSearchParams(location.search).get("verify");
