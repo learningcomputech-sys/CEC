@@ -9,26 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#14203d; --ink-2:#223a5e;
-  --accent:#e0a13a; --accent-soft:#fbeecd;
-  --accent-2:#1fa596;
-  --bg:#f4f6fb; --surface:#ffffff; --surface-2:#fafbfe;
-  --line:#e5e9f2; --line-2:#eef1f7;
-  --text:#182036; --muted:#647089; --muted-2:#8a94ab;
-  --good:#22a06b; --good-soft:#e2f4ec;
-  --bad:#d64545; --bad-soft:#fae6e6;
-  --radius:16px; --radius-sm:10px;
-  --shadow:0 1px 3px rgba(20,32,61,.06), 0 8px 24px rgba(20,32,61,.06);
-  --shadow-lg:0 12px 40px rgba(20,32,61,.14);
+  --ink:#14203d;--ink-2:#223a5e;--accent:#e0a13a;--accent-soft:#fbeecd;--accent-2:#1fa596;
+  --bg:#f4f6fb;--surface:#fff;--surface-2:#fafbfe;--line:#e5e9f2;--line-2:#eef1f7;
+  --text:#182036;--muted:#647089;--muted-2:#8a94ab;--good:#22a06b;--good-soft:#e2f4ec;
+  --bad:#d64545;--bad-soft:#fae6e6;--radius:16px;--radius-sm:10px;
+  --shadow:0 1px 3px rgba(20,32,61,.06),0 8px 24px rgba(20,32,61,.06);--shadow-lg:0 12px 40px rgba(20,32,61,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{
-  font-family:'Inter',system-ui,sans-serif;
-  background:var(--bg); color:var(--text);
-  line-height:1.5; -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
 h1,h2,h3,h4,.brand-name{font-family:'Space Grotesk',sans-serif;letter-spacing:-.01em}
 .mono{font-family:'JetBrains Mono',monospace}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
@@ -36,310 +24,240 @@ a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- LOGIN ---------- */
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:radial-gradient(1200px 600px at 80% -10%,rgba(224,161,58,.10),transparent 60%),
-             radial-gradient(900px 500px at -10% 110%,rgba(31,165,150,.10),transparent 55%),
-             var(--ink);}
-.auth-card{width:100%;max-width:410px;background:var(--surface);border-radius:22px;
-  box-shadow:var(--shadow-lg);overflow:hidden}
-.auth-head{padding:30px 30px 22px;border-bottom:1px solid var(--line-2)}
-.logo-row{display:flex;align-items:center;gap:11px;margin-bottom:20px}
-.logo-mark{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:none;
-  background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 100%);position:relative}
+/* shared components */
+.logo-row{display:flex;align-items:center;gap:11px}
+.logo-mark{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:none;background:linear-gradient(135deg,var(--ink),var(--ink-2));position:relative}
 .logo-mark span{font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:19px;line-height:1}
-.logo-mark::after{content:"";position:absolute;right:-3px;bottom:-3px;width:14px;height:14px;
-  border-radius:5px;background:var(--accent);border:2.5px solid var(--surface)}
+.logo-mark::after{content:"";position:absolute;right:-3px;bottom:-3px;width:14px;height:14px;border-radius:5px;background:var(--accent);border:2.5px solid var(--surface)}
 .brand-name{font-size:16px;font-weight:700;color:var(--ink)}
 .brand-sub{font-size:11px;color:var(--muted-2);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
-.auth-head h1{font-size:22px;color:var(--ink);margin-bottom:5px}
-.auth-head p{font-size:13.5px;color:var(--muted)}
-.auth-body{padding:24px 30px 30px}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
-.field input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-  font-size:15px;font-family:inherit;background:var(--surface-2);transition:border-color .15s,background .15s}
-.field input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
-.field input::placeholder{color:var(--muted-2)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;
-  font-size:14.5px;padding:12px 18px;border-radius:var(--radius-sm);transition:transform .08s,box-shadow .15s,background .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14.5px;padding:12px 18px;border-radius:var(--radius-sm);transition:transform .08s,box-shadow .15s,background .15s}
 .btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--accent);color:#3a2a05;width:100%;box-shadow:0 2px 0 #c58a26}
+.btn-primary{background:var(--accent);color:#3a2a05;box-shadow:0 2px 0 #c58a26}
 .btn-primary:hover{background:#e6ab4a}
 .btn-ghost{background:transparent;color:var(--ink-2);border:1.5px solid var(--line)}
 .btn-ghost:hover{border-color:var(--muted-2)}
-.auth-msg{font-size:13px;padding:10px 12px;border-radius:9px;margin-bottom:16px;display:none}
-.auth-msg.show{display:block}
-.auth-msg.err{background:var(--bad-soft);color:#a13333}
-.auth-foot{margin-top:18px;padding-top:18px;border-top:1px solid var(--line-2);text-align:center}
-.auth-foot button{font-size:13px;color:var(--accent-2);font-weight:600}
-.auth-foot button:hover{text-decoration:underline}
-.demo-hint{margin-top:14px;font-size:11.5px;color:var(--muted-2);text-align:center;line-height:1.6}
-.demo-hint code{background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-2)}
-
-/* ---------- APP SHELL ---------- */
-.app{display:none;min-height:100vh}
-.app.show{display:grid;grid-template-columns:248px 1fr}
-.sidebar{background:var(--ink);color:#cdd6ea;padding:22px 16px;display:flex;flex-direction:column;
-  position:sticky;top:0;height:100vh}
-.sidebar .logo-row{margin-bottom:26px;padding:0 6px}
-.sidebar .brand-name{color:#fff}
-.sidebar .brand-sub{color:#7d89a8}
-.nav{display:flex;flex-direction:column;gap:3px;flex:1}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;
-  font-size:14px;font-weight:500;color:#aab6d1;transition:background .15s,color .15s;text-align:left;width:100%}
-.nav-item svg{width:19px;height:19px;flex:none;stroke-width:1.9}
-.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav-item.active{background:var(--accent);color:#3a2a05;font-weight:600}
-.nav-item.active svg{stroke:#3a2a05}
-.side-foot{padding:12px 6px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:8px}
-.side-user{display:flex;align-items:center;gap:10px;padding:6px 6px 12px}
-.avatar{width:36px;height:36px;border-radius:10px;background:var(--ink-2);color:#fff;display:grid;
-  place-items:center;font-weight:600;font-size:14px;flex:none;font-family:'Space Grotesk'}
-.side-user .nm{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
-.side-user .bt{font-size:11px;color:#7d89a8}
-.logout{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border-radius:10px;
-  font-size:13px;color:#9aa6c4;font-weight:500}
-.logout:hover{background:rgba(214,69,69,.14);color:#ff9d9d}
-.logout svg{width:17px;height:17px}
-
-/* main */
-.main{padding:26px 30px 40px;max-width:1080px}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px}
-.topbar h1{font-size:24px;color:var(--ink)}
-.topbar .sub{font-size:13.5px;color:var(--muted);margin-top:2px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;
-  border-radius:20px;background:var(--accent-soft);color:#8a6410}
+.btn-danger{background:var(--bad-soft);color:#a13333}.btn-danger:hover{background:#f5d6d6}
+.btn-block{width:100%}
+.btn-sm{padding:8px 13px;font-size:12.5px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:15px;font-family:inherit;background:var(--surface-2);transition:border-color .15s,background .15s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.field input::placeholder{color:var(--muted-2)}
+.field textarea{min-height:88px;resize:vertical;line-height:1.5}
+.field .help{font-size:11.5px;color:var(--muted-2);margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.card+.card{margin-top:16px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--accent-soft);color:#8a6410}
 .pill.live{background:var(--good-soft);color:#1a7a4f}
-.pill.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good);
-  animation:pulse 1.8s infinite}
+.pill.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-
-.tab-panel{display:none;animation:fade .25s ease}
-.tab-panel.show{display:block}
+.warn-banner{background:var(--accent-soft);border:1px solid #f0dcae;border-radius:12px;padding:12px 15px;font-size:12.5px;color:#7a6220;display:flex;gap:10px;align-items:flex-start}
+.warn-banner b{color:var(--ink)}
+.modal{display:none;position:fixed;inset:0;background:rgba(15,22,42,.7);z-index:50;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.modal.show{display:flex;animation:fade .2s}
+.modal-box{background:var(--surface);border-radius:var(--radius);max-width:520px;width:100%;box-shadow:var(--shadow-lg);max-height:92vh;overflow:auto}
+.modal-box.vidbox{max-width:760px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-head h3{font-size:16px;color:var(--ink)}
+.modal-close{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.modal-close:hover{background:var(--surface-2);color:var(--ink)}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:13.5px;font-weight:500;box-shadow:var(--shadow-lg);z-index:60;transition:transform .3s;display:flex;align-items:center;gap:9px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast svg{width:17px;height:17px;color:var(--accent)}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:20px}
-.card + .card{margin-top:16px}
-.grid{display:grid;gap:16px}
-.grid-3{grid-template-columns:repeat(3,1fr)}
-.grid-2{grid-template-columns:repeat(2,1fr)}
+/* ---------- LOGIN ---------- */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(1200px 600px at 80% -10%,rgba(224,161,58,.10),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(31,165,150,.10),transparent 55%),var(--ink)}
+.auth-card{width:100%;max-width:410px;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-lg);overflow:hidden}
+.auth-head{padding:30px 30px 22px;border-bottom:1px solid var(--line-2)}
+.auth-head .logo-row{margin-bottom:20px}
+.auth-head h1{font-size:22px;color:var(--ink);margin-bottom:5px}
+.auth-head p{font-size:13.5px;color:var(--muted)}
+.auth-body{padding:24px 30px 30px}
+.auth-msg{font-size:13px;padding:10px 12px;border-radius:9px;margin-bottom:16px;display:none;background:var(--bad-soft);color:#a13333}
+.auth-msg.show{display:block}
+.auth-foot{margin-top:18px;padding-top:18px;border-top:1px solid var(--line-2);display:flex;justify-content:space-between;gap:12px}
+.auth-foot button{font-size:13px;color:var(--accent-2);font-weight:600}
+.auth-foot button:hover{text-decoration:underline}
+.demo-hint{margin-top:14px;font-size:11.5px;color:var(--muted-2);text-align:center;line-height:1.7}
+.demo-hint code{background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-2)}
 
-/* home stats */
+/* ================= STUDENT APP ================= */
+.s-app{display:none;min-height:100vh}
+.s-app.show{display:grid;grid-template-columns:248px 1fr}
+.s-side{background:var(--ink);color:#cdd6ea;padding:22px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.s-side .logo-row{margin-bottom:26px;padding:0 6px}.s-side .brand-name{color:#fff}.s-side .brand-sub{color:#7d89a8}
+.s-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.s-navitem{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;font-size:14px;font-weight:500;color:#aab6d1;transition:background .15s,color .15s;text-align:left;width:100%}
+.s-navitem svg{width:19px;height:19px;flex:none;stroke-width:1.9}
+.s-navitem:hover{background:rgba(255,255,255,.06);color:#fff}
+.s-navitem.active{background:var(--accent);color:#3a2a05;font-weight:600}
+.s-navitem.active svg{stroke:#3a2a05}
+.s-sidefoot{padding:12px 6px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:8px}
+.s-sideuser{display:flex;align-items:center;gap:10px;padding:6px 6px 12px}
+.avatar{width:36px;height:36px;border-radius:10px;background:var(--ink-2);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex:none;font-family:'Space Grotesk'}
+.s-sideuser .nm{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.s-sideuser .bt{font-size:11px;color:#7d89a8}
+.s-logout{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border-radius:10px;font-size:13px;color:#9aa6c4;font-weight:500}
+.s-logout:hover{background:rgba(214,69,69,.14);color:#ff9d9d}.s-logout svg{width:17px;height:17px}
+.s-main{padding:26px 30px 40px;max-width:1080px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px}
+.topbar h1{font-size:24px;color:var(--ink)}.topbar .sub{font-size:13.5px;color:var(--muted);margin-top:2px}
+.tab-panel{display:none;animation:fade .25s ease}.tab-panel.show{display:block}
+.grid{display:grid;gap:16px}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:repeat(2,1fr)}
 .stat{padding:18px 20px}
-.stat .k{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;
-  display:flex;align-items:center;gap:8px}
+.stat .k{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
 .stat .k svg{width:15px;height:15px;color:var(--accent-2)}
 .stat .v{font-family:'Space Grotesk';font-size:28px;font-weight:700;color:var(--ink);margin-top:8px;line-height:1}
 .stat .v small{font-size:14px;color:var(--muted-2);font-weight:500}
 .progress-track{height:8px;background:var(--line-2);border-radius:20px;overflow:hidden;margin-top:14px}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-2),#38c9b8);border-radius:20px;transition:width .8s ease}
-
-.section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;
-  align-items:center;justify-content:space-between}
-.section-title span{font-size:12px;font-weight:600;color:var(--accent-2)}
-
-/* announcements */
-.ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}
-.ann:last-child{border-bottom:none;padding-bottom:0}
-.ann-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
-.ann-body h4{font-size:14px;color:var(--ink);margin-bottom:3px}
-.ann-body p{font-size:13px;color:var(--muted)}
-.ann-body .t{font-size:11.5px;color:var(--muted-2);margin-top:4px}
-
-/* next class */
-.next-class{background:linear-gradient(120deg,var(--ink) 0%,var(--ink-2) 100%);color:#fff;
-  border:none;position:relative;overflow:hidden}
-.next-class::before{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
-  border-radius:50%;background:radial-gradient(circle,rgba(224,161,58,.35),transparent 70%)}
-.next-class .lbl{font-size:12px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.next-class h3{font-size:19px;margin:8px 0 4px;color:#fff}
-.next-class .when{font-size:13.5px;color:#b9c3dc}
-.next-class .btn{margin-top:16px;width:auto;position:relative}
-
-/* welcome banner */
-.welcome-banner{display:flex;align-items:center;gap:16px;margin-bottom:16px;
-  background:linear-gradient(120deg,var(--accent-soft) 0%,#fff7e8 100%);
-  border:1px solid #f0dcae}
-.wb-icon{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;
-  font-size:22px;flex:none;box-shadow:0 2px 8px rgba(224,161,58,.18)}
-.wb-body{flex:1;min-width:0}
-.wb-body h3{font-size:15.5px;color:var(--ink);margin-bottom:3px}
-.wb-body p{font-size:13px;color:#7a6220;line-height:1.5}
+.welcome-banner{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:linear-gradient(120deg,var(--accent-soft) 0%,#fff7e8 100%);border:1px solid #f0dcae}
+.wb-icon{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:22px;flex:none;box-shadow:0 2px 8px rgba(224,161,58,.18)}
+.wb-body{flex:1;min-width:0}.wb-body h3{font-size:15.5px;color:var(--ink);margin-bottom:3px}.wb-body p{font-size:13px;color:#7a6220;line-height:1.5}
 .wb-btn{width:auto;flex:none}
-@media (max-width:860px){.welcome-banner{flex-wrap:wrap}.wb-btn{width:100%}}
-
-/* syllabus */
-.module{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
-.module + .module{margin-top:12px}
-.module-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;width:100%;text-align:left}
-.module-head:hover{background:var(--surface-2)}
-.module-ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;
-  font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff}
-.module-head .mt{flex:1}
-.module-head .mt h4{font-size:15px;color:var(--ink)}
-.module-head .mt p{font-size:12.5px;color:var(--muted);margin-top:2px}
-.chev{width:20px;height:20px;color:var(--muted-2);transition:transform .25s;flex:none}
-.module.open .chev{transform:rotate(180deg)}
-.module-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
-.module.open .module-body{max-height:600px}
+.section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}.ann:last-child{border-bottom:none;padding-bottom:0}
+.ann-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
+.ann-body h4{font-size:14px;color:var(--ink);margin-bottom:3px}.ann-body p{font-size:13px;color:var(--muted)}.ann-body .t{font-size:11.5px;color:var(--muted-2);margin-top:4px}
+.next-class{background:linear-gradient(120deg,var(--ink) 0%,var(--ink-2) 100%);color:#fff;border:none;position:relative;overflow:hidden}
+.next-class::before{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(224,161,58,.35),transparent 70%)}
+.next-class .lbl{font-size:12px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.next-class h3{font-size:19px;margin:8px 0 4px;color:#fff}.next-class .when{font-size:13.5px;color:#b9c3dc}
+.next-class .btn{margin-top:16px;width:auto;position:relative}
+.module{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}.module+.module{margin-top:12px}
+.module-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;width:100%;text-align:left}.module-head:hover{background:var(--surface-2)}
+.module-ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff}
+.module-head .mt{flex:1}.module-head .mt h4{font-size:15px;color:var(--ink)}.module-head .mt p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.chev{width:20px;height:20px;color:var(--muted-2);transition:transform .25s;flex:none}.module.open .chev{transform:rotate(180deg)}
+.module-body{max-height:0;overflow:hidden;transition:max-height .3s ease}.module.open .module-body{max-height:600px}
 .module-body ul{list-style:none;padding:4px 18px 18px 72px}
-.module-body li{font-size:13.5px;color:var(--ink-2);padding:7px 0;border-bottom:1px dashed var(--line-2);
-  display:flex;align-items:center;gap:9px}
-.module-body li:last-child{border-bottom:none}
+.module-body li{font-size:13.5px;color:var(--ink-2);padding:7px 0;border-bottom:1px dashed var(--line-2);display:flex;align-items:center;gap:9px}.module-body li:last-child{border-bottom:none}
 .module-body li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent-2);flex:none}
-
-/* recordings */
 .rec-group{margin-bottom:22px}
-.rec-group > h3{font-size:14px;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:9px}
-.rec-group > h3 .tag{font-size:11px;font-weight:600;color:var(--muted);background:var(--surface-2);
-  border:1px solid var(--line);padding:2px 9px;border-radius:20px}
-.vid-card{display:flex;align-items:center;gap:14px;padding:13px 15px;background:var(--surface);
-  border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
-.vid-card + .vid-card{margin-top:9px}
+.rec-group>h3{font-size:14px;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.rec-group>h3 .tag{font-size:11px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:2px 9px;border-radius:20px}
+.vid-card{display:flex;align-items:center;gap:14px;padding:13px 15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s,box-shadow .15s;width:100%;text-align:left}.vid-card+.vid-card{margin-top:9px}
 .vid-card:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(224,161,58,.12)}
-.vid-thumb{width:52px;height:52px;border-radius:10px;background:var(--ink);display:grid;place-items:center;flex:none;position:relative}
-.vid-thumb svg{width:22px;height:22px;color:var(--accent)}
-.vid-info{flex:1;min-width:0}
-.vid-info h4{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vid-info p{font-size:12px;color:var(--muted);margin-top:2px}
+.vid-thumb{width:52px;height:52px;border-radius:10px;background:var(--ink);display:grid;place-items:center;flex:none}
+.vid-info{flex:1;min-width:0}.vid-info h4{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vid-info p{font-size:12px;color:var(--muted);margin-top:2px}
 .vid-dur{font-size:11.5px;color:var(--muted-2);font-family:'JetBrains Mono';flex:none}
-
-/* modal */
-.modal{display:none;position:fixed;inset:0;background:rgba(15,22,42,.72);z-index:50;
-  align-items:center;justify-content:center;padding:20px}
-.modal.show{display:flex;animation:fade .2s}
-.modal-box{background:var(--surface);border-radius:var(--radius);max-width:760px;width:100%;overflow:hidden;box-shadow:var(--shadow-lg)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
-.modal-head h3{font-size:15px;color:var(--ink)}
-.modal-close{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
-.modal-close:hover{background:var(--surface-2);color:var(--ink)}
 .vid-frame{aspect-ratio:16/9;background:#000;display:grid;place-items:center;color:#8a94ab;text-align:center;padding:20px}
-.vid-frame iframe{width:100%;height:100%;border:0}
-.vid-frame .ph{font-size:13px;line-height:1.7}
-.vid-frame .ph .mono{color:var(--accent);font-size:12px}
-
-/* resources */
-.res-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);
-  border-radius:12px;background:var(--surface)}
-.res-item + .res-item{margin-top:10px}
-.res-ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:none}
-.res-ico svg{width:20px;height:20px}
-.res-info{flex:1}
-.res-info h4{font-size:14px;color:var(--ink)}
-.res-info p{font-size:12px;color:var(--muted);margin-top:2px}
-.res-dl{padding:8px 14px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);
-  font-size:12.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:7px}
-.res-dl:hover{border-color:var(--accent-2);color:var(--accent-2)}
-.res-dl svg{width:15px;height:15px}
-
-/* schedule */
-.sched-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line-2)}
-.sched-row:last-child{border-bottom:none}
-.sched-day{width:46px;text-align:center;flex:none}
-.sched-day .d{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--ink)}
-.sched-day .dd{font-size:10.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.05em}
-.sched-info{flex:1}
-.sched-info h4{font-size:14px;color:var(--ink)}
-.sched-info p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.vid-frame iframe{width:100%;height:100%;border:0}.vid-frame .ph{font-size:13px;line-height:1.7}.vid-frame .ph .mono{color:var(--accent);font-size:12px}
+.res-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.res-item+.res-item{margin-top:10px}
+.res-ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:none}.res-ico svg{width:20px;height:20px}
+.res-info{flex:1}.res-info h4{font-size:14px;color:var(--ink)}.res-info p{font-size:12px;color:var(--muted);margin-top:2px}
+.res-dl{padding:8px 14px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:7px}.res-dl:hover{border-color:var(--accent-2);color:var(--accent-2)}.res-dl svg{width:15px;height:15px}
+.sched-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line-2)}.sched-row:last-child{border-bottom:none}
+.sched-day{width:46px;text-align:center;flex:none}.sched-day .d{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--ink)}.sched-day .dd{font-size:10.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.05em}
+.sched-info{flex:1}.sched-info h4{font-size:14px;color:var(--ink)}.sched-info p{font-size:12.5px;color:var(--muted);margin-top:2px}
 .sched-time{font-size:12.5px;font-family:'JetBrains Mono';color:var(--ink-2);font-weight:500;flex:none}
-.meet-btn{padding:8px 13px;border-radius:9px;background:var(--good-soft);color:#1a7a4f;font-size:12.5px;font-weight:600;flex:none}
-.meet-btn:hover{background:#d3eee0}
-
-/* certificate */
+.meet-btn{padding:8px 13px;border-radius:9px;background:var(--good-soft);color:#1a7a4f;font-size:12.5px;font-weight:600;flex:none}.meet-btn:hover{background:#d3eee0}
 .cert-wrap{display:flex;flex-direction:column;align-items:center}
-.certificate{width:100%;max-width:640px;aspect-ratio:1.414/1;background:var(--surface);
-  border:2px solid var(--ink);border-radius:8px;padding:34px;position:relative;
-  box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
+.certificate{width:100%;max-width:640px;aspect-ratio:1.414/1;background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:34px;position:relative;box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
 .certificate::before{content:"";position:absolute;inset:9px;border:1px solid var(--accent);border-radius:4px;pointer-events:none}
 .cert-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .cert-brand{display:flex;align-items:center;gap:10px}
-.cert-seal{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),#c58a26);
-  display:grid;place-items:center;color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:10px;text-align:center;
-  line-height:1.1;box-shadow:0 4px 12px rgba(197,138,38,.4);border:3px solid #fff;position:relative}
+.cert-seal{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),#c58a26);display:grid;place-items:center;color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:10px;text-align:center;line-height:1.1;box-shadow:0 4px 12px rgba(197,138,38,.4);border:3px solid #fff;position:relative}
 .cert-seal::after{content:"";position:absolute;inset:-6px;border:1.5px dashed var(--accent);border-radius:50%}
 .cert-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;z-index:1}
 .cert-mid .kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-2);font-weight:600}
-.cert-mid h2{font-family:'Space Grotesk';font-size:26px;color:var(--ink);margin:6px 0 20px}
 .cert-mid .awarded{font-size:12px;color:var(--muted);letter-spacing:.05em}
-.cert-name{font-family:'Space Grotesk';font-size:30px;font-weight:700;color:var(--ink);
-  margin:8px 0 6px;padding:0 20px 10px;border-bottom:2px solid var(--accent);min-width:280px}
-.cert-mid .desc{font-size:12.5px;color:var(--ink-2);max-width:400px;margin-top:14px;line-height:1.6}
-.cert-mid .desc b{color:var(--ink)}
+.cert-name{font-family:'Space Grotesk';font-size:30px;font-weight:700;color:var(--ink);margin:8px 0 6px;padding:0 20px 10px;border-bottom:2px solid var(--accent);min-width:280px}
+.cert-mid .desc{font-size:12.5px;color:var(--ink-2);max-width:400px;margin-top:14px;line-height:1.6}.cert-mid .desc b{color:var(--ink)}
 .cert-bot{display:flex;align-items:flex-end;justify-content:space-between;position:relative;z-index:1;gap:16px}
-.cert-sig{text-align:center}
-.cert-sig .line{width:130px;border-top:1.5px solid var(--ink);margin-bottom:5px}
-.cert-sig .role{font-size:11px;color:var(--muted)}
-.cert-sig .nm{font-size:12.5px;font-weight:600;color:var(--ink);font-family:'Space Grotesk'}
-.cert-qr{text-align:center}
-.cert-qr img{width:74px;height:74px;border:1px solid var(--line);border-radius:6px;background:#fff;display:block}
-.cert-qr .qr-fallback{width:74px;height:74px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);
-  display:grid;place-items:center;font-size:9px;color:var(--muted-2);padding:6px;text-align:center;line-height:1.3}
+.cert-sig{text-align:center}.cert-sig .line{width:130px;border-top:1.5px solid var(--ink);margin-bottom:5px}.cert-sig .role{font-size:11px;color:var(--muted)}.cert-sig .nm{font-size:12.5px;font-weight:600;color:var(--ink);font-family:'Space Grotesk'}
+.cert-qr{text-align:center}.cert-qr img{width:74px;height:74px;border:1px solid var(--line);border-radius:6px;background:#fff;display:block}
+.cert-qr .qr-fallback{width:74px;height:74px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);display:grid;place-items:center;font-size:9px;color:var(--muted-2);padding:6px;text-align:center;line-height:1.3}
 .cert-qr .cid{font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono'}
-.cert-actions{display:flex;gap:12px;margin-top:22px}
-.cert-actions .btn{width:auto;padding:11px 20px}
-
-/* verify */
+.cert-actions{display:flex;gap:12px;margin-top:22px}.cert-actions .btn{width:auto;padding:11px 20px}
 .verify-box{max-width:520px;margin:0 auto}
 .verify-input{display:flex;gap:10px;margin-top:8px}
-.verify-input input{flex:1;padding:13px 15px;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-  font-size:15px;font-family:'JetBrains Mono';letter-spacing:.02em;text-transform:uppercase;background:var(--surface-2)}
+.verify-input input{flex:1;padding:13px 15px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:15px;font-family:'JetBrains Mono';text-transform:uppercase;background:var(--surface-2)}
 .verify-input input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
 .verify-input .btn{width:auto;padding:13px 22px}
-.verify-result{margin-top:20px;border-radius:var(--radius);padding:22px;display:none}
-.verify-result.show{display:block;animation:fade .3s}
-.verify-result.valid{background:var(--good-soft);border:1px solid #b9e5cf}
-.verify-result.invalid{background:var(--bad-soft);border:1px solid #f0c9c9}
+.verify-result{margin-top:20px;border-radius:var(--radius);padding:22px;display:none}.verify-result.show{display:block;animation:fade .3s}
+.verify-result.valid{background:var(--good-soft);border:1px solid #b9e5cf}.verify-result.invalid{background:var(--bad-soft);border:1px solid #f0c9c9}
 .vr-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.vr-badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none}
-.vr-badge svg{width:24px;height:24px;color:#fff}
-.valid .vr-badge{background:var(--good)}
-.invalid .vr-badge{background:var(--bad)}
-.vr-head h3{font-size:16px}
-.valid .vr-head h3{color:#1a7a4f}
-.invalid .vr-head h3{color:#a13333}
-.vr-head p{font-size:12.5px;color:var(--muted)}
+.vr-badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none}.vr-badge svg{width:24px;height:24px;color:#fff}
+.valid .vr-badge{background:var(--good)}.invalid .vr-badge{background:var(--bad)}
+.vr-head h3{font-size:16px}.valid .vr-head h3{color:#1a7a4f}.invalid .vr-head h3{color:#a13333}.vr-head p{font-size:12.5px;color:var(--muted)}
 .vr-detail{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:13.5px;padding-top:14px;border-top:1px solid rgba(0,0,0,.06)}
-.vr-detail dt{color:var(--muted);font-weight:500}
-.vr-detail dd{color:var(--ink);font-weight:600;text-align:right}
+.vr-detail dt{color:var(--muted);font-weight:500}.vr-detail dd{color:var(--ink);font-weight:600;text-align:right}
+.s-mnav,.s-mtop{display:none}
 
-/* mobile bottom nav */
-.mobile-nav{display:none}
+/* ================= ADMIN APP ================= */
+.a-app{display:none;min-height:100vh}
+.a-app.show{display:grid;grid-template-columns:236px 1fr}
+.a-side{background:var(--ink);color:#cdd6ea;padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.a-side .logo-row{margin-bottom:6px;padding:0 6px}.a-side .brand-name{color:#fff}.a-side .brand-sub{color:#7d89a8}
+.admin-tag{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.1em;padding:0 6px 16px;text-transform:uppercase}
+.a-nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow:auto}
+.a-navitem{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:#aab6d1;transition:background .15s,color .15s;text-align:left;width:100%}
+.a-navitem svg{width:18px;height:18px;flex:none;stroke-width:1.9}
+.a-navitem:hover{background:rgba(255,255,255,.06);color:#fff}
+.a-navitem.active{background:var(--accent);color:#3a2a05;font-weight:600}.a-navitem.active svg{stroke:#3a2a05}
+.a-sidefoot{padding-top:12px;border-top:1px solid rgba(255,255,255,.08);margin-top:8px}
+.a-logout{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border-radius:10px;font-size:13px;color:#9aa6c4;font-weight:500}
+.a-logout:hover{background:rgba(214,69,69,.14);color:#ff9d9d}.a-logout svg{width:17px;height:17px}
+.a-main{padding:0 0 60px}
+.export-bar{position:sticky;top:0;z-index:15;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:var(--shadow)}
+.export-bar .note{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px}.export-bar .note b{color:var(--ink)}
+.dirty-dot{width:8px;height:8px;border-radius:50%;background:var(--muted-2)}
+.dirty .dirty-dot{background:var(--accent);box-shadow:0 0 0 4px rgba(224,161,58,.18)}
+.export-actions{display:flex;gap:10px}
+.content{padding:26px;max-width:920px}
+.page-head{margin-bottom:20px}.page-head h1{font-size:23px;color:var(--ink)}.page-head p{font-size:13.5px;color:var(--muted);margin-top:3px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.sec-head h3{font-size:15px;color:var(--ink)}
+.row{display:flex;align-items:center;gap:14px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.row+.row{margin-top:9px}
+.row .rico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:14px}
+.row .rmain{flex:1;min-width:0}.row .rmain h4{font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.row .rmain p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.row .ract{display:flex;gap:7px;flex:none}
+.credline{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.credchip{font-family:'JetBrains Mono';background:var(--surface-2);border:1px solid var(--line);padding:2px 8px;border-radius:6px;color:var(--ink-2);font-size:11.5px}
+.credchip.pw{cursor:pointer;user-select:all}
+.linkbtn{font-size:11.5px;color:var(--accent-2);font-weight:600}.linkbtn:hover{text-decoration:underline}
+.tagx{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px}.tagx.ok{background:var(--good-soft);color:#1a7a4f}.tagx.no{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.iconbtn{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted);background:var(--surface)}.iconbtn:hover{border-color:var(--accent-2);color:var(--accent-2)}.iconbtn.del:hover{border-color:var(--bad);color:var(--bad)}.iconbtn svg{width:16px;height:16px}
+.empty{text-align:center;padding:34px 20px;color:var(--muted-2);font-size:13.5px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line-2)}.toggle-row:last-child{border-bottom:none}
+.toggle-row .tl{font-size:13.5px;color:var(--ink);font-weight:500}.toggle-row .tl small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:2px}
+.switch{position:relative;width:44px;height:25px;flex:none}.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--line);border-radius:20px;transition:.2s;cursor:pointer}
+.slider::before{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked+.slider{background:var(--accent-2)}.switch input:checked+.slider::before{transform:translateX(19px)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rangewrap{display:flex;align-items:center;gap:12px}.rangewrap input[type=range]{flex:1;accent-color:var(--accent-2)}.rangewrap .rv{font-family:'JetBrains Mono';font-weight:700;color:var(--ink);min-width:44px;text-align:right}
 
+/* ---------- responsive ---------- */
 @media (max-width:860px){
-  .app.show{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .main{padding:18px 16px 90px;max-width:100%}
+  .s-app.show{grid-template-columns:1fr}
+  .s-side{display:none}
+  .s-main{padding:18px 16px 90px;max-width:100%}
   .topbar h1{font-size:20px}
-  .grid-3{grid-template-columns:1fr}
-  .grid-2{grid-template-columns:1fr}
-  .mobile-topbar{display:flex;align-items:center;justify-content:space-between;
-    padding:12px 16px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:20}
-  .mobile-topbar .logo-row{margin:0}
-  .mobile-topbar .brand-name{color:#fff;font-size:14px}
-  .mobile-topbar .logo-mark{width:34px;height:34px}
-  .mobile-topbar .logo-mark span{font-size:15px}
-  .m-logout{color:#9aa6c4;padding:8px;border-radius:9px}
-  .m-logout svg{width:20px;height:20px}
-  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);
-    border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:30;
-    box-shadow:0 -4px 20px rgba(20,32,61,.08)}
-  .mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;
-    font-size:10px;font-weight:500;color:var(--muted-2)}
-  .mnav-item svg{width:21px;height:21px;stroke-width:1.9}
-  .mnav-item.active{color:var(--accent-2)}
-  .certificate{padding:20px;aspect-ratio:auto}
-  .cert-mid h2{font-size:19px}
-  .cert-name{font-size:22px}
-  .cert-seal{width:48px;height:48px;font-size:8px}
-  .cert-bot{flex-wrap:wrap}
-  .verify-input{flex-direction:column}
-  .verify-input .btn{width:100%}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .s-mtop{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:20}
+  .s-mtop .logo-row{margin:0}.s-mtop .brand-name{color:#fff;font-size:14px}.s-mtop .logo-mark{width:34px;height:34px}.s-mtop .logo-mark span{font-size:15px}
+  .s-mlogout{color:#9aa6c4;padding:8px;border-radius:9px}.s-mlogout svg{width:20px;height:20px}
+  .s-mnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:30;box-shadow:0 -4px 20px rgba(20,32,61,.08)}
+  .s-mnavitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:10px;font-weight:500;color:var(--muted-2)}
+  .s-mnavitem svg{width:21px;height:21px;stroke-width:1.9}.s-mnavitem.active{color:var(--accent-2)}
+  .certificate{padding:20px;aspect-ratio:auto}.cert-mid h2{font-size:19px}.cert-name{font-size:22px}.cert-seal{width:48px;height:48px;font-size:8px}.cert-bot{flex-wrap:wrap}
+  .verify-input{flex-direction:column}.verify-input .btn{width:100%}
+  .desktop-only{display:none!important}
+
+  .a-app.show{grid-template-columns:1fr}
+  .a-side{flex-direction:row;height:auto;position:sticky;top:0;z-index:20;padding:10px;overflow-x:auto;align-items:center}
+  .a-side .logo-row,.admin-tag,.a-sidefoot{display:none}
+  .a-nav{flex-direction:row;gap:4px}.a-navitem{white-space:nowrap;padding:8px 12px}.a-navitem span{display:none}
+  .export-bar{padding:12px 16px;flex-wrap:wrap}.export-bar .note{font-size:11.5px}
+  .content{padding:16px}.grid2{grid-template-columns:1fr}
 }
-.desktop-only{}
-@media (max-width:860px){.desktop-only{display:none!important}}
-.mobile-topbar{display:none}
 </style>
 </head>
 <body>
@@ -348,466 +266,689 @@ a{color:inherit;text-decoration:none}
 <div class="auth-wrap" id="authScreen">
   <div class="auth-card">
     <div class="auth-head">
-      <div class="logo-row">
-        <div class="logo-mark"><span>C</span></div>
-        <div>
-          <div class="brand-name">Computech CEC</div>
-          <div class="brand-sub">Student Portal</div>
-        </div>
-      </div>
+      <div class="logo-row"><div class="logo-mark"><span>C</span></div>
+        <div><div class="brand-name">Computech CEC</div><div class="brand-sub">Student Portal</div></div></div>
       <h1 id="authTitle">Sign in</h1>
       <p id="authDesc">Enter the student ID and password shared by your instructor.</p>
     </div>
     <div class="auth-body">
-      <!-- login view -->
       <div id="loginView">
-        <div class="auth-msg err" id="loginMsg"></div>
-        <div class="field">
-          <label for="sid">Student ID</label>
-          <input id="sid" type="text" placeholder="e.g. BA2025001" autocomplete="username" spellcheck="false">
-        </div>
-        <div class="field">
-          <label for="spw">Password</label>
-          <input id="spw" type="password" placeholder="Your password" autocomplete="current-password">
-        </div>
-        <button class="btn btn-primary" onclick="doLogin()">Sign in</button>
+        <div class="auth-msg" id="loginMsg"></div>
+        <div class="field"><label for="sid">Student ID</label>
+          <input id="sid" type="text" placeholder="e.g. BA2026001" autocomplete="username" spellcheck="false"></div>
+        <div class="field"><label for="spw">Password</label>
+          <input id="spw" type="password" placeholder="Your password" autocomplete="current-password"></div>
+        <button class="btn btn-primary btn-block" onclick="doStudentLogin()">Sign in</button>
         <div class="auth-foot">
-          <button onclick="showVerifyPublic()">Verify a certificate →</button>
+          <button onclick="showVerify()">Verify a certificate</button>
+          <button onclick="showAdmin()">Staff login</button>
         </div>
-        <div class="demo-hint">
-          Demo login — ID <code>BA2025001</code> · password <code>demo123</code>
-        </div>
+        <div class="demo-hint">Demo student — <code>BA2026001</code> · <code>demo123</code></div>
       </div>
-      <!-- public verify view -->
+      <div id="adminView" style="display:none">
+        <div class="auth-msg" id="adminMsg"></div>
+        <div class="field"><label for="apw">Admin password</label>
+          <input id="apw" type="password" placeholder="Enter admin password" autocomplete="current-password"></div>
+        <button class="btn btn-primary btn-block" onclick="doAdminLogin()">Open control panel</button>
+        <div class="auth-foot"><button onclick="showLogin()">← Back to student sign in</button></div>
+        <div class="demo-hint">Default admin password <code>admin123</code> — change it in Settings.</div>
+      </div>
       <div id="verifyView" style="display:none">
-        <div class="field">
-          <label for="pubCid">Certificate ID</label>
-          <input id="pubCid" class="mono" type="text" placeholder="CEC-BA-2026-0001" style="text-transform:uppercase" spellcheck="false">
-        </div>
-        <button class="btn btn-primary" onclick="verifyPublic()">Verify certificate</button>
+        <div class="field"><label for="pubCid">Certificate ID</label>
+          <input id="pubCid" class="mono" type="text" placeholder="CEC-BA-2026-0001" style="text-transform:uppercase" spellcheck="false"></div>
+        <button class="btn btn-primary btn-block" onclick="verifyPublic()">Verify certificate</button>
         <div class="verify-result" id="pubResult"></div>
-        <div class="auth-foot">
-          <button onclick="showLoginView()">← Back to sign in</button>
-        </div>
+        <div class="auth-foot"><button onclick="showLogin()">← Back to sign in</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============ APP ============ -->
-<div class="app" id="app">
-  <!-- sidebar (desktop) -->
-  <aside class="sidebar">
-    <div class="logo-row">
-      <div class="logo-mark"><span>C</span></div>
-      <div>
-        <div class="brand-name">Computech CEC</div>
-        <div class="brand-sub">Student Portal</div>
-      </div>
-    </div>
-    <nav class="nav" id="deskNav"></nav>
-    <div class="side-foot">
-      <div class="side-user">
-        <div class="avatar" id="sideAvatar">P</div>
-        <div>
-          <div class="nm" id="sideName">Student</div>
-          <div class="bt" id="sideBatch">Batch</div>
-        </div>
-      </div>
-      <button class="logout" onclick="doLogout()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        Log out
-      </button>
+<!-- ============ STUDENT APP ============ -->
+<div class="s-app" id="studentApp">
+  <aside class="s-side">
+    <div class="logo-row"><div class="logo-mark"><span>C</span></div>
+      <div><div class="brand-name">Computech CEC</div><div class="brand-sub">Student Portal</div></div></div>
+    <nav class="s-nav" id="sNav"></nav>
+    <div class="s-sidefoot">
+      <div class="s-sideuser"><div class="avatar" id="sideAvatar">P</div>
+        <div><div class="nm" id="sideName">Student</div><div class="bt" id="sideBatch">Batch</div></div></div>
+      <button class="s-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
     </div>
   </aside>
-
-  <!-- main -->
   <div>
-    <!-- mobile topbar -->
-    <div class="mobile-topbar">
-      <div class="logo-row">
-        <div class="logo-mark"><span>C</span></div>
-        <div class="brand-name">Computech CEC</div>
-      </div>
-      <button class="m-logout" onclick="doLogout()" aria-label="Log out">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      </button>
+    <div class="s-mtop">
+      <div class="logo-row"><div class="logo-mark"><span>C</span></div><div class="brand-name">Computech CEC</div></div>
+      <button class="s-mlogout" onclick="logout()" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
     </div>
-
-    <main class="main">
-      <div id="panels"></div>
-    </main>
+    <main class="s-main"><div id="sPanels"></div></main>
   </div>
+  <nav class="s-mnav" id="sMobileNav"></nav>
+</div>
 
-  <!-- mobile bottom nav -->
-  <nav class="mobile-nav" id="mobileNav"></nav>
+<!-- ============ ADMIN APP ============ -->
+<div class="a-app" id="adminApp">
+  <aside class="a-side">
+    <div>
+      <div class="logo-row"><div class="logo-mark"><span>C</span></div>
+        <div><div class="brand-name">Computech CEC</div><div class="brand-sub">Admin</div></div></div>
+      <div class="admin-tag">Control Panel</div>
+    </div>
+    <nav class="a-nav" id="aNav"></nav>
+    <div class="a-sidefoot"><button class="a-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Lock &amp; exit</button></div>
+  </aside>
+  <div class="a-main">
+    <div class="export-bar" id="exportBar">
+      <div class="note"><span class="dirty-dot"></span><span id="dirtyText"><b>All changes saved in memory.</b> Export &amp; upload to publish.</span></div>
+      <div class="export-actions">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Import data.js</button>
+        <input type="file" id="importFile" accept=".js" style="display:none" onchange="importData(this.files[0])">
+        <button class="btn btn-primary btn-sm" onclick="exportData()">⬇ Export data.js</button>
+      </div>
+    </div>
+    <div class="content"><div id="aPanels"></div></div>
+  </div>
 </div>
 
 <!-- video modal -->
 <div class="modal" id="vidModal" onclick="if(event.target===this)closeVid()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3 id="vidTitle">Recording</h3>
-      <button class="modal-close" onclick="closeVid()" aria-label="Close">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
+  <div class="modal-box vidbox">
+    <div class="modal-head"><h3 id="vidTitle">Recording</h3>
+      <button class="modal-close" onclick="closeVid()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="vid-frame" id="vidFrame"></div>
   </div>
 </div>
 
+<!-- admin form modal -->
+<div class="modal" id="aModal" onclick="if(event.target===this)closeAModal()">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="aModalTitle">Edit</h3>
+      <button class="modal-close" onclick="closeAModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" id="aModalBody"></div>
+    <div class="modal-foot" id="aModalFoot"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span id="toastText">Saved</span></div>
+
 <script src="data.js"></script>
 <script>
 /* ============================================================
-   ENGINE
+   COMPUTECH CEC — ONE PORTAL (students + admin)
+   All content lives in data.js. Admin edits it here and
+   Exports a new data.js to re-upload to GitHub.
    ============================================================ */
-let CURRENT = null;
+let DB = null, CURRENT = null, dirty = false;
 
 async function sha256(str){
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
+function clone(x){ return JSON.parse(JSON.stringify(x)); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-async function doLogin(){
-  const id = document.getElementById("sid").value.trim().toUpperCase();
-  const pw = document.getElementById("spw").value;
-  const msg = document.getElementById("loginMsg");
-  const s = STUDENTS[id];
-  if(!s || !pw){ return showLoginErr("Enter a valid student ID and password."); }
-  const hash = await sha256(pw);
-  if(hash !== s.passHash){ return showLoginErr("Incorrect ID or password. Try again."); }
-  msg.classList.remove("show");
-  CURRENT = { id, ...s };
-  enterApp();
+function seedDB(src){
+  DB = {
+    INSTITUTE: clone(src.INSTITUTE||{name:"Computech CEC",course:"",director:"",meetLink:"",verifyBase:"",idPrefix:"BA"}),
+    adminHash: src.ADMIN_HASH || "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    WELCOME: clone(src.WELCOME||{enabled:true,title:"",message:"",showMeet:true}),
+    STUDENTS: clone(src.STUDENTS||{}),
+    SYLLABUS: clone(src.SYLLABUS||[]),
+    RECORDINGS: clone(src.RECORDINGS||[]),
+    RESOURCES: clone(src.RESOURCES||[]),
+    SCHEDULE: clone(src.SCHEDULE||[]),
+    ANNOUNCEMENTS: clone(src.ANNOUNCEMENTS||[])
+  };
 }
-function showLoginErr(t){
-  const msg = document.getElementById("loginMsg");
-  msg.textContent = t; msg.classList.add("show");
-}
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter" && document.getElementById("authScreen").style.display!=="none"
-     && document.getElementById("loginView").style.display!=="none") doLogin();
+seedDB({
+  INSTITUTE:(typeof INSTITUTE!=="undefined"?INSTITUTE:null),
+  ADMIN_HASH:(typeof ADMIN_HASH!=="undefined"?ADMIN_HASH:null),
+  WELCOME:(typeof WELCOME!=="undefined"?WELCOME:null),
+  STUDENTS:(typeof STUDENTS!=="undefined"?STUDENTS:null),
+  SYLLABUS:(typeof SYLLABUS!=="undefined"?SYLLABUS:null),
+  RECORDINGS:(typeof RECORDINGS!=="undefined"?RECORDINGS:null),
+  RESOURCES:(typeof RESOURCES!=="undefined"?RESOURCES:null),
+  SCHEDULE:(typeof SCHEDULE!=="undefined"?SCHEDULE:null),
+  ANNOUNCEMENTS:(typeof ANNOUNCEMENTS!=="undefined"?ANNOUNCEMENTS:null)
 });
 
-function doLogout(){
-  CURRENT = null;
-  document.getElementById("app").classList.remove("show");
+/* ---------- login switching ---------- */
+function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
+function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); }
+function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
+function view(id,title,desc){
+  ["loginView","adminView","verifyView"].forEach(v=>document.getElementById(v).style.display=v===id?"block":"none");
+  document.getElementById("authTitle").textContent=title;
+  document.getElementById("authDesc").textContent=desc;
+}
+function doStudentLogin(){
+  const id=document.getElementById("sid").value.trim().toUpperCase();
+  const pw=document.getElementById("spw").value;
+  const s=DB.STUDENTS[id];
+  if(!s||s.pass!==pw){ return showErr("loginMsg","Incorrect ID or password. Try again."); }
+  document.getElementById("loginMsg").classList.remove("show");
+  CURRENT={id,...s}; enterStudent();
+}
+async function doAdminLogin(){
+  const pw=document.getElementById("apw").value;
+  if(!pw) return;
+  if(await sha256(pw)!==DB.adminHash){ return showErr("adminMsg","Incorrect admin password."); }
+  document.getElementById("adminMsg").classList.remove("show");
+  enterAdmin();
+}
+function showErr(id,t){ const m=document.getElementById(id); m.textContent=t; m.classList.add("show"); }
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||document.getElementById("authScreen").style.display==="none") return;
+  if(document.getElementById("loginView").style.display!=="none") doStudentLogin();
+  else if(document.getElementById("adminView").style.display!=="none") doAdminLogin();
+  else if(document.getElementById("verifyView").style.display!=="none") verifyPublic();
+});
+function logout(){
+  CURRENT=null;
+  document.getElementById("studentApp").classList.remove("show");
+  document.getElementById("adminApp").classList.remove("show");
   document.getElementById("authScreen").style.display="flex";
-  document.getElementById("sid").value="";
-  document.getElementById("spw").value="";
-  showLoginView();
+  document.getElementById("sid").value=""; document.getElementById("spw").value="";
+  document.getElementById("apw").value="";
+  showLogin();
 }
 
-/* public verify (from login screen) */
-function showVerifyPublic(){
-  document.getElementById("loginView").style.display="none";
-  document.getElementById("verifyView").style.display="block";
-  document.getElementById("authTitle").textContent="Verify a certificate";
-  document.getElementById("authDesc").textContent="Enter a certificate ID to confirm it was issued by Computech CEC.";
-}
-function showLoginView(){
-  document.getElementById("verifyView").style.display="none";
-  document.getElementById("loginView").style.display="block";
-  document.getElementById("authTitle").textContent="Sign in";
-  document.getElementById("authDesc").textContent="Enter the student ID and password shared by your instructor.";
-  document.getElementById("pubResult").className="verify-result";
-}
+/* ---------- public verify ---------- */
 function findByCert(cid){
-  cid = cid.trim().toUpperCase();
-  for(const id in STUDENTS){
-    const s = STUDENTS[id];
-    if(s.certId.toUpperCase()===cid && s.certReady) return {id,...s};
-  }
+  cid=(cid||"").trim().toUpperCase();
+  for(const id in DB.STUDENTS){ const s=DB.STUDENTS[id];
+    if((s.certId||"").toUpperCase()===cid && s.certReady) return {id,...s}; }
   return null;
 }
 function verifyPublic(){
-  const cid = document.getElementById("pubCid").value;
-  const box = document.getElementById("pubResult");
-  const found = findByCert(cid);
-  box.className = "verify-result show " + (found?"valid":"invalid");
-  box.innerHTML = renderVerifyResult(found, cid);
+  const cid=document.getElementById("pubCid").value, box=document.getElementById("pubResult");
+  const f=findByCert(cid); box.className="verify-result show "+(f?"valid":"invalid");
+  box.innerHTML=renderVerifyResult(f,cid);
+}
+function renderVerifyResult(f,cid){
+  if(f) return `<div class="vr-head"><div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <div><h3>Certificate verified</h3><p>Issued by ${esc(DB.INSTITUTE.name)}</p></div></div>
+    <dl class="vr-detail"><dt>Name</dt><dd>${esc(f.name)}</dd><dt>Course</dt><dd>${esc(DB.INSTITUTE.course)}</dd>
+      <dt>Certificate ID</dt><dd class="mono">${esc(f.certId)}</dd><dt>Issued on</dt><dd>${esc(f.certDate)}</dd></dl>`;
+  return `<div class="vr-head"><div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+      <div><h3>Not found</h3><p>No valid certificate matches <span class="mono">${esc(cid||"—")}</span></p></div></div>`;
 }
 
-function renderVerifyResult(found, cid){
-  if(found){
-    return `<div class="vr-head">
-        <div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <div><h3>Certificate verified</h3><p>Issued by Computech CEC</p></div>
-      </div>
-      <dl class="vr-detail">
-        <dt>Name</dt><dd>${found.name}</dd>
-        <dt>Course</dt><dd>${INSTITUTE.course}</dd>
-        <dt>Certificate ID</dt><dd class="mono">${found.certId}</dd>
-        <dt>Issued on</dt><dd>${found.certDate}</dd>
-      </dl>`;
-  }
-  return `<div class="vr-head">
-      <div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
-      <div><h3>Not found</h3><p>No valid certificate matches <span class="mono">${cid||"—"}</span></p></div>
-    </div>`;
-}
-
-/* ---- nav config ---- */
-const TABS = [
-  { id:"home",    label:"Home",        icon:'<path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>' },
-  { id:"syllabus",label:"Syllabus",    icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>' },
-  { id:"videos",  label:"Recordings",  icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>' },
-  { id:"resources",label:"Resources",  icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>' },
-  { id:"schedule",label:"Schedule",    icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>' },
-  { id:"certificate",label:"Certificate",icon:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>' }
+/* ================= STUDENT APP ================= */
+const TABS=[
+  {id:"home",label:"Home",icon:'<path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>'},
+  {id:"syllabus",label:"Syllabus",icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>'},
+  {id:"videos",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
+  {id:"resources",label:"Resources",icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>'},
+  {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
+  {id:"certificate",label:"Certificate",icon:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>'}
 ];
-
-function enterApp(){
+function enterStudent(){
   document.getElementById("authScreen").style.display="none";
-  document.getElementById("app").classList.add("show");
-  document.getElementById("sideName").textContent = CURRENT.name;
-  document.getElementById("sideBatch").textContent = CURRENT.batch;
-  document.getElementById("sideAvatar").textContent = CURRENT.name[0];
-  buildNav(); buildPanels(); goTab("home");
-  window.scrollTo(0,0);
+  document.getElementById("studentApp").classList.add("show");
+  document.getElementById("sideName").textContent=CURRENT.name;
+  document.getElementById("sideBatch").textContent=CURRENT.batch;
+  document.getElementById("sideAvatar").textContent=(CURRENT.name||"?")[0];
+  sBuildNav(); sBuildPanels(); sGoTab("home"); window.scrollTo(0,0);
 }
-
-function buildNav(){
-  const dn = document.getElementById("deskNav");
-  const mn = document.getElementById("mobileNav");
+function sBuildNav(){
+  const dn=document.getElementById("sNav"), mn=document.getElementById("sMobileNav");
   dn.innerHTML=""; mn.innerHTML="";
   TABS.forEach(t=>{
-    dn.insertAdjacentHTML("beforeend",
-      `<button class="nav-item" data-tab="${t.id}" onclick="goTab('${t.id}')">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${t.icon}</svg>${t.label}</button>`);
-    mn.insertAdjacentHTML("beforeend",
-      `<button class="mnav-item" data-tab="${t.id}" onclick="goTab('${t.id}')">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${t.icon}</svg>${t.label}</button>`);
+    dn.insertAdjacentHTML("beforeend",`<button class="s-navitem" data-tab="${t.id}" onclick="sGoTab('${t.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${t.icon}</svg>${t.label}</button>`);
+    mn.insertAdjacentHTML("beforeend",`<button class="s-mnavitem" data-tab="${t.id}" onclick="sGoTab('${t.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${t.icon}</svg>${t.label}</button>`);
   });
 }
-
-function goTab(id){
-  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("show",p.dataset.tab===id));
-  document.querySelectorAll(".nav-item,.mnav-item").forEach(n=>n.classList.toggle("active",n.dataset.tab===id));
+function sGoTab(id){
+  document.querySelectorAll("#studentApp .tab-panel").forEach(p=>p.classList.toggle("show",p.dataset.tab===id));
+  document.querySelectorAll(".s-navitem,.s-mnavitem").forEach(n=>n.classList.toggle("active",n.dataset.tab===id));
   window.scrollTo(0,0);
 }
-
-function buildPanels(){
-  document.getElementById("panels").innerHTML =
-    panelHome()+panelSyllabus()+panelVideos()+panelResources()+panelSchedule()+panelCertificate();
-  // init QR after render
+function sBuildPanels(){
+  document.getElementById("sPanels").innerHTML=panelHome()+panelSyllabus()+panelVideos()+panelResources()+panelSchedule()+panelCertificate();
   loadCertQR();
 }
-
-/* ---- HOME ---- */
 function panelHome(){
-  const next = SCHEDULE[0];
+  const next=DB.SCHEDULE[0]||{title:"—",day:"",time:""}, W=DB.WELCOME, I=DB.INSTITUTE;
   return `<section class="tab-panel show" data-tab="home">
-    <div class="topbar">
-      <div><h1>Hi, ${CURRENT.name.split(" ")[0]} 👋</h1>
-        <div class="sub">${INSTITUTE.course} · ${CURRENT.batch}</div></div>
-      <span class="pill live desktop-only">Live batch</span>
-    </div>
-
-    ${(typeof WELCOME!=="undefined" && WELCOME.enabled) ? `
-    <div class="card welcome-banner">
-      <div class="wb-icon">📣</div>
-      <div class="wb-body">
-        <h3>${WELCOME.title}</h3>
-        <p>${WELCOME.message}</p>
-      </div>
-      ${WELCOME.showMeet ? `<a class="btn btn-primary wb-btn" href="${INSTITUTE.meetLink}" target="_blank" rel="noopener">Join live class</a>` : ""}
-    </div>` : ""}
-
+    <div class="topbar"><div><h1>Hi, ${esc((CURRENT.name||"").split(" ")[0])} 👋</h1>
+      <div class="sub">${esc(I.course)} · ${esc(CURRENT.batch||"")}</div></div>
+      <span class="pill live desktop-only">Live batch</span></div>
+    ${W.enabled?`<div class="card welcome-banner"><div class="wb-icon">📣</div>
+      <div class="wb-body"><h3>${esc(W.title)}</h3><p>${esc(W.message)}</p></div>
+      ${W.showMeet?`<a class="btn btn-primary wb-btn" href="${esc(I.meetLink)}" target="_blank" rel="noopener">Join live class</a>`:""}</div>`:""}
     <div class="grid grid-3">
-      <div class="card stat">
-        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Course progress</div>
-        <div class="v">${CURRENT.progress}<small>%</small></div>
-        <div class="progress-track"><div class="progress-fill" style="width:${CURRENT.progress}%"></div></div>
-      </div>
-      <div class="card stat">
-        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>Recordings</div>
-        <div class="v">${RECORDINGS.reduce((a,g)=>a+g.items.length,0)}<small> available</small></div>
-      </div>
-      <div class="card stat">
-        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8 13 6 22l6-3 6 3-2-9"/></svg>Certificate</div>
-        <div class="v" style="font-size:20px;margin-top:12px">${CURRENT.certReady?'<span style="color:var(--good)">Ready</span>':'<span style="color:var(--muted-2)">In progress</span>'}</div>
-      </div>
+      <div class="card stat"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Course progress</div>
+        <div class="v">${CURRENT.progress||0}<small>%</small></div>
+        <div class="progress-track"><div class="progress-fill" style="width:${CURRENT.progress||0}%"></div></div></div>
+      <div class="card stat"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>Recordings</div>
+        <div class="v">${DB.RECORDINGS.reduce((a,g)=>a+g.items.length,0)}<small> available</small></div></div>
+      <div class="card stat"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8 13 6 22l6-3 6 3-2-9"/></svg>Certificate</div>
+        <div class="v" style="font-size:20px;margin-top:12px">${CURRENT.certReady?'<span style="color:var(--good)">Ready</span>':'<span style="color:var(--muted-2)">In progress</span>'}</div></div>
     </div>
-
     <div class="grid grid-2" style="margin-top:16px;align-items:start">
-      <div class="card next-class">
-        <div class="lbl">Next live class</div>
-        <h3>${next.title}</h3>
-        <div class="when">${next.day} · ${next.time} · Google Meet</div>
-        <a class="btn btn-primary" href="${INSTITUTE.meetLink}" target="_blank" rel="noopener">Join class</a>
-      </div>
-      <div class="card">
-        <div class="section-title">Announcements</div>
-        ${ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div>
-          <div class="ann-body"><h4>${a.title}</h4><p>${a.body}</p><div class="t">${a.time}</div></div></div>`).join("")}
-      </div>
-    </div>
-  </section>`;
+      <div class="card next-class"><div class="lbl">Next live class</div><h3>${esc(next.title)}</h3>
+        <div class="when">${esc(next.day)} · ${esc(next.time)} · Google Meet</div>
+        <a class="btn btn-primary" href="${esc(I.meetLink)}" target="_blank" rel="noopener">Join class</a></div>
+      <div class="card"><div class="section-title">Announcements</div>
+        ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
+    </div></section>`;
 }
-
-/* ---- SYLLABUS ---- */
 function panelSyllabus(){
   return `<section class="tab-panel" data-tab="syllabus">
-    <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${INSTITUTE.course} · 5 modules</div></div>
-      <a class="pill" href="#" onclick="return false">Download PDF</a></div>
-    ${SYLLABUS.map((m,i)=>`
-      <div class="module ${i===0?'open':''}">
-        <button class="module-head" onclick="this.parentElement.classList.toggle('open')">
-          <div class="module-ico" style="background:${m.color}">${m.code}</div>
-          <div class="mt"><h4>${m.name}</h4><p>${m.topics.length} topics</p></div>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="module-body"><ul>${m.topics.map(t=>`<li>${t}</li>`).join("")}</ul></div>
-      </div>`).join("")}
+    <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${esc(DB.INSTITUTE.course)} · ${DB.SYLLABUS.length} modules</div></div></div>
+    ${DB.SYLLABUS.map((m,i)=>`<div class="module ${i===0?'open':''}">
+      <button class="module-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="module-ico" style="background:${esc(m.color)}">${esc(m.code)}</div>
+        <div class="mt"><h4>${esc(m.name)}</h4><p>${m.topics.length} topics</p></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      <div class="module-body"><ul>${m.topics.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div></div>`).join("")||'<div class="card">No modules yet.</div>'}
   </section>`;
 }
-
-/* ---- VIDEOS ---- */
 function panelVideos(){
   return `<section class="tab-panel" data-tab="videos">
     <div class="topbar"><div><h1>Recordings</h1><div class="sub">Class recordings — watch inside the portal</div></div></div>
-    ${RECORDINGS.map(g=>`
-      <div class="rec-group">
-        <h3>${g.module} <span class="tag">${g.items.length} videos</span></h3>
-        ${g.items.map((v,idx)=>`
-          <button class="vid-card" onclick="openVid('${g.module.replace(/'/g,"")} — ${v.title.replace(/'/g,"")}','${v.fileId}')">
-            <div class="vid-thumb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="vid-info"><h4>${v.title}</h4><p>${v.date}</p></div>
-            <div class="vid-dur">${v.dur}</div>
-          </button>`).join("")}
-      </div>`).join("")}
+    ${DB.RECORDINGS.map(g=>`<div class="rec-group"><h3>${esc(g.module)} <span class="tag">${g.items.length} videos</span></h3>
+      ${g.items.map(v=>`<button class="vid-card" onclick="openVid('${esc(g.module).replace(/'/g,"")} — ${esc(v.title).replace(/'/g,"")}','${esc(v.fileId)}')">
+        <div class="vid-thumb"><svg viewBox="0 0 24 24" fill="var(--accent)" width="22"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="vid-info"><h4>${esc(v.title)}</h4><p>${esc(v.date)}</p></div><div class="vid-dur">${esc(v.dur)}</div></button>`).join("")}</div>`).join("")||'<div class="card">No recordings yet.</div>'}
   </section>`;
 }
-function openVid(title, fileId){
-  document.getElementById("vidTitle").textContent = title;
-  const frame = document.getElementById("vidFrame");
-  if(fileId){
-    frame.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay" allowfullscreen></iframe>`;
-  }else{
-    frame.innerHTML = `<div class="ph">This recording isn't linked yet.<br>
-      Instructor: paste the Drive file ID into <span class="mono">RECORDINGS</span> to enable playback.</div>`;
-  }
+function openVid(title,fileId){
+  document.getElementById("vidTitle").textContent=title;
+  const f=document.getElementById("vidFrame");
+  f.innerHTML=fileId?`<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay" allowfullscreen></iframe>`
+    :`<div class="ph">This recording isn't linked yet.<br>Ask your instructor to add it.</div>`;
   document.getElementById("vidModal").classList.add("show");
 }
-function closeVid(){
-  document.getElementById("vidModal").classList.remove("show");
-  document.getElementById("vidFrame").innerHTML="";
-}
-
-/* ---- RESOURCES ---- */
+function closeVid(){ document.getElementById("vidModal").classList.remove("show"); document.getElementById("vidFrame").innerHTML=""; }
 function panelResources(){
-  const ic = {
-    pdf:{bg:"#fae6e6",fg:"#d64545",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'},
+  const ic={pdf:{bg:"#fae6e6",fg:"#d64545",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'},
     xlsx:{bg:"#e2f4ec",fg:"#22a06b",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13l3 5M11 13l-3 5"/>'},
-    doc:{bg:"#e6eefb",fg:"#2a5db0",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h3"/>'}
-  };
+    doc:{bg:"#e6eefb",fg:"#2a5db0",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h3"/>'}};
   return `<section class="tab-panel" data-tab="resources">
-    <div class="topbar"><div><h1>Resources</h1><div class="sub">Notes, datasets & practice files</div></div></div>
-    <div class="card">
-    ${RESOURCES.map(r=>{const k=ic[r.type]||ic.doc;return`
-      <div class="res-item">
-        <div class="res-ico" style="background:${k.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${k.fg}" stroke-width="2">${k.p}</svg></div>
-        <div class="res-info"><h4>${r.name}</h4><p>${r.meta}</p></div>
-        <a class="res-dl" href="${r.url}" ${r.url!=='#'?'target="_blank" rel="noopener"':''} onclick="${r.url==='#'?'return false':''}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</a>
-      </div>`}).join("")}
-    </div>
+    <div class="topbar"><div><h1>Resources</h1><div class="sub">Notes, datasets &amp; practice files</div></div></div>
+    <div class="card">${DB.RESOURCES.map(r=>{const k=ic[r.type]||ic.doc;return`<div class="res-item">
+      <div class="res-ico" style="background:${k.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${k.fg}" stroke-width="2">${k.p}</svg></div>
+      <div class="res-info"><h4>${esc(r.name)}</h4><p>${esc(r.meta)}</p></div>
+      <a class="res-dl" href="${esc(r.url)}" ${r.url!=='#'?'target="_blank" rel="noopener"':''} onclick="${r.url==='#'?'return false':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</a></div>`}).join("")||'<div class="empty">No resources yet.</div>'}</div>
   </section>`;
 }
-
-/* ---- SCHEDULE ---- */
 function panelSchedule(){
   return `<section class="tab-panel" data-tab="schedule">
     <div class="topbar"><div><h1>Schedule</h1><div class="sub">Weekly live classes · Google Meet</div></div></div>
-    <div class="card">
-    ${SCHEDULE.map(s=>`
-      <div class="sched-row">
-        <div class="sched-day"><div class="d">${s.day}</div><div class="dd">${s.dd}</div></div>
-        <div class="sched-info"><h4>${s.title}</h4><p>${INSTITUTE.course}</p></div>
-        <div class="sched-time">${s.time}</div>
-        ${s.meet?`<a class="meet-btn" href="${INSTITUTE.meetLink}" target="_blank" rel="noopener">Join</a>`:""}
-      </div>`).join("")}
-    </div>
+    <div class="card">${DB.SCHEDULE.map(s=>`<div class="sched-row">
+      <div class="sched-day"><div class="d">${esc(s.day)}</div><div class="dd">${esc(s.dd||"Live")}</div></div>
+      <div class="sched-info"><h4>${esc(s.title)}</h4><p>${esc(DB.INSTITUTE.course)}</p></div>
+      <div class="sched-time">${esc(s.time)}</div>
+      ${s.meet?`<a class="meet-btn" href="${esc(DB.INSTITUTE.meetLink)}" target="_blank" rel="noopener">Join</a>`:""}</div>`).join("")||'<div class="empty">No classes scheduled.</div>'}</div>
   </section>`;
 }
-
-/* ---- CERTIFICATE ---- */
 function panelCertificate(){
-  if(!CURRENT.certReady){
-    return `<section class="tab-panel" data-tab="certificate">
-      <div class="topbar"><div><h1>Certificate</h1></div></div>
-      <div class="card" style="text-align:center;padding:48px 24px">
-        <div style="width:64px;height:64px;border-radius:16px;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 16px">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8 13 6 22l6-3 6 3-2-9"/></svg></div>
-        <h3 style="color:var(--ink);font-size:17px;margin-bottom:6px">Certificate in progress</h3>
-        <p style="color:var(--muted);font-size:13.5px;max-width:340px;margin:0 auto">Finish the course to unlock your certificate. You're at <b style="color:var(--ink)">${CURRENT.progress}%</b> — keep going!</p>
-      </div></section>`;
-  }
+  const I=DB.INSTITUTE;
+  if(!CURRENT.certReady) return `<section class="tab-panel" data-tab="certificate">
+    <div class="topbar"><div><h1>Certificate</h1></div></div>
+    <div class="card" style="text-align:center;padding:48px 24px">
+      <div style="width:64px;height:64px;border-radius:16px;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 16px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8 13 6 22l6-3 6 3-2-9"/></svg></div>
+      <h3 style="color:var(--ink);font-size:17px;margin-bottom:6px">Certificate in progress</h3>
+      <p style="color:var(--muted);font-size:13.5px;max-width:340px;margin:0 auto">Finish the course to unlock your certificate. You're at <b style="color:var(--ink)">${CURRENT.progress||0}%</b> — keep going!</p></div></section>`;
   return `<section class="tab-panel" data-tab="certificate">
-    <div class="topbar"><div><h1>Certificate</h1><div class="sub">Verified · ID <span class="mono">${CURRENT.certId}</span></div></div></div>
-    <div class="cert-wrap">
-      <div class="certificate" id="certCard">
-        <div class="cert-top">
-          <div class="cert-brand">
-            <div class="logo-mark" style="width:46px;height:46px"><span>C</span></div>
-            <div><div class="brand-name" style="font-size:15px;color:var(--ink)">${INSTITUTE.name}</div>
-              <div class="brand-sub">Computer Education Center · Est. 1999</div></div>
-          </div>
-          <div class="cert-seal">ISO<br>CERTIFIED</div>
-        </div>
-        <div class="cert-mid">
-          <div class="kicker">Certificate of Completion</div>
-          <div class="awarded" style="margin-top:14px">This is proudly awarded to</div>
-          <div class="cert-name">${CURRENT.name}</div>
-          <div class="desc">for successfully completing the <b>${INSTITUTE.course}</b> program covering Excel, SQL, Power BI, Tableau &amp; AI Tools.</div>
-        </div>
-        <div class="cert-bot">
-          <div class="cert-sig"><div class="line"></div><div class="nm">${INSTITUTE.director}</div><div class="role">Director, ${INSTITUTE.name}</div></div>
-          <div class="cert-qr">
-            <img id="certQR" alt="Verification QR" onerror="qrFallback()">
-            <div class="qr-fallback" id="qrFB" style="display:none">Scan to verify<br>${CURRENT.certId}</div>
-            <div class="cid">${CURRENT.certId}</div>
-          </div>
-          <div class="cert-sig"><div class="line"></div><div class="role">Date</div><div class="nm">${CURRENT.certDate}</div></div>
-        </div>
-      </div>
-      <div class="cert-actions">
-        <button class="btn btn-primary" onclick="printCert()">Download / Print</button>
-        <button class="btn btn-ghost" onclick="goTab('home')">Back to home</button>
-      </div>
+    <div class="topbar"><div><h1>Certificate</h1><div class="sub">Verified · ID <span class="mono">${esc(CURRENT.certId)}</span></div></div></div>
+    <div class="cert-wrap"><div class="certificate" id="certCard">
+      <div class="cert-top"><div class="cert-brand"><div class="logo-mark" style="width:46px;height:46px"><span>C</span></div>
+        <div><div class="brand-name" style="font-size:15px;color:var(--ink)">${esc(I.name)}</div><div class="brand-sub">Computer Education Center · Est. 1999</div></div></div>
+        <div class="cert-seal">ISO<br>CERTIFIED</div></div>
+      <div class="cert-mid"><div class="kicker">Certificate of Completion</div>
+        <div class="awarded" style="margin-top:14px">This is proudly awarded to</div>
+        <div class="cert-name">${esc(CURRENT.name)}</div>
+        <div class="desc">for successfully completing the <b>${esc(I.course)}</b> program covering Excel, SQL, Power BI, Tableau &amp; AI Tools.</div></div>
+      <div class="cert-bot"><div class="cert-sig"><div class="line"></div><div class="nm">${esc(I.director)}</div><div class="role">Director, ${esc(I.name)}</div></div>
+        <div class="cert-qr"><img id="certQR" alt="Verification QR" onerror="qrFallback()"><div class="qr-fallback" id="qrFB" style="display:none">Scan to verify<br>${esc(CURRENT.certId)}</div><div class="cid">${esc(CURRENT.certId)}</div></div>
+        <div class="cert-sig"><div class="line"></div><div class="role">Date</div><div class="nm">${esc(CURRENT.certDate)}</div></div></div>
     </div>
-  </section>`;
+    <div class="cert-actions"><button class="btn btn-primary" onclick="printCert()">Download / Print</button>
+      <button class="btn btn-ghost" onclick="sGoTab('home')">Back to home</button></div></div></section>`;
 }
 function loadCertQR(){
-  const img = document.getElementById("certQR");
-  if(!img) return;
-  // Encodes the verification target. Replace the base URL with your GitHub Pages URL.
-  const base = (INSTITUTE.verifyBase||"").replace(/\/$/,"");
-  const verifyUrl = base + "/?verify="+encodeURIComponent(CURRENT.certId);
-  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data="+encodeURIComponent(verifyUrl);
+  const img=document.getElementById("certQR"); if(!img) return;
+  const base=(DB.INSTITUTE.verifyBase||"").replace(/\/$/,"");
+  const url=base+"/?verify="+encodeURIComponent(CURRENT.certId);
+  img.src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data="+encodeURIComponent(url);
 }
-function qrFallback(){
-  const img=document.getElementById("certQR"), fb=document.getElementById("qrFB");
-  if(img) img.style.display="none";
-  if(fb) fb.style.display="grid";
-}
+function qrFallback(){ const i=document.getElementById("certQR"),f=document.getElementById("qrFB"); if(i)i.style.display="none"; if(f)f.style.display="grid"; }
 function printCert(){
-  const card = document.getElementById("certCard").outerHTML;
-  const w = window.open("","_blank");
-  w.document.write(`<html><head><title>${CURRENT.name} — Certificate</title>
+  const card=document.getElementById("certCard").outerHTML;
+  const w=window.open("","_blank");
+  w.document.write(`<html><head><title>${esc(CURRENT.name)} — Certificate</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>body{margin:0;padding:24px;font-family:Inter}${document.querySelector("style").innerHTML}
-    .certificate{box-shadow:none;margin:0 auto}@media print{body{padding:0}}</style></head>
-    <body>${card}<script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>`);
+    <style>body{margin:0;padding:24px;font-family:Inter}${document.querySelector("style").innerHTML}.certificate{box-shadow:none;margin:0 auto}@media print{body{padding:0}}</style></head>
+    <body>${card}<scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),400)</scr`+`ipt></body></html>`);
   w.document.close();
 }
 
-/* deep-link: ?verify=CEC-BA-... opens public verify */
-window.addEventListener("load",()=>{
-  const p = new URLSearchParams(location.search).get("verify");
-  if(p){ showVerifyPublic(); document.getElementById("pubCid").value=p; verifyPublic(); }
-});
+/* ================= ADMIN APP ================= */
+const SECTIONS=[
+  {id:"welcome",label:"Welcome message",icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  {id:"students",label:"Students",icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  {id:"recordings",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
+  {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
+  {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
+  {id:"resources",label:"Resources",icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>'},
+  {id:"syllabus",label:"Syllabus",icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>'},
+  {id:"settings",label:"Settings",icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'}
+];
+let CURSEC="students";
+function enterAdmin(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("adminApp").classList.add("show");
+  aBuildNav(); aRender("students"); window.scrollTo(0,0);
+}
+function aBuildNav(){
+  document.getElementById("aNav").innerHTML=SECTIONS.map(s=>`<button class="a-navitem" data-sec="${s.id}" onclick="aRender('${s.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${s.icon}</svg><span>${s.label}</span></button>`).join("");
+}
+function aRender(sec){
+  CURSEC=sec;
+  document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
+  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,schedule:secSched,resources:secRes,syllabus:secSyl,settings:secSettings};
+  document.getElementById("aPanels").innerHTML=map[sec]();
+  window.scrollTo(0,0);
+}
+function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
+  document.getElementById("dirtyText").innerHTML="<b>Unsaved changes.</b> Export &amp; upload data.js to publish."; }
+
+/* WELCOME */
+function secWelcome(){
+  const w=DB.WELCOME;
+  return `<div class="page-head"><h1>Welcome message</h1><p>Shown to every student at the top of their Home tab.</p></div>
+  <div class="card">
+    <div class="toggle-row"><div class="tl">Show welcome message<small>Turn the banner on or off for all students.</small></div>
+      <label class="switch"><input type="checkbox" ${w.enabled?"checked":""} onchange="DB.WELCOME.enabled=this.checked;markDirty()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div class="tl">Show “Join live class” button<small>Uses the Meet link from Settings.</small></div>
+      <label class="switch"><input type="checkbox" ${w.showMeet?"checked":""} onchange="DB.WELCOME.showMeet=this.checked;markDirty()"><span class="slider"></span></label></div>
+    <div class="field" style="margin-top:16px"><label>Title</label><input value="${esc(w.title)}" oninput="DB.WELCOME.title=this.value;markDirty()"></div>
+    <div class="field"><label>Message</label><textarea oninput="DB.WELCOME.message=this.value;markDirty()">${esc(w.message)}</textarea></div>
+    <div class="warn-banner"><span>💡</span><div>The Google Meet link lives in <b>Settings</b>.</div></div>
+  </div>`;
+}
+
+/* STUDENTS */
+function genId(){
+  const p=(DB.INSTITUTE.idPrefix||"BA").toUpperCase(), yr=new Date().getFullYear(), pre=p+yr;
+  let max=0; Object.keys(DB.STUDENTS).forEach(id=>{ if(id.startsWith(pre)){ const n=parseInt(id.slice(pre.length),10); if(n>max)max=n; }});
+  return pre+String(max+1).padStart(3,"0");
+}
+function genPass(len){ len=len||8; const a="abcdefghjkmnpqrstuvwxyz23456789"; let s=""; const arr=crypto.getRandomValues(new Uint32Array(len)); for(let i=0;i<len;i++)s+=a[arr[i]%a.length]; return s; }
+function nextCertId(){ const yr=new Date().getFullYear(),n=Object.keys(DB.STUDENTS).length+1; return `CEC-BA-${yr}-${String(n).padStart(4,"0")}`; }
+function secStudents(){
+  const ids=Object.keys(DB.STUDENTS);
+  const rows=ids.length?ids.map(id=>{const s=DB.STUDENTS[id];const pid="pw_"+id;
+    return `<div class="row"><div class="rico" style="background:var(--ink-2)">${esc((s.name||"?")[0])}</div>
+      <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Cert ready</span>':'<span class="tagx no">'+(s.progress||0)+'%</span>'}</h4>
+        <div class="credline"><span>ID</span><span class="credchip">${esc(id)}</span>
+          <span>Pass</span><span class="credchip pw" id="${pid}" data-pw="${esc(s.pass)}">••••••</span>
+          <button class="linkbtn" onclick="togglePw('${pid}')">show</button>
+          <button class="linkbtn" onclick="copyLogin('${id}')">copy login</button></div></div>
+      <div class="ract">
+        <button class="iconbtn" onclick="resetPass('${id}')" title="New password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></button>
+        <button class="iconbtn" onclick="editStudent('${id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" onclick="delStudent('${id}')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+      </div></div>`;}).join(""):`<div class="empty">No students yet. Add your first one.</div>`;
+  return `<div class="page-head"><h1>Students</h1><p>${ids.length} student${ids.length===1?"":"s"} · logins auto-generated. Tap “copy login” to share on WhatsApp.</p></div>
+  <div class="sec-head"><h3>All students</h3><button class="btn btn-primary btn-sm" onclick="editStudent(null)">+ Add student</button></div>${rows}`;
+}
+function togglePw(pid){ const el=document.getElementById(pid); const on=el.textContent==="••••••"; el.textContent=on?el.dataset.pw:"••••••";
+  const b=el.nextElementSibling; if(b)b.textContent=on?"hide":"show"; }
+function copyLogin(id){ const s=DB.STUDENTS[id];
+  const link=(DB.INSTITUTE.verifyBase||"").replace(/\/$/,"")||"[your portal link]";
+  const msg="Computech CEC — Student Portal\n"+link+"\n\nStudent ID: "+id+"\nPassword: "+s.pass;
+  navigator.clipboard?.writeText(msg).then(()=>toast("Login copied for WhatsApp")).catch(()=>toast("Copy failed")); }
+function resetPass(id){ const np=genPass(8); DB.STUDENTS[id].pass=np; markDirty(); aRender("students"); toast("New password: "+np); }
+function editStudent(id){
+  const isNew=!id;
+  const s=isNew?{name:"",batch:(Object.values(DB.STUDENTS)[0]||{}).batch||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8)}:clone(DB.STUDENTS[id]);
+  const sid=isNew?genId():id;
+  openForm(isNew?"Add student":"Edit student",[
+    {k:"__id",label:"Student ID (auto)",type:"text",mono:true,val:sid,disabled:!isNew},
+    {k:"name",label:"Full name",type:"text",val:s.name},
+    {k:"batch",label:"Batch",type:"text",val:s.batch,ph:"BA — Jan 2026"},
+    {k:"pass",label:"Password (auto — you can edit)",type:"text",mono:true,val:s.pass,help:"Students use this to log in. Visible to you anytime."},
+    {k:"email",label:"Email",type:"email",val:s.email},
+    {k:"joined",label:"Joined on",type:"text",val:s.joined},
+    {k:"progress",label:"Course progress",type:"range",val:s.progress||0},
+    {k:"certReady",label:"Certificate ready to view",type:"checkbox",val:s.certReady},
+    {k:"certId",label:"Certificate ID",type:"text",mono:true,val:s.certId},
+    {k:"certDate",label:"Certificate date",type:"text",val:s.certDate,ph:"15 Mar 2026"}
+  ],v=>{
+    const newId=(v.__id||"").trim().toUpperCase();
+    if(!newId) return toast("Student ID required");
+    if(isNew && DB.STUDENTS[newId]) return toast("That ID already exists");
+    if(!v.pass.trim()) return toast("Password required");
+    DB.STUDENTS[newId]={name:v.name.trim(),batch:v.batch.trim(),email:v.email.trim(),joined:v.joined.trim(),
+      progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim()};
+    markDirty(); closeAModal(); aRender("students"); toast("Student saved");
+  });
+}
+function delStudent(id){ confirmDel("Delete "+id+"? This removes their login.",()=>{ delete DB.STUDENTS[id]; markDirty(); aRender("students"); }); }
+
+/* RECORDINGS */
+function secRecordings(){
+  const total=DB.RECORDINGS.reduce((a,g)=>a+g.items.length,0);
+  const body=DB.RECORDINGS.map((g,gi)=>`<div class="card"><div class="sec-head"><h3>${esc(g.module)} <span style="font-size:12px;color:var(--muted);font-weight:400">· ${g.items.length}</span></h3>
+    <div style="display:flex;gap:7px"><button class="btn btn-ghost btn-sm" onclick="editVideo(${gi},null)">+ Video</button>
+      <button class="iconbtn del" onclick="delModRec(${gi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>
+    ${g.items.map((v,vi)=>`<div class="row"><div class="rico" style="background:var(--ink)"><svg viewBox="0 0 24 24" fill="var(--accent)" width="18"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="rmain"><h4>${esc(v.title)} ${v.fileId?'<span class="tagx ok">linked</span>':'<span class="tagx no">no link</span>'}</h4><p>${esc(v.date)} · ${esc(v.dur)}</p></div>
+      <div class="ract"><button class="iconbtn" onclick="editVideo(${gi},${vi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" onclick="delVideo(${gi},${vi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty" style="padding:16px">No videos yet.</div>'}</div>`).join("")||'<div class="empty">No recordings yet.</div>';
+  return `<div class="page-head"><h1>Recordings</h1><p>${total} video${total===1?"":"s"}. Paste Google Drive file IDs to enable playback.</p></div>
+  <div class="sec-head"><h3></h3><button class="btn btn-primary btn-sm" onclick="addModRec()">+ Add module</button></div>${body}`;
+}
+function addModRec(){ openForm("New module",[{k:"module",label:"Module name",type:"text",val:"",ph:"Tableau"}],v=>{
+  if(!v.module.trim())return toast("Enter a name"); DB.RECORDINGS.push({module:v.module.trim(),items:[]}); markDirty(); closeAModal(); aRender("recordings"); toast("Module added"); }); }
+function delModRec(gi){ confirmDel('Delete module "'+DB.RECORDINGS[gi].module+'"?',()=>{ DB.RECORDINGS.splice(gi,1); markDirty(); aRender("recordings"); }); }
+function editVideo(gi,vi){
+  const isNew=vi===null, v=isNew?{title:"",date:"",dur:"",fileId:""}:clone(DB.RECORDINGS[gi].items[vi]);
+  openForm(isNew?"Add video":"Edit video",[
+    {k:"title",label:"Title",type:"text",val:v.title,ph:"Day 7 — Dashboards"},
+    {k:"date",label:"Date",type:"text",val:v.date,ph:"22 Jan 2026"},
+    {k:"dur",label:"Duration",type:"text",mono:true,val:v.dur,ph:"1:05:00"},
+    {k:"fileId",label:"Google Drive file ID",type:"text",mono:true,val:v.fileId,help:"From drive.google.com/file/d/<THIS>/view"}
+  ],val=>{ if(!val.title.trim())return toast("Title required");
+    const rec={title:val.title.trim(),date:val.date.trim(),dur:val.dur.trim(),fileId:val.fileId.trim()};
+    if(isNew)DB.RECORDINGS[gi].items.push(rec); else DB.RECORDINGS[gi].items[vi]=rec;
+    markDirty(); closeAModal(); aRender("recordings"); toast("Video saved"); });
+}
+function delVideo(gi,vi){ confirmDel("Delete this video?",()=>{ DB.RECORDINGS[gi].items.splice(vi,1); markDirty(); aRender("recordings"); }); }
+
+/* ANNOUNCEMENTS */
+function secAnn(){
+  const rows=DB.ANNOUNCEMENTS.map((a,i)=>`<div class="row"><div class="rico" style="background:var(--accent);color:#3a2a05">📣</div>
+    <div class="rmain"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><p style="color:var(--muted-2)">${esc(a.time)}</p></div>
+    <div class="ract"><button class="iconbtn" onclick="editAnn(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delAnn(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No announcements yet.</div>';
+  return `<div class="page-head"><h1>Announcements</h1><p>Posted on the student Home tab, newest first.</p></div>
+  <div class="sec-head"><h3>Posts</h3><button class="btn btn-primary btn-sm" onclick="editAnn(null)">+ Add</button></div>${rows}`;
+}
+function editAnn(i){ const isNew=i===null,a=isNew?{title:"",body:"",time:"Just now"}:clone(DB.ANNOUNCEMENTS[i]);
+  openForm(isNew?"Add announcement":"Edit announcement",[
+    {k:"title",label:"Title",type:"text",val:a.title},{k:"body",label:"Message",type:"textarea",val:a.body},
+    {k:"time",label:"Timestamp label",type:"text",val:a.time,ph:"2 days ago"}
+  ],v=>{ if(!v.title.trim())return toast("Title required");
+    const rec={title:v.title.trim(),body:v.body.trim(),time:v.time.trim()||"Just now"};
+    if(isNew)DB.ANNOUNCEMENTS.unshift(rec); else DB.ANNOUNCEMENTS[i]=rec;
+    markDirty(); closeAModal(); aRender("announcements"); toast("Saved"); }); }
+function delAnn(i){ confirmDel("Delete this announcement?",()=>{ DB.ANNOUNCEMENTS.splice(i,1); markDirty(); aRender("announcements"); }); }
+
+/* SCHEDULE */
+function secSched(){
+  const rows=DB.SCHEDULE.map((s,i)=>`<div class="row"><div class="rico" style="background:var(--accent-2)">${esc(s.day)}</div>
+    <div class="rmain"><h4>${esc(s.title)}</h4><p>${esc(s.time)} · ${s.meet?'<span class="tagx ok">Meet on</span>':'<span class="tagx no">No link</span>'}</p></div>
+    <div class="ract"><button class="iconbtn" onclick="editSched(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delSched(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No classes scheduled.</div>';
+  return `<div class="page-head"><h1>Schedule</h1><p>Weekly live classes. Join buttons use the Meet link in Settings.</p></div>
+  <div class="sec-head"><h3>Classes</h3><button class="btn btn-primary btn-sm" onclick="editSched(null)">+ Add class</button></div>${rows}`;
+}
+function editSched(i){ const isNew=i===null,s=isNew?{day:"",dd:"Live",title:"",time:"",meet:true}:clone(DB.SCHEDULE[i]);
+  openForm(isNew?"Add class":"Edit class",[
+    {k:"day",label:"Day",type:"text",val:s.day,ph:"Mon"},{k:"title",label:"Topic",type:"text",val:s.title},
+    {k:"time",label:"Time",type:"text",val:s.time,ph:"7:00 PM"},{k:"meet",label:"Show Join (Meet) button",type:"checkbox",val:s.meet}
+  ],v=>{ if(!v.day.trim()||!v.title.trim())return toast("Day and topic required");
+    const rec={day:v.day.trim(),dd:"Live",title:v.title.trim(),time:v.time.trim(),meet:!!v.meet};
+    if(isNew)DB.SCHEDULE.push(rec); else DB.SCHEDULE[i]=rec;
+    markDirty(); closeAModal(); aRender("schedule"); toast("Saved"); }); }
+function delSched(i){ confirmDel("Delete this class?",()=>{ DB.SCHEDULE.splice(i,1); markDirty(); aRender("schedule"); }); }
+
+/* RESOURCES */
+function secRes(){
+  const rows=DB.RESOURCES.map((r,i)=>`<div class="row"><div class="rico" style="background:var(--ink-2);text-transform:uppercase;font-size:11px">${esc(r.type)}</div>
+    <div class="rmain"><h4>${esc(r.name)} ${r.url&&r.url!=="#"?'<span class="tagx ok">linked</span>':'<span class="tagx no">no link</span>'}</h4><p>${esc(r.meta)}</p></div>
+    <div class="ract"><button class="iconbtn" onclick="editRes(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delRes(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No resources yet.</div>';
+  return `<div class="page-head"><h1>Resources</h1><p>Notes, datasets and files on the Resources tab.</p></div>
+  <div class="sec-head"><h3>Files</h3><button class="btn btn-primary btn-sm" onclick="editRes(null)">+ Add</button></div>${rows}`;
+}
+function editRes(i){ const isNew=i===null,r=isNew?{type:"pdf",name:"",meta:"",url:"#"}:clone(DB.RESOURCES[i]);
+  openForm(isNew?"Add resource":"Edit resource",[
+    {k:"type",label:"File type",type:"select",val:r.type,options:["pdf","xlsx","doc"]},
+    {k:"name",label:"Name",type:"text",val:r.name},{k:"meta",label:"Description",type:"text",val:r.meta},
+    {k:"url",label:"Download link",type:"text",val:r.url,help:"Drive/GitHub link. Leave # if not ready."}
+  ],v=>{ if(!v.name.trim())return toast("Name required");
+    const rec={type:v.type,name:v.name.trim(),meta:v.meta.trim(),url:v.url.trim()||"#"};
+    if(isNew)DB.RESOURCES.push(rec); else DB.RESOURCES[i]=rec;
+    markDirty(); closeAModal(); aRender("resources"); toast("Saved"); }); }
+function delRes(i){ confirmDel("Delete this resource?",()=>{ DB.RESOURCES.splice(i,1); markDirty(); aRender("resources"); }); }
+
+/* SYLLABUS */
+function secSyl(){
+  const rows=DB.SYLLABUS.map((m,i)=>`<div class="row"><div class="rico" style="background:${esc(m.color)}">${esc(m.code)}</div>
+    <div class="rmain"><h4>${esc(m.name)}</h4><p>${m.topics.length} topic${m.topics.length===1?"":"s"}</p></div>
+    <div class="ract"><button class="iconbtn" onclick="editMod(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delMod(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No modules yet.</div>';
+  return `<div class="page-head"><h1>Syllabus</h1><p>Course modules and topics on the Syllabus tab.</p></div>
+  <div class="sec-head"><h3>Modules</h3><button class="btn btn-primary btn-sm" onclick="editMod(null)">+ Add module</button></div>${rows}`;
+}
+function editMod(i){ const isNew=i===null,m=isNew?{code:String(DB.SYLLABUS.length+1).padStart(2,"0"),color:"#2a5db0",name:"",topics:[]}:clone(DB.SYLLABUS[i]);
+  openForm(isNew?"Add module":"Edit module",[
+    {k:"code",label:"Number",type:"text",mono:true,val:m.code,ph:"06"},{k:"name",label:"Module name",type:"text",val:m.name},
+    {k:"color",label:"Accent colour",type:"color",val:m.color},{k:"topics",label:"Topics (one per line)",type:"textarea",val:m.topics.join("\n")}
+  ],v=>{ if(!v.name.trim())return toast("Name required");
+    const rec={code:v.code.trim()||"00",color:v.color,name:v.name.trim(),topics:v.topics.split("\n").map(t=>t.trim()).filter(Boolean)};
+    if(isNew)DB.SYLLABUS.push(rec); else DB.SYLLABUS[i]=rec;
+    markDirty(); closeAModal(); aRender("syllabus"); toast("Saved"); }); }
+function delMod(i){ confirmDel("Delete this module?",()=>{ DB.SYLLABUS.splice(i,1); markDirty(); aRender("syllabus"); }); }
+
+/* SETTINGS */
+function secSettings(){
+  const t=DB.INSTITUTE;
+  return `<div class="page-head"><h1>Settings</h1><p>Institute details, Meet link and admin password.</p></div>
+  <div class="card"><div class="sec-head"><h3>Institute</h3></div>
+    <div class="grid2">
+      <div class="field"><label>Institute name</label><input value="${esc(t.name)}" oninput="DB.INSTITUTE.name=this.value;markDirty()"></div>
+      <div class="field"><label>Course name</label><input value="${esc(t.course)}" oninput="DB.INSTITUTE.course=this.value;markDirty()"></div></div>
+    <div class="grid2">
+      <div class="field"><label>Director / signatory</label><input value="${esc(t.director)}" oninput="DB.INSTITUTE.director=this.value;markDirty()"></div>
+      <div class="field"><label>Student ID prefix</label><input class="mono" value="${esc(t.idPrefix||'BA')}" oninput="DB.INSTITUTE.idPrefix=this.value.toUpperCase();markDirty()"></div></div>
+    <div class="field"><label>Google Meet link</label><input class="mono" value="${esc(t.meetLink)}" oninput="DB.INSTITUTE.meetLink=this.value;markDirty()" placeholder="https://meet.google.com/xxx-xxxx-xxx">
+      <div class="help">Used by the welcome button, schedule and home page.</div></div>
+    <div class="field"><label>Portal URL (for certificate QR &amp; shared logins)</label><input class="mono" value="${esc(t.verifyBase)}" oninput="DB.INSTITUTE.verifyBase=this.value;markDirty()" placeholder="https://you.github.io/CEC"></div>
+  </div>
+  <div class="card"><div class="sec-head"><h3>Admin password</h3></div>
+    <div class="field"><label>New admin password</label><input id="newAdminPw" type="password" placeholder="Enter a new password"></div>
+    <button class="btn btn-ghost btn-sm" onclick="changeAdminPw()">Update admin password</button>
+    <div class="warn-banner" id="adminPwOut" style="display:none;margin-top:14px"></div>
+  </div>`;
+}
+async function changeAdminPw(){
+  const pw=document.getElementById("newAdminPw").value; if(!pw) return toast("Enter a new password");
+  DB.adminHash=await sha256(pw); markDirty();
+  const box=document.getElementById("adminPwOut"); box.style.display="flex";
+  box.innerHTML="<span>🔑</span><div>Admin password updated. <b>Export &amp; upload data.js</b> to make it permanent.</div>";
+  toast("Admin password updated");
+}
+
+/* ---------- generic form ---------- */
+let FORM_SAVE=null;
+function openForm(title,fields,onSave){
+  document.getElementById("aModalTitle").textContent=title;
+  document.getElementById("aModalBody").innerHTML=fields.map(fieldHTML).join("");
+  document.getElementById("aModalFoot").innerHTML=`<button class="btn btn-ghost" onclick="closeAModal()">Cancel</button><button class="btn btn-primary" onclick="submitForm()">Save</button>`;
+  FORM_SAVE={fields,onSave};
+  document.getElementById("aModal").classList.add("show");
+  const f=document.querySelector("#aModalBody input,#aModalBody textarea,#aModalBody select"); if(f)setTimeout(()=>f.focus(),50);
+}
+function fieldHTML(f){
+  const id="f_"+f.k;
+  if(f.type==="checkbox") return `<div class="toggle-row"><div class="tl">${f.label}</div><label class="switch"><input type="checkbox" id="${id}" ${f.val?"checked":""}><span class="slider"></span></label></div>`;
+  if(f.type==="range") return `<div class="field"><label>${f.label}</label><div class="rangewrap"><input type="range" min="0" max="100" id="${id}" value="${f.val||0}" oninput="document.getElementById('${id}_v').textContent=this.value+'%'"><span class="rv" id="${id}_v">${f.val||0}%</span></div></div>`;
+  if(f.type==="textarea") return `<div class="field"><label>${f.label}</label><textarea id="${id}">${esc(f.val)}</textarea>${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
+  if(f.type==="select") return `<div class="field"><label>${f.label}</label><select id="${id}">${f.options.map(o=>`<option ${o===f.val?"selected":""} value="${o}">${o.toUpperCase()}</option>`).join("")}</select></div>`;
+  if(f.type==="color") return `<div class="field"><label>${f.label}</label><input type="color" id="${id}" value="${f.val||"#2a5db0"}" style="height:44px;padding:4px"></div>`;
+  return `<div class="field"><label>${f.label}</label><input type="${f.type||"text"}" id="${id}" value="${esc(f.val)}" ${f.disabled?"disabled":""} ${f.mono?'class="mono"':""} placeholder="${f.ph||""}">${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
+}
+function submitForm(){ const o=FORM_SAVE,v={};
+  o.fields.forEach(f=>{ const el=document.getElementById("f_"+f.k); v[f.k]=f.type==="checkbox"?el.checked:el.value; }); o.onSave(v); }
+function closeAModal(){ document.getElementById("aModal").classList.remove("show"); }
+function confirmDel(msg,onYes){
+  document.getElementById("aModalTitle").textContent="Confirm";
+  document.getElementById("aModalBody").innerHTML=`<p style="font-size:14px;color:var(--ink)">${esc(msg)}</p>`;
+  document.getElementById("aModalFoot").innerHTML=`<button class="btn btn-ghost" onclick="closeAModal()">Cancel</button><button class="btn btn-danger" id="delYes">Delete</button>`;
+  document.getElementById("aModal").classList.add("show");
+  document.getElementById("delYes").onclick=()=>{ onYes(); closeAModal(); toast("Deleted"); };
+}
+
+/* ---------- export / import ---------- */
+function buildDataJS(){
+  const j=o=>JSON.stringify(o,null,2);
+  return `/* ============================================================
+   COMPUTECH CEC — PORTAL DATA
+   Generated by the admin panel. Re-upload this file to your repo
+   to publish changes.
+   ============================================================ */
+
+const INSTITUTE = ${j(DB.INSTITUTE)};
+
+const ADMIN_HASH = ${JSON.stringify(DB.adminHash)};
+
+const WELCOME = ${j(DB.WELCOME)};
+
+const STUDENTS = ${j(DB.STUDENTS)};
+
+const SYLLABUS = ${j(DB.SYLLABUS)};
+
+const RECORDINGS = ${j(DB.RECORDINGS)};
+
+const RESOURCES = ${j(DB.RESOURCES)};
+
+const SCHEDULE = ${j(DB.SCHEDULE)};
+
+const ANNOUNCEMENTS = ${j(DB.ANNOUNCEMENTS)};
+`;
+}
+function exportData(){
+  const text=buildDataJS(), blob=new Blob([text],{type:"text/javascript"}), url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="data.js"; a.click(); URL.revokeObjectURL(url);
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  dirty=false; document.getElementById("exportBar").classList.remove("dirty");
+  document.getElementById("dirtyText").innerHTML="<b>Exported.</b> Upload data.js to your repo to publish.";
+  toast("data.js downloaded");
+}
+function importData(file){
+  if(!file) return; const r=new FileReader();
+  r.onload=()=>{ try{
+    const g=new Function(r.result+";return {INSTITUTE,ADMIN_HASH:(typeof ADMIN_HASH!=='undefined'?ADMIN_HASH:null),WELCOME:(typeof WELCOME!=='undefined'?WELCOME:null),STUDENTS,SYLLABUS,RECORDINGS,RESOURCES,SCHEDULE,ANNOUNCEMENTS};")();
+    seedDB(g); aRender(CURSEC); toast("data.js loaded");
+  }catch(e){ toast("Couldn't read that file"); } };
+  r.readAsText(file);
+}
+
+/* toast */
+let toastT;
+function toast(msg){ const t=document.getElementById("toast"); document.getElementById("toastText").textContent=msg;
+  t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400); }
+
+/* deep-link ?verify= */
+window.addEventListener("load",()=>{ const p=new URLSearchParams(location.search).get("verify");
+  if(p){ showVerify(); document.getElementById("pubCid").value=p; verifyPublic(); } });
 </script>
 </body>
 </html>
