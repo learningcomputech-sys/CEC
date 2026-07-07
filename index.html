@@ -339,9 +339,7 @@ a{color:inherit;text-decoration:none}
     <div class="export-bar" id="exportBar">
       <div class="note"><span class="dirty-dot"></span><span id="dirtyText"><b>All changes saved in memory.</b> Export &amp; upload to publish.</span></div>
       <div class="export-actions">
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Import data.js</button>
-        <input type="file" id="importFile" accept=".js" style="display:none" onchange="importData(this.files[0])">
-        <button class="btn btn-primary btn-sm" onclick="exportData()">⬇ Export data.js</button>
+        <button class="btn btn-primary btn-sm" onclick="exportData()">⬇ Export index.html</button>
       </div>
     </div>
     <div class="content"><div id="aPanels"></div></div>
@@ -370,12 +368,269 @@ a{color:inherit;text-decoration:none}
 
 <div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span id="toastText">Saved</span></div>
 
-<script src="data.js"></script>
+<script>
+/*DATA_START*/
+window.PORTAL_DATA = {
+  "INSTITUTE": {
+    "name": "Computech CEC",
+    "course": "Business Analyst Certification",
+    "director": "Amin",
+    "meetLink": "https://meet.google.com/xxx-xxxx-xxx",
+    "verifyBase": "https://learningcomputech-sys.github.io/CEC",
+    "idPrefix": "BA",
+    "brochureUrl": "https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view?usp=drive_link"
+  },
+  "adminHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+  "BATCHES": [
+    {
+      "name": "Morning — Jul 2026",
+      "meetLink": "https://meet.google.com/xxx-xxxx-xxx"
+    },
+    {
+      "name": "Evening — Jul 2026",
+      "meetLink": "https://meet.google.com/yyy-yyyy-yyy"
+    }
+  ],
+  "WELCOME": {
+    "enabled": true,
+    "title": "Welcome to your BA batch 👋",
+    "message": "Classes are live Monday to Friday. Missed a session? Check the Recordings tab. Questions anytime on the batch WhatsApp group.",
+    "showMeet": true
+  },
+  "STUDENTS": {
+    "BA2026001": {
+      "name": "Priya Sharma",
+      "batch": "Morning — Jul 2026",
+      "email": "priya@example.com",
+      "joined": "08 Jul 2026",
+      "progress": 68,
+      "certId": "CEC-BA-2026-0001",
+      "certDate": "15 Aug 2026",
+      "certReady": true,
+      "pass": "demo123"
+    },
+    "BA2026002": {
+      "name": "Rahul Kumar",
+      "batch": "Evening — Jul 2026",
+      "email": "rahul@example.com",
+      "joined": "08 Jul 2026",
+      "progress": 42,
+      "certId": "CEC-BA-2026-0002",
+      "certDate": "",
+      "certReady": false,
+      "pass": "rk48fm2q"
+    }
+  },
+  "SYLLABUS": [
+    {
+      "code": "01",
+      "color": "#217a56",
+      "name": "Advanced Excel",
+      "topics": [
+        "Lookup functions — VLOOKUP, XLOOKUP, INDEX+MATCH",
+        "SUMIFS, COUNTIFS, IFS & nested logic",
+        "Pivot tables & Power Query",
+        "Conditional formatting (formula-based)",
+        "Data validation & dashboards",
+        "VBA basics"
+      ]
+    },
+    {
+      "code": "02",
+      "color": "#2a5db0",
+      "name": "SQL & Databases",
+      "topics": [
+        "SELECT, WHERE, ORDER BY",
+        "GROUP BY, HAVING, aggregates",
+        "JOINs & relationships",
+        "CASE statements & subqueries",
+        "Temp tables",
+        "MySQL Workbench workflow"
+      ]
+    },
+    {
+      "code": "03",
+      "color": "#c58a26",
+      "name": "Power BI",
+      "topics": [
+        "Data modelling & relationships",
+        "DAX measures & calculated columns",
+        "Visuals & interactive dashboards",
+        "Power Query transformations",
+        "Publishing & sharing reports"
+      ]
+    },
+    {
+      "code": "04",
+      "color": "#8a3bb0",
+      "name": "Tableau",
+      "topics": [
+        "Connecting & preparing data",
+        "Building worksheets & views",
+        "Dashboards & stories",
+        "Calculated fields & parameters",
+        "Publishing to Tableau Public"
+      ]
+    },
+    {
+      "code": "05",
+      "color": "#1fa596",
+      "name": "AI Tools for Analysts",
+      "topics": [
+        "Prompting for data analysis",
+        "AI-assisted Excel & SQL",
+        "Automating reports",
+        "Data storytelling with AI"
+      ]
+    }
+  ],
+  "RECORDINGS": [
+    {
+      "module": "Advanced Excel",
+      "items": [
+        {
+          "title": "Day 1 — Lookup functions",
+          "date": "08 Jul 2026",
+          "dur": "1:12:40",
+          "fileId": ""
+        },
+        {
+          "title": "Day 2 — SUMIFS & logic",
+          "date": "10 Jul 2026",
+          "dur": "58:20",
+          "fileId": ""
+        },
+        {
+          "title": "Day 3 — Pivot tables & Power Query",
+          "date": "11 Jul 2026",
+          "dur": "1:05:10",
+          "fileId": ""
+        }
+      ]
+    },
+    {
+      "module": "SQL & Databases",
+      "items": [
+        {
+          "title": "Day 4 — SELECT & filtering",
+          "date": "14 Jul 2026",
+          "dur": "1:08:00",
+          "fileId": ""
+        },
+        {
+          "title": "Day 5 — JOINs & GROUP BY",
+          "date": "15 Jul 2026",
+          "dur": "1:15:30",
+          "fileId": ""
+        }
+      ]
+    },
+    {
+      "module": "Power BI",
+      "items": [
+        {
+          "title": "Day 6 — Data modelling & DAX",
+          "date": "18 Jul 2026",
+          "dur": "1:20:00",
+          "fileId": ""
+        }
+      ]
+    }
+  ],
+  "RESOURCES": [
+    {
+      "type": "pdf",
+      "name": "Excel Notes — Day-wise (PDF)",
+      "meta": "CEC branded · 24 pages",
+      "url": "#"
+    },
+    {
+      "type": "xlsx",
+      "name": "HR Analytics Practice Dataset",
+      "meta": "150 employees · multi-table",
+      "url": "#"
+    },
+    {
+      "type": "xlsx",
+      "name": "Power BI — School Management Dataset",
+      "meta": "For DAX practice",
+      "url": "#"
+    },
+    {
+      "type": "pdf",
+      "name": "SQL Cheat Sheet",
+      "meta": "Quick reference",
+      "url": "#"
+    },
+    {
+      "type": "doc",
+      "name": "Course Brochure — BA Certification",
+      "meta": "Includes Tableau module",
+      "url": "#"
+    }
+  ],
+  "SCHEDULE": [
+    {
+      "day": "Mon",
+      "dd": "Live",
+      "title": "SQL — JOINs deep dive",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Tue",
+      "dd": "Live",
+      "title": "Power BI — DAX measures",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Wed",
+      "dd": "Live",
+      "title": "Tableau — dashboards",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Thu",
+      "dd": "Live",
+      "title": "AI tools for analysts",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Fri",
+      "dd": "Live",
+      "title": "Project workshop",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    }
+  ],
+  "ANNOUNCEMENTS": [
+    {
+      "title": "New batch starts 8th July",
+      "body": "Morning (7:30 AM) and Evening (8:00 PM) slots available. Seats are limited.",
+      "time": "2 days ago"
+    },
+    {
+      "title": "Assignment 3 due Friday",
+      "body": "Submit the Power BI dashboard task before the Friday live class.",
+      "time": "4 days ago"
+    },
+    {
+      "title": "Recorded videos — lifetime access",
+      "body": "Optional recorded videos add-on gives you lifetime access. Ask your instructor.",
+      "time": "1 week ago"
+    }
+  ]
+};
+/*DATA_END*/
+</script>
 <script>
 /* ============================================================
    COMPUTECH CEC — ONE PORTAL (students + admin)
-   All content lives in data.js. Admin edits it here and
-   Exports a new data.js to re-upload to GitHub.
+   Everything is in this one file. The admin panel edits the
+   data and Exports a fresh index.html to re-upload to GitHub.
    ============================================================ */
 let DB = null, CURRENT = null, dirty = false;
 
@@ -402,18 +657,14 @@ function seedDB(src){
     ANNOUNCEMENTS: clone(src.ANNOUNCEMENTS||[])
   };
 }
+const P = window.PORTAL_DATA || {};
 seedDB({
-  INSTITUTE:(typeof INSTITUTE!=="undefined"?INSTITUTE:null),
-  ADMIN_HASH:(typeof ADMIN_HASH!=="undefined"?ADMIN_HASH:null),
-  WELCOME:(typeof WELCOME!=="undefined"?WELCOME:null),
-  BATCHES:(typeof BATCHES!=="undefined"?BATCHES:null),
-  STUDENTS:(typeof STUDENTS!=="undefined"?STUDENTS:null),
-  SYLLABUS:(typeof SYLLABUS!=="undefined"?SYLLABUS:null),
-  RECORDINGS:(typeof RECORDINGS!=="undefined"?RECORDINGS:null),
-  RESOURCES:(typeof RESOURCES!=="undefined"?RESOURCES:null),
-  SCHEDULE:(typeof SCHEDULE!=="undefined"?SCHEDULE:null),
-  ANNOUNCEMENTS:(typeof ANNOUNCEMENTS!=="undefined"?ANNOUNCEMENTS:null)
+  INSTITUTE:P.INSTITUTE, ADMIN_HASH:P.adminHash, WELCOME:P.WELCOME, BATCHES:P.BATCHES,
+  STUDENTS:P.STUDENTS, SYLLABUS:P.SYLLABUS, RECORDINGS:P.RECORDINGS,
+  RESOURCES:P.RESOURCES, SCHEDULE:P.SCHEDULE, ANNOUNCEMENTS:P.ANNOUNCEMENTS
 });
+let ORIGINAL_HTML="";
+document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html>\n"+document.documentElement.outerHTML; });
 
 /* ---------- login switching ---------- */
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
@@ -664,7 +915,7 @@ function aRender(sec){
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
-  document.getElementById("dirtyText").innerHTML="<b>Unsaved changes.</b> Export &amp; upload data.js to publish."; }
+  document.getElementById("dirtyText").innerHTML="<b>Unsaved changes.</b> Export &amp; upload index.html to publish."; }
 
 /* WELCOME */
 function secWelcome(){
@@ -899,7 +1150,7 @@ async function changeAdminPw(){
   const pw=document.getElementById("newAdminPw").value; if(!pw) return toast("Enter a new password");
   DB.adminHash=await sha256(pw); markDirty();
   const box=document.getElementById("adminPwOut"); box.style.display="flex";
-  box.innerHTML="<span>🔑</span><div>Admin password updated. <b>Export &amp; upload data.js</b> to make it permanent.</div>";
+  box.innerHTML="<span>🔑</span><div>Admin password updated. <b>Export &amp; upload index.html</b> to make it permanent.</div>";
   toast("Admin password updated");
 }
 
@@ -935,50 +1186,15 @@ function confirmDel(msg,onYes){
 }
 
 /* ---------- export / import ---------- */
-function buildDataJS(){
-  const j=o=>JSON.stringify(o,null,2);
-  return `/* ============================================================
-   COMPUTECH CEC — PORTAL DATA
-   Generated by the admin panel. Re-upload this file to your repo
-   to publish changes.
-   ============================================================ */
-
-const INSTITUTE = ${j(DB.INSTITUTE)};
-
-const ADMIN_HASH = ${JSON.stringify(DB.adminHash)};
-
-const WELCOME = ${j(DB.WELCOME)};
-
-const BATCHES = ${j(DB.BATCHES)};
-
-const STUDENTS = ${j(DB.STUDENTS)};
-
-const SYLLABUS = ${j(DB.SYLLABUS)};
-
-const RECORDINGS = ${j(DB.RECORDINGS)};
-
-const RESOURCES = ${j(DB.RESOURCES)};
-
-const SCHEDULE = ${j(DB.SCHEDULE)};
-
-const ANNOUNCEMENTS = ${j(DB.ANNOUNCEMENTS)};
-`;
-}
 function exportData(){
-  const text=buildDataJS(), blob=new Blob([text],{type:"text/javascript"}), url=URL.createObjectURL(blob);
-  const a=document.createElement("a"); a.href=url; a.download="data.js"; a.click(); URL.revokeObjectURL(url);
-  navigator.clipboard?.writeText(text).catch(()=>{});
+  if(!ORIGINAL_HTML){ toast("Still loading — try again in a second"); return; }
+  const block="/*DATA_START*/\nwindow.PORTAL_DATA = "+JSON.stringify(DB,null,2)+";\n/*DATA_END*/";
+  const html=ORIGINAL_HTML.replace(/\/\*DATA_START\*\/[\s\S]*?\/\*DATA_END\*\//, ()=>block);
+  const blob=new Blob([html],{type:"text/html"}), url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="index.html"; a.click(); URL.revokeObjectURL(url);
   dirty=false; document.getElementById("exportBar").classList.remove("dirty");
-  document.getElementById("dirtyText").innerHTML="<b>Exported.</b> Upload data.js to your repo to publish.";
-  toast("data.js downloaded");
-}
-function importData(file){
-  if(!file) return; const r=new FileReader();
-  r.onload=()=>{ try{
-    const g=new Function(r.result+";return {INSTITUTE,ADMIN_HASH:(typeof ADMIN_HASH!=='undefined'?ADMIN_HASH:null),WELCOME:(typeof WELCOME!=='undefined'?WELCOME:null),BATCHES:(typeof BATCHES!=='undefined'?BATCHES:null),STUDENTS,SYLLABUS,RECORDINGS,RESOURCES,SCHEDULE,ANNOUNCEMENTS};")();
-    seedDB(g); aRender(CURSEC); toast("data.js loaded");
-  }catch(e){ toast("Couldn't read that file"); } };
-  r.readAsText(file);
+  document.getElementById("dirtyText").innerHTML="<b>Exported.</b> Upload index.html to your repo to publish.";
+  toast("index.html downloaded");
 }
 
 /* toast */
