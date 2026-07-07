@@ -283,7 +283,6 @@ a{color:inherit;text-decoration:none}
           <button onclick="showVerify()">Verify a certificate</button>
           <button onclick="showAdmin()">Staff login</button>
         </div>
-        <div class="demo-hint">Demo student — <code>BA2026001</code> · <code>demo123</code></div>
       </div>
       <div id="adminView" style="display:none">
         <div class="auth-msg" id="adminMsg"></div>
@@ -291,7 +290,6 @@ a{color:inherit;text-decoration:none}
           <input id="apw" type="password" placeholder="Enter admin password" autocomplete="current-password"></div>
         <button class="btn btn-primary btn-block" onclick="doAdminLogin()">Open control panel</button>
         <div class="auth-foot"><button onclick="showLogin()">← Back to student sign in</button></div>
-        <div class="demo-hint">Default admin password <code>admin123</code> — change it in Settings.</div>
       </div>
       <div id="verifyView" style="display:none">
         <div class="field"><label for="pubCid">Certificate ID</label>
@@ -356,6 +354,7 @@ a{color:inherit;text-decoration:none}
     <div class="modal-head"><h3 id="vidTitle">Recording</h3>
       <button class="modal-close" onclick="closeVid()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="vid-frame" id="vidFrame"></div>
+    <div id="vidFoot" style="padding:12px 16px;border-top:1px solid var(--line);display:none"></div>
   </div>
 </div>
 
@@ -560,12 +559,18 @@ function panelVideos(){
 }
 function openVid(title,fileId){
   document.getElementById("vidTitle").textContent=title;
-  const f=document.getElementById("vidFrame"); const fid=driveId(fileId);
-  f.innerHTML=fid?`<iframe src="https://drive.google.com/file/d/${fid}/preview" allow="autoplay" allowfullscreen></iframe>`
-    :`<div class="ph">This recording isn't linked yet.<br>Ask your instructor to add it.</div>`;
+  const f=document.getElementById("vidFrame"); const foot=document.getElementById("vidFoot"); const fid=driveId(fileId);
+  if(fid){
+    f.innerHTML=`<iframe src="https://drive.google.com/file/d/${fid}/preview" allow="autoplay" allowfullscreen></iframe>`;
+    foot.style.display="block";
+    foot.innerHTML=`<a class="linkbtn" href="https://drive.google.com/file/d/${fid}/view" target="_blank" rel="noopener">Video not loading? Open in Google Drive ↗</a>`;
+  }else{
+    f.innerHTML=`<div class="ph">This recording isn't linked yet.<br>Ask your instructor to add it.</div>`;
+    foot.style.display="none"; foot.innerHTML="";
+  }
   document.getElementById("vidModal").classList.add("show");
 }
-function closeVid(){ document.getElementById("vidModal").classList.remove("show"); document.getElementById("vidFrame").innerHTML=""; }
+function closeVid(){ document.getElementById("vidModal").classList.remove("show"); document.getElementById("vidFrame").innerHTML=""; const vf=document.getElementById("vidFoot"); vf.style.display="none"; vf.innerHTML=""; }
 function panelResources(){
   const ic={pdf:{bg:"#fae6e6",fg:"#d64545",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'},
     xlsx:{bg:"#e2f4ec",fg:"#22a06b",p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13l3 5M11 13l-3 5"/>'},
