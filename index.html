@@ -121,6 +121,15 @@ a{color:inherit;text-decoration:none}
 .wb-icon{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:22px;flex:none;box-shadow:0 2px 8px rgba(224,161,58,.18)}
 .wb-body{flex:1;min-width:0}.wb-body h3{font-size:15.5px;color:var(--ink);margin-bottom:3px}.wb-body p{font-size:13px;color:#7a6220;line-height:1.5}
 .wb-btn{width:auto;flex:none}
+.pro-card{display:flex;gap:16px;align-items:flex-start;margin-top:16px;background:linear-gradient(120deg,var(--ink) 0%,var(--ink-2) 100%);border:none;color:#fff}
+.pro-card h3{color:#fff;font-size:16px;margin-bottom:4px}.pro-card p{color:#b9c3dc;font-size:13px;line-height:1.55}
+.pro-badge{width:46px;height:46px;border-radius:12px;background:var(--accent);display:grid;place-items:center;font-size:22px;flex:none}
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.review{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.review .stars{color:var(--accent);font-size:13px;letter-spacing:1px;margin-bottom:6px}
+.review p{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:8px}
+.review .rv-by{font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:860px){.reviews{grid-template-columns:1fr}.pro-card{flex-wrap:wrap}}
 .section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
 .ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}.ann:last-child{border-bottom:none;padding-bottom:0}
 .ann-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
@@ -283,6 +292,7 @@ a{color:inherit;text-decoration:none}
           <button onclick="showVerify()">Verify a certificate</button>
           <button onclick="showAdmin()">Staff login</button>
         </div>
+        <div style="margin-top:14px;text-align:center"><button class="btn btn-ghost btn-block" onclick="showRegister()">New student? Register here →</button></div>
       </div>
       <div id="adminView" style="display:none">
         <div class="auth-msg" id="adminMsg"></div>
@@ -296,6 +306,16 @@ a{color:inherit;text-decoration:none}
           <input id="pubCid" class="mono" type="text" placeholder="CEC-BA-2026-0001" style="text-transform:uppercase" spellcheck="false"></div>
         <button class="btn btn-primary btn-block" onclick="verifyPublic()">Verify certificate</button>
         <div class="verify-result" id="pubResult"></div>
+        <div class="auth-foot"><button onclick="showLogin()">← Back to sign in</button></div>
+      </div>
+      <div id="registerView" style="display:none">
+        <div class="auth-msg" id="regMsg"></div>
+        <div class="field"><label for="rName">Full name</label><input id="rName" type="text" placeholder="Your name"></div>
+        <div class="field"><label for="rPhone">Phone (WhatsApp)</label><input id="rPhone" type="tel" placeholder="10-digit mobile"></div>
+        <div class="field"><label for="rEmail">Email</label><input id="rEmail" type="email" placeholder="you@example.com"></div>
+        <div class="field"><label for="rBatch">Preferred batch</label><select id="rBatch"></select></div>
+        <button class="btn btn-primary btn-block" onclick="submitRegister()">Send registration on WhatsApp</button>
+        <div class="demo-hint">We'll review your details and send your login ID &amp; password on WhatsApp.</div>
         <div class="auth-foot"><button onclick="showLogin()">← Back to sign in</button></div>
       </div>
     </div>
@@ -640,7 +660,9 @@ async function sha256(str){
 }
 function clone(x){ return JSON.parse(JSON.stringify(x)); }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function meetFor(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return (b&&b.meetLink)||DB.INSTITUTE.meetLink||"#"; }
+function meetFor(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return normUrl((b&&b.meetLink)||DB.INSTITUTE.meetLink||"#"); }
+function normUrl(u){ u=(u||"").trim(); if(!u||u==="#")return u; if(!/^https?:\/\//i.test(u)&&!/^mailto:/i.test(u)) u="https://"+u.replace(/^\/+/,""); return u; }
+function waLink(text){ const num=(DB.INSTITUTE.whatsapp||"").replace(/[^0-9]/g,""); return "https://wa.me/"+num+"?text="+encodeURIComponent(text); }
 function driveId(s){ s=(s||"").trim(); let m=s.match(/\/d\/([^/]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
 
 function seedDB(src){
@@ -648,20 +670,28 @@ function seedDB(src){
     INSTITUTE: clone(src.INSTITUTE||{name:"Computech CEC",course:"",director:"",meetLink:"",verifyBase:"",idPrefix:"BA"}),
     adminHash: src.ADMIN_HASH || "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
     WELCOME: clone(src.WELCOME||{enabled:true,title:"",message:"",showMeet:true}),
+    CERT: clone(src.CERT||{desc:"for successfully completing the {course} program covering Excel, SQL, Power BI, Tableau & AI Tools.", seal:"ISO CERTIFIED", tagline:"Computer Education Center · Est. 1999"}),
     BATCHES: clone(src.BATCHES||[]),
     STUDENTS: clone(src.STUDENTS||{}),
     SYLLABUS: clone(src.SYLLABUS||[]),
     RECORDINGS: clone(src.RECORDINGS||[]),
     RESOURCES: clone(src.RESOURCES||[]),
     SCHEDULE: clone(src.SCHEDULE||[]),
-    ANNOUNCEMENTS: clone(src.ANNOUNCEMENTS||[])
+    ANNOUNCEMENTS: clone(src.ANNOUNCEMENTS||[]),
+    REVIEWS: clone(src.REVIEWS||[
+      {name:"Priya Sharma", role:"BA graduate · now Data Analyst", rating:5, text:"The live classes and recordings made it easy to keep up. Got placed within 2 months of finishing!"},
+      {name:"Rahul Kumar", role:"BA graduate", rating:5, text:"Amin sir explains SQL and Power BI so clearly. The practice datasets were super helpful."},
+      {name:"Sneha R.", role:"Working professional", rating:5, text:"Perfect for someone with a full-time job — evening batch and lifetime recordings were exactly what I needed."}
+    ]),
+    PRO: clone(src.PRO||{enabled:true, title:"You're certified — now make it count 🎓", message:"Add your certificate to LinkedIn, mention Excel, SQL, Power BI & Tableau on your resume, and reach out to us anytime for job-assistance and interview prep."})
   };
+  if(DB.INSTITUTE.whatsapp===undefined) DB.INSTITUTE.whatsapp="";
 }
 const P = window.PORTAL_DATA || {};
 seedDB({
-  INSTITUTE:P.INSTITUTE, ADMIN_HASH:P.adminHash, WELCOME:P.WELCOME, BATCHES:P.BATCHES,
+  INSTITUTE:P.INSTITUTE, ADMIN_HASH:P.adminHash, WELCOME:P.WELCOME, CERT:P.CERT, BATCHES:P.BATCHES,
   STUDENTS:P.STUDENTS, SYLLABUS:P.SYLLABUS, RECORDINGS:P.RECORDINGS,
-  RESOURCES:P.RESOURCES, SCHEDULE:P.SCHEDULE, ANNOUNCEMENTS:P.ANNOUNCEMENTS
+  RESOURCES:P.RESOURCES, SCHEDULE:P.SCHEDULE, ANNOUNCEMENTS:P.ANNOUNCEMENTS, REVIEWS:P.REVIEWS, PRO:P.PRO
 });
 let ORIGINAL_HTML="";
 document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html>\n"+document.documentElement.outerHTML; });
@@ -670,8 +700,22 @@ document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
 function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
+function showRegister(){
+  const sel=document.getElementById("rBatch");
+  const names=(DB.BATCHES||[]).map(b=>b.name);
+  sel.innerHTML=(names.length?names:["Morning batch","Evening batch"]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  view("registerView","Student registration","Fill your details to request enrolment.");
+}
+function submitRegister(){
+  const n=document.getElementById("rName").value.trim(), p=document.getElementById("rPhone").value.trim(),
+        e=document.getElementById("rEmail").value.trim(), b=document.getElementById("rBatch").value;
+  if(!n||!p){ const m=document.getElementById("regMsg"); m.textContent="Please enter your name and phone number."; m.classList.add("show"); return; }
+  document.getElementById("regMsg").classList.remove("show");
+  const msg=`New registration — ${DB.INSTITUTE.course}\n\nName: ${n}\nPhone: ${p}\nEmail: ${e||"-"}\nPreferred batch: ${b}\n\nPlease send my login ID & password. 🙏`;
+  window.open(waLink(msg),"_blank");
+}
 function view(id,title,desc){
-  ["loginView","adminView","verifyView"].forEach(v=>document.getElementById(v).style.display=v===id?"block":"none");
+  ["loginView","adminView","verifyView","registerView"].forEach(v=>document.getElementById(v).style.display=v===id?"block":"none");
   document.getElementById("authTitle").textContent=title;
   document.getElementById("authDesc").textContent=desc;
 }
@@ -786,9 +830,16 @@ function panelHome(){
         <a class="btn btn-primary" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join class</a></div>
       <div class="card"><div class="section-title">Announcements</div>
         ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
-    </div></section>`;
+    </div>
+    ${(CURRENT.certReady && DB.PRO && DB.PRO.enabled)?`<div class="card pro-card"><div class="pro-badge">🎓</div><div><h3>${esc(DB.PRO.title)}</h3><p>${esc(DB.PRO.message)}</p></div></div>`:""}
+    <div class="card" style="margin-top:16px">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px">What our students say
+        <a class="pill" href="${esc(waLink('Hi, I want to share a review for the '+DB.INSTITUTE.course+' course:'))}" target="_blank" rel="noopener">★ Leave a review</a></div>
+      <div class="reviews">${DB.REVIEWS.map(r=>`<div class="review"><div class="stars">${"★".repeat(Math.max(1,Math.min(5,r.rating||5)))}</div><p>“${esc(r.text)}”</p><div class="rv-by">— ${esc(r.name)}${r.role?", "+esc(r.role):""}</div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No reviews yet.</p>'}</div>
+    </div>
+  </section>`;
 }
-function panelSyllabus(){ const bro=DB.INSTITUTE.brochureUrl;
+function panelSyllabus(){ const bro=normUrl(DB.INSTITUTE.brochureUrl);
   return `<section class="tab-panel" data-tab="syllabus">
     <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${esc(DB.INSTITUTE.course)} · ${DB.SYLLABUS.length} modules</div></div>${bro?`<a class="pill" href="${esc(bro)}" target="_blank" rel="noopener">📄 Course brochure</a>`:""}</div>
     ${DB.SYLLABUS.map((m,i)=>`<div class="module ${i===0?'open':''}">
@@ -831,7 +882,7 @@ function panelResources(){
     <div class="card">${DB.RESOURCES.map(r=>{const k=ic[r.type]||ic.doc;return`<div class="res-item">
       <div class="res-ico" style="background:${k.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${k.fg}" stroke-width="2">${k.p}</svg></div>
       <div class="res-info"><h4>${esc(r.name)}</h4><p>${esc(r.meta)}</p></div>
-      <a class="res-dl" href="${esc(r.url)}" ${r.url!=='#'?'target="_blank" rel="noopener"':''} onclick="${r.url==='#'?'return false':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</a></div>`}).join("")||'<div class="empty">No resources yet.</div>'}</div>
+      <a class="res-dl" href="${esc(normUrl(r.url))}" ${r.url!=='#'?'target="_blank" rel="noopener"':''} onclick="${r.url==='#'?'return false':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</a></div>`}).join("")||'<div class="empty">No resources yet.</div>'}</div>
   </section>`;
 }
 function panelSchedule(){
@@ -844,6 +895,24 @@ function panelSchedule(){
       ${s.meet?`<a class="meet-btn" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join</a>`:""}</div>`).join("")||'<div class="empty">No classes scheduled.</div>'}</div>
   </section>`;
 }
+function certHTML(stu){
+  const I=DB.INSTITUTE, C=DB.CERT||{};
+  const base=(I.verifyBase||"").replace(/\/$/,"");
+  const qr="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data="+encodeURIComponent(base+"/?verify="+encodeURIComponent(stu.certId||""));
+  const desc=esc(C.desc||"").split("{course}").join("<b>"+esc(I.course)+"</b>");
+  return `<div class="certificate" id="certCard">
+    <div class="cert-top"><div class="cert-brand"><div class="logo-mark" style="width:46px;height:46px"><span>C</span></div>
+      <div><div class="brand-name" style="font-size:15px;color:var(--ink)">${esc(I.name)}</div><div class="brand-sub">${esc(C.tagline||"")}</div></div></div>
+      <div class="cert-seal">${esc(C.seal||"").replace(/ /,"<br>")}</div></div>
+    <div class="cert-mid"><div class="kicker">Certificate of Completion</div>
+      <div class="awarded" style="margin-top:14px">This is proudly awarded to</div>
+      <div class="cert-name">${esc(stu.name)}</div>
+      <div class="desc">${desc}</div></div>
+    <div class="cert-bot"><div class="cert-sig"><div class="line"></div><div class="nm">${esc(I.director)}</div><div class="role">Director, ${esc(I.name)}</div></div>
+      <div class="cert-qr"><img id="certQR" alt="Verification QR" src="${qr}" onerror="qrFallback()"><div class="qr-fallback" id="qrFB" style="display:none">Scan to verify<br>${esc(stu.certId||"")}</div><div class="cid">${esc(stu.certId||"")}</div></div>
+      <div class="cert-sig"><div class="line"></div><div class="role">Date</div><div class="nm">${esc(stu.certDate||"")}</div></div></div>
+  </div>`;
+}
 function panelCertificate(){
   const I=DB.INSTITUTE;
   if(!CURRENT.certReady) return `<section class="tab-panel" data-tab="certificate">
@@ -854,18 +923,7 @@ function panelCertificate(){
       <p style="color:var(--muted);font-size:13.5px;max-width:340px;margin:0 auto">Finish the course to unlock your certificate. You're at <b style="color:var(--ink)">${CURRENT.progress||0}%</b> — keep going!</p></div></section>`;
   return `<section class="tab-panel" data-tab="certificate">
     <div class="topbar"><div><h1>Certificate</h1><div class="sub">Verified · ID <span class="mono">${esc(CURRENT.certId)}</span></div></div></div>
-    <div class="cert-wrap"><div class="certificate" id="certCard">
-      <div class="cert-top"><div class="cert-brand"><div class="logo-mark" style="width:46px;height:46px"><span>C</span></div>
-        <div><div class="brand-name" style="font-size:15px;color:var(--ink)">${esc(I.name)}</div><div class="brand-sub">Computer Education Center · Est. 1999</div></div></div>
-        <div class="cert-seal">ISO<br>CERTIFIED</div></div>
-      <div class="cert-mid"><div class="kicker">Certificate of Completion</div>
-        <div class="awarded" style="margin-top:14px">This is proudly awarded to</div>
-        <div class="cert-name">${esc(CURRENT.name)}</div>
-        <div class="desc">for successfully completing the <b>${esc(I.course)}</b> program covering Excel, SQL, Power BI, Tableau &amp; AI Tools.</div></div>
-      <div class="cert-bot"><div class="cert-sig"><div class="line"></div><div class="nm">${esc(I.director)}</div><div class="role">Director, ${esc(I.name)}</div></div>
-        <div class="cert-qr"><img id="certQR" alt="Verification QR" onerror="qrFallback()"><div class="qr-fallback" id="qrFB" style="display:none">Scan to verify<br>${esc(CURRENT.certId)}</div><div class="cid">${esc(CURRENT.certId)}</div></div>
-        <div class="cert-sig"><div class="line"></div><div class="role">Date</div><div class="nm">${esc(CURRENT.certDate)}</div></div></div>
-    </div>
+    <div class="cert-wrap">${certHTML(CURRENT)}
     <div class="cert-actions"><button class="btn btn-primary" onclick="printCert()">Download / Print</button>
       <button class="btn btn-ghost" onclick="sGoTab('home')">Back to home</button></div></div></section>`;
 }
@@ -892,10 +950,12 @@ const SECTIONS=[
   {id:"students",label:"Students",icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
   {id:"recordings",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
   {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
+  {id:"reviews",label:"Reviews",icon:'<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>'},
   {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
   {id:"batches",label:"Batches",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18M9 16l2 2 4-4"/>'},
   {id:"resources",label:"Resources",icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>'},
   {id:"syllabus",label:"Syllabus",icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>'},
+  {id:"certificate",label:"Certificate",icon:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>'},
   {id:"settings",label:"Settings",icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'}
 ];
 let CURSEC="students";
@@ -910,7 +970,7 @@ function aBuildNav(){
 function aRender(sec){
   CURSEC=sec;
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
-  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,settings:secSettings};
+  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,reviews:secReviews,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
   window.scrollTo(0,0);
 }
@@ -945,7 +1005,7 @@ function secStudents(){
   const rows=ids.length?ids.map(id=>{const s=DB.STUDENTS[id];const pid="pw_"+id;
     return `<div class="row"><div class="rico" style="background:var(--ink-2)">${esc((s.name||"?")[0])}</div>
       <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Cert ready</span>':'<span class="tagx no">'+(s.progress||0)+'%</span>'}</h4>
-        <div class="credline"><span>ID</span><span class="credchip">${esc(id)}</span>
+        <div class="credline"><span class="credchip" style="background:var(--accent-soft);border-color:#f0dcae;color:#8a6410">${esc(s.batch||"no batch")}</span><span>ID</span><span class="credchip">${esc(id)}</span>
           <span>Pass</span><span class="credchip pw" id="${pid}" data-pw="${esc(s.pass)}">••••••</span>
           <button class="linkbtn" onclick="togglePw('${pid}')">show</button>
           <button class="linkbtn" onclick="copyLogin('${id}')">copy login</button></div></div>
@@ -1044,6 +1104,26 @@ function editAnn(i){ const isNew=i===null,a=isNew?{title:"",body:"",time:"Just n
     markDirty(); closeAModal(); aRender("announcements"); toast("Saved"); }); }
 function delAnn(i){ confirmDel("Delete this announcement?",()=>{ DB.ANNOUNCEMENTS.splice(i,1); markDirty(); aRender("announcements"); }); }
 
+function secReviews(){
+  const rows=DB.REVIEWS.map((r,i)=>`<div class="row"><div class="rico" style="background:var(--accent);color:#3a2a05">★</div>
+    <div class="rmain"><h4>${esc(r.name)} <span style="color:var(--accent)">${"★".repeat(Math.max(1,Math.min(5,r.rating||5)))}</span></h4><p>${esc(r.role||"")}</p><p style="color:var(--ink-2);margin-top:4px">“${esc(r.text)}”</p></div>
+    <div class="ract"><button class="iconbtn" onclick="editReview(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button class="iconbtn del" onclick="delReview(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No reviews yet.</div>';
+  return `<div class="page-head"><h1>Reviews</h1><p>Testimonials shown on the student Home page. Students submit reviews to you on WhatsApp — add the good ones here.</p></div>
+  <div class="sec-head"><h3>Testimonials</h3><button class="btn btn-primary btn-sm" onclick="editReview(null)">+ Add review</button></div>${rows}`;
+}
+function editReview(i){ const isNew=i===null,r=isNew?{name:"",role:"",rating:5,text:""}:clone(DB.REVIEWS[i]);
+  openForm(isNew?"Add review":"Edit review",[
+    {k:"name",label:"Student name",type:"text",val:r.name},
+    {k:"role",label:"Role / batch (optional)",type:"text",val:r.role,ph:"BA graduate · now Data Analyst"},
+    {k:"rating",label:"Rating",type:"select",val:String(r.rating||5),options:["5","4","3","2","1"]},
+    {k:"text",label:"Review",type:"textarea",val:r.text}
+  ],v=>{ if(!v.name.trim()||!v.text.trim())return toast("Name and review required");
+    const rec={name:v.name.trim(),role:v.role.trim(),rating:+v.rating||5,text:v.text.trim()};
+    if(isNew)DB.REVIEWS.unshift(rec); else DB.REVIEWS[i]=rec;
+    markDirty(); closeAModal(); aRender("reviews"); toast("Review saved"); }); }
+function delReview(i){ confirmDel("Delete this review?",()=>{ DB.REVIEWS.splice(i,1); markDirty(); aRender("reviews"); }); }
+
 /* SCHEDULE */
 function secSched(){
   const rows=DB.SCHEDULE.map((s,i)=>`<div class="row"><div class="rico" style="background:var(--accent-2)">${esc(s.day)}</div>
@@ -1078,7 +1158,7 @@ function editBatch(i){ const isNew=i===null,b=isNew?{name:"",meetLink:""}:clone(
     {k:"name",label:"Batch name",type:"text",val:b.name,ph:"Morning — Jul 2026"},
     {k:"meetLink",label:"Google Meet link",type:"text",mono:true,val:b.meetLink,help:"This batch's own Meet link. Students in this batch join here."}
   ],v=>{ if(!v.name.trim())return toast("Batch name required");
-    const rec={name:v.name.trim(),meetLink:v.meetLink.trim()};
+    const rec={name:v.name.trim(),meetLink:normUrl(v.meetLink.trim())};
     if(isNew)DB.BATCHES.push(rec); else { DB.BATCHES[i]=rec;
       if(oldName&&oldName!==rec.name) Object.values(DB.STUDENTS).forEach(s=>{ if(s.batch===oldName)s.batch=rec.name; }); }
     markDirty(); closeAModal(); aRender("batches"); toast("Batch saved"); }); }
@@ -1124,6 +1204,25 @@ function editMod(i){ const isNew=i===null,m=isNew?{code:String(DB.SYLLABUS.lengt
 function delMod(i){ confirmDel("Delete this module?",()=>{ DB.SYLLABUS.splice(i,1); markDirty(); aRender("syllabus"); }); }
 
 /* SETTINGS */
+function certSample(){ return Object.values(DB.STUDENTS).find(s=>s.certReady)||{name:"Student Name",certId:"CEC-BA-2026-0001",certDate:"15 Aug 2026"}; }
+function secCert(){
+  const C=DB.CERT;
+  return `<div class="page-head"><h1>Certificate</h1><p>This is the certificate students download when you mark their certificate “ready”. Below is a live preview.</p></div>
+  <div class="card"><div class="sec-head"><h3>Preview</h3></div><div class="cert-wrap" id="certPrev">${certHTML(certSample())}</div></div>
+  <div class="card"><div class="sec-head"><h3>Certificate text</h3></div>
+    <div class="field"><label>Description line</label><textarea oninput="DB.CERT.desc=this.value;markDirty();updateCertPrev()">${esc(C.desc)}</textarea><div class="help">Use <b>{course}</b> where the course name should appear.</div></div>
+    <div class="field"><label>Seal text</label><input value="${esc(C.seal)}" oninput="DB.CERT.seal=this.value;markDirty();updateCertPrev()"></div>
+    <div class="field"><label>Tagline (under institute name)</label><input value="${esc(C.tagline)}" oninput="DB.CERT.tagline=this.value;markDirty();updateCertPrev()"></div>
+    <div class="warn-banner"><span>💡</span><div>Institute name, director &amp; course come from <b>Settings</b>. Each student's certificate <b>ID, date and “ready” toggle</b> are set per-student in the <b>Students</b> tab.</div></div>
+  </div>
+  <div class="card"><div class="sec-head"><h3>Career message (for completed students)</h3></div>
+    <div class="toggle-row"><div class="tl">Show career card on completion<small>Appears on the Home page once a student's certificate is ready.</small></div>
+      <label class="switch"><input type="checkbox" ${DB.PRO.enabled?"checked":""} onchange="DB.PRO.enabled=this.checked;markDirty()"><span class="slider"></span></label></div>
+    <div class="field" style="margin-top:14px"><label>Title</label><input value="${esc(DB.PRO.title)}" oninput="DB.PRO.title=this.value;markDirty()"></div>
+    <div class="field"><label>Message</label><textarea oninput="DB.PRO.message=this.value;markDirty()">${esc(DB.PRO.message)}</textarea></div>
+  </div>`;
+}
+function updateCertPrev(){ const el=document.getElementById("certPrev"); if(el)el.innerHTML=certHTML(certSample()); }
 function secSettings(){
   const t=DB.INSTITUTE;
   return `<div class="page-head"><h1>Settings</h1><p>Institute details, Meet link and admin password.</p></div>
@@ -1136,6 +1235,8 @@ function secSettings(){
       <div class="field"><label>Student ID prefix</label><input class="mono" value="${esc(t.idPrefix||'BA')}" oninput="DB.INSTITUTE.idPrefix=this.value.toUpperCase();markDirty()"></div></div>
     <div class="field"><label>Fallback Meet link</label><input class="mono" value="${esc(t.meetLink)}" oninput="DB.INSTITUTE.meetLink=this.value;markDirty()" placeholder="https://meet.google.com/xxx-xxxx-xxx">
       <div class="help">Used only if a student's batch has no Meet link. Per-batch links are set in the <b>Batches</b> tab.</div></div>
+    <div class="field"><label>WhatsApp number (with country code, digits only)</label><input class="mono" value="${esc(t.whatsapp||'')}" oninput="DB.INSTITUTE.whatsapp=this.value;markDirty()" placeholder="919999999999">
+      <div class="help">Used for the student <b>Register</b> form and <b>Leave a review</b> button. Example: 91 + 10-digit number.</div></div>
     <div class="field"><label>Course brochure link</label><input class="mono" value="${esc(t.brochureUrl||'')}" oninput="DB.INSTITUTE.brochureUrl=this.value;markDirty()" placeholder="https://drive.google.com/file/d/.../view">
       <div class="help">Shown as a button on the student Syllabus tab.</div></div>
     <div class="field"><label>Portal URL (for certificate QR &amp; shared logins)</label><input class="mono" value="${esc(t.verifyBase)}" oninput="DB.INSTITUTE.verifyBase=this.value;markDirty()" placeholder="https://you.github.io/CEC"></div>
