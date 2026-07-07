@@ -1,9 +1,8 @@
 /* ============================================================
    COMPUTECH CEC — PORTAL DATA
-   This file holds ALL portal content. It is edited by admin.html
-   (Export → download this file → re-upload to your repo).
-   Both index.html and admin.html read from here.
-   Do not rename the variables.
+   One file powers the whole portal (students + admin).
+   The admin panel edits this and exports a new copy.
+   Re-upload data.js to your repo to publish changes.
    ============================================================ */
 
 const INSTITUTE = {
@@ -11,11 +10,13 @@ const INSTITUTE = {
   course: "Business Analyst Certification",
   director: "Amin",
   meetLink: "https://meet.google.com/xxx-xxxx-xxx",
-  verifyBase: "https://YOUR-USERNAME.github.io/portal"   // for certificate QR
+  verifyBase: "https://learningcomputech-sys.github.io/CEC",
+  idPrefix: "BA"                 // used when auto-generating student IDs
 };
 
-/* Welcome message — shown to every student on their Home tab.
-   Admin can edit the text, toggle it on/off, and set the Meet button. */
+/* Admin password (hashed). Default = admin123. Change it in Settings. */
+const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+
 const WELCOME = {
   enabled: true,
   title: "Welcome to your BA batch 👋",
@@ -23,28 +24,20 @@ const WELCOME = {
   showMeet: true
 };
 
+/* Passwords are stored as plain text so the admin can see & share them.
+   (data.js is public — treat these as access codes, not secrets.) */
 const STUDENTS = {
-  "BA2025001": {
-    name: "Priya Sharma",
-    batch: "BA — Jan 2026",
-    email: "priya@example.com",
-    joined: "06 Jan 2026",
-    progress: 68,
-    certId: "CEC-BA-2026-0001",
-    certDate: "15 Mar 2026",
-    certReady: true,
-    passHash: "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791"
+  "BA2026001": {
+    name: "Priya Sharma", batch: "BA — Jan 2026", email: "priya@example.com",
+    joined: "06 Jan 2026", progress: 68,
+    certId: "CEC-BA-2026-0001", certDate: "15 Mar 2026", certReady: true,
+    pass: "demo123"
   },
-  "BA2025002": {
-    name: "Rahul Kumar",
-    batch: "BA — Jan 2026",
-    email: "rahul@example.com",
-    joined: "06 Jan 2026",
-    progress: 42,
-    certId: "CEC-BA-2026-0002",
-    certDate: "",
-    certReady: false,
-    passHash: "264c8c381bf16c982a4e59b0dd4c6f7808c51a05f64c35db42cc78a2a72875bb"
+  "BA2026002": {
+    name: "Rahul Kumar", batch: "BA — Jan 2026", email: "rahul@example.com",
+    joined: "06 Jan 2026", progress: 42,
+    certId: "CEC-BA-2026-0002", certDate: "", certReady: false,
+    pass: "rk48fm2q"
   }
 };
 
