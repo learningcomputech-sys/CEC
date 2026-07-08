@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Computech CEC — Student Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#14203d;--ink-2:#223a5e;--accent:#e0a13a;--accent-soft:#fbeecd;--accent-2:#1fa596;
@@ -290,9 +294,9 @@ a{color:inherit;text-decoration:none}
       <div id="loginView">
         <div class="auth-msg" id="loginMsg"></div>
         <div class="field"><label for="sid">Student ID</label>
-          <input id="sid" type="text" placeholder="e.g. BA2026001" autocomplete="username" spellcheck="false"></div>
+          <input id="sid" type="text" placeholder="e.g. BA2026001" autocomplete="username" autocapitalize="characters" autocorrect="off" spellcheck="false"></div>
         <div class="field"><label for="spw">Password</label>
-          <input id="spw" type="password" placeholder="Your password" autocomplete="current-password"></div>
+          <input id="spw" type="password" placeholder="Your password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <button class="btn btn-primary btn-block" onclick="doStudentLogin()">Sign in</button>
         <div class="auth-foot">
           <button onclick="showVerify()">Verify a certificate</button>
@@ -302,8 +306,10 @@ a{color:inherit;text-decoration:none}
       </div>
       <div id="adminView" style="display:none">
         <div class="auth-msg" id="adminMsg"></div>
+        <div class="field" id="adminEmailField" style="display:none"><label for="aemail">Admin email</label>
+          <input id="aemail" type="email" placeholder="admin@email.com" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <div class="field"><label for="apw">Admin password</label>
-          <input id="apw" type="password" placeholder="Enter admin password" autocomplete="current-password"></div>
+          <input id="apw" type="password" placeholder="Enter admin password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <button class="btn btn-primary btn-block" onclick="doAdminLogin()">Open control panel</button>
         <div class="auth-foot"><button onclick="showLogin()">← Back to student sign in</button></div>
       </div>
@@ -337,13 +343,13 @@ a{color:inherit;text-decoration:none}
     <div class="s-sidefoot">
       <div class="s-sideuser"><div class="avatar" id="sideAvatar">P</div>
         <div><div class="nm" id="sideName">Student</div><div class="bt" id="sideBatch">Batch</div></div></div>
-      <button class="s-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Log out</button>
+      <button class="s-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
     </div>
   </aside>
   <div>
     <div class="s-mtop">
       <div class="logo-row"><div class="logo-mark"><span>C</span></div><div class="brand-name">Computech CEC</div></div>
-      <button class="s-mlogout" onclick="logout()" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg></button>
+      <button class="s-mlogout" onclick="logout()" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
     </div>
     <main class="s-main"><div id="sPanels"></div></main>
   </div>
@@ -359,7 +365,7 @@ a{color:inherit;text-decoration:none}
       <div class="admin-tag">Control Panel</div>
     </div>
     <nav class="a-nav" id="aNav"></nav>
-    <div class="a-sidefoot"><button class="a-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Lock &amp; exit</button></div>
+    <div class="a-sidefoot"><button class="a-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Lock &amp; exit</button></div>
   </aside>
   <div class="a-main">
     <div class="export-bar" id="exportBar">
@@ -368,7 +374,7 @@ a{color:inherit;text-decoration:none}
         <input type="file" id="importFile" accept=".html,.js,.json" style="display:none" onchange="importData(this.files[0])">
         <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Import data</button>
         <button class="btn btn-ghost btn-sm" onclick="backupData()">Backup</button>
-        <button class="btn btn-primary btn-sm" onclick="exportData()">⬇ Export index.html</button>
+        <button class="btn btn-primary btn-sm" id="exportBtn" onclick="exportData()">⬇ Export index.html</button>
       </div>
     </div>
     <div class="content"><div id="aPanels"></div></div>
@@ -379,7 +385,7 @@ a{color:inherit;text-decoration:none}
 <div class="modal" id="vidModal" onclick="if(event.target===this)closeVid()">
   <div class="modal-box vidbox">
     <div class="modal-head"><h3 id="vidTitle">Recording</h3>
-      <button class="modal-close" onclick="closeVid()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+      <button class="modal-close" onclick="closeVid()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="vid-frame" id="vidFrame"></div>
     <div id="vidFoot" style="padding:12px 16px;border-top:1px solid var(--line);display:none"></div>
   </div>
@@ -389,13 +395,32 @@ a{color:inherit;text-decoration:none}
 <div class="modal" id="aModal" onclick="if(event.target===this)closeAModal()">
   <div class="modal-box">
     <div class="modal-head"><h3 id="aModalTitle">Edit</h3>
-      <button class="modal-close" onclick="closeAModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+      <button class="modal-close" onclick="closeAModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="modal-body" id="aModalBody"></div>
     <div class="modal-foot" id="aModalFoot"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"></path></svg><span id="toastText">Saved</span></div>
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span id="toastText">Saved</span></div>
+
+<!-- Firebase (cloud sync). Fill FIREBASE_CONFIG below to turn on auto-save. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+/*FIREBASE_START*/
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCJ71-1ns0oEu6DlIx31DXUn42aNopk-7Q",
+  authDomain: "cec-education.firebaseapp.com",
+  databaseURL: "https://cec-education-default-rtdb.firebaseio.com",
+  projectId: "cec-education",
+  storageBucket: "cec-education.firebasestorage.app",
+  messagingSenderId: "313492701216",
+  appId: "1:313492701216:web:8c0d2a843f0b31f97d3c45",
+  measurementId: "G-M7879XR4VH"
+};
+/*FIREBASE_END*/
+</script>
 
 <script>
 /*DATA_START*/
@@ -407,38 +432,25 @@ window.PORTAL_DATA = {
     "meetLink": "https://meet.google.com/xxx-xxxx-xxx",
     "verifyBase": "https://learningcomputech-sys.github.io/CEC",
     "idPrefix": "BA",
-    "brochureUrl": "https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view?usp=drive_link",
-    "whatsapp": ""
+    "brochureUrl": "https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view?usp=drive_link"
   },
   "adminHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+  "BATCHES": [
+    {
+      "name": "Morning — Jul 2026",
+      "meetLink": "https://meet.google.com/xxx-xxxx-xxx"
+    },
+    {
+      "name": "Evening — Jul 2026",
+      "meetLink": "https://meet.google.com/yyy-yyyy-yyy"
+    }
+  ],
   "WELCOME": {
     "enabled": true,
     "title": "Welcome to your BA batch 👋",
     "message": "Classes are live Monday to Friday. Missed a session? Check the Recordings tab. Questions anytime on the batch WhatsApp group.",
     "showMeet": true
   },
-  "CERT": {
-    "desc": "for successfully completing the {course} program covering Excel, SQL, Power BI, Tableau & AI Tools.",
-    "seal": "ISO CERTIFIED",
-    "tagline": "Computer Education Center · Est. 1999",
-    "roleLeft": "Director",
-    "roleRight": "CTO",
-    "sigDirector": "",
-    "sigCTO": "",
-    "skills": [
-      "Advanced Excel",
-      "Power BI",
-      "SQL",
-      "Tableau",
-      "AI Tools"
-    ]
-  },
-  "BATCHES": [
-    {
-      "name": "Evening — Jul 8th  2026 (08-09pm)",
-      "meetLink": "https://meet.google.com/qyq-cnjg-xvj"
-    }
-  ],
   "STUDENTS": {
     "BA2026001": {
       "name": "Priya Sharma",
@@ -453,7 +465,7 @@ window.PORTAL_DATA = {
     },
     "BA2026002": {
       "name": "Rahul Kumar",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
+      "batch": "Evening — Jul 2026",
       "email": "rahul@example.com",
       "joined": "08 Jul 2026",
       "progress": 42,
@@ -461,237 +473,6 @@ window.PORTAL_DATA = {
       "certDate": "",
       "certReady": false,
       "pass": "rk48fm2q"
-    },
-    "BA2026003": {
-      "name": "Ganesha M",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0003",
-      "certDate": "",
-      "certReady": false,
-      "pass": "ganesh123"
-    },
-    "BA2026004": {
-      "name": "kopparam naresh",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0004",
-      "certDate": "",
-      "certReady": false,
-      "pass": "kopparam123"
-    },
-    "BA2026005": {
-      "name": "Karthik",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0005",
-      "certDate": "",
-      "certReady": false,
-      "pass": "kartik123"
-    },
-    "BA2026006": {
-      "name": "VM Vijay",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0006",
-      "certDate": "",
-      "certReady": false,
-      "pass": "vm333"
-    },
-    "BA2026007": {
-      "name": "Pushpa s",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0007",
-      "certDate": "",
-      "certReady": false,
-      "pass": "pushpa123"
-    },
-    "BA2026008": {
-      "name": "Yashwanth C R",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0008",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Ycr123"
-    },
-    "BA2026009": {
-      "name": "Sinchana K",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0009",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Ksinc123"
-    },
-    "BA2026010": {
-      "name": "Supriya G",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0010",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Gsup123"
-    },
-    "BA2026011": {
-      "name": "Ashwini",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0011",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Ash123"
-    },
-    "BA2026012": {
-      "name": "Avinash P V",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0012",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Pvav123"
-    },
-    "BA2026013": {
-      "name": "Krishna S",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0013",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Skri123"
-    },
-    "BA2026014": {
-      "name": "Murugesh",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0014",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Mur123"
-    },
-    "BA2026015": {
-      "name": "Pavan Kumar N R",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0015",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Nrpa123"
-    },
-    "BA2026016": {
-      "name": "Khalandar",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0016",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Kha123"
-    },
-    "BA2026017": {
-      "name": "Noor Basha V B",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0017",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Noor123"
-    },
-    "BA2026018": {
-      "name": "Shilpa S",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0018",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Sshi123"
-    },
-    "BA2026019": {
-      "name": "Prathiba S E",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0019",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Sepra123"
-    },
-    "BA2026020": {
-      "name": "Swetha",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0020",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Swh123"
-    },
-    "BA2026021": {
-      "name": "Yashas N",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0021",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Nyas123"
-    },
-    "BA2026022": {
-      "name": "Chethan",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0022",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Chet123"
-    },
-    "BA2026023": {
-      "name": "Kiran TK",
-      "batch": "Evening — Jul 8th  2026 (08-09pm)",
-      "email": "",
-      "joined": "08 Jul 2026",
-      "progress": 0,
-      "certId": "CEC-BA-2026-0023",
-      "certDate": "",
-      "certReady": false,
-      "pass": "Tkir123"
     }
   },
   "SYLLABUS": [
@@ -700,26 +481,12 @@ window.PORTAL_DATA = {
       "color": "#217a56",
       "name": "Advanced Excel",
       "topics": [
-        "Excel interface, shortcuts & efficient navigation",
-        "Cell referencing — relative, absolute & mixed ($)",
-        "Text functions — LEFT, RIGHT, MID, TRIM, CONCAT, TEXTSPLIT",
-        "Logical functions — IF, IFS, AND, OR, nested conditions",
-        "Lookup functions — VLOOKUP, HLOOKUP, XLOOKUP",
-        "INDEX + MATCH for flexible lookups",
-        "SUMIF, SUMIFS, COUNTIF, COUNTIFS, AVERAGEIFS",
-        "Data cleaning — remove duplicates, Flash Fill, Text to Columns",
-        "Data validation & dropdown lists",
-        "Conditional formatting (rules & formula-based)",
-        "Sorting, filtering & advanced filters",
-        "Pivot Tables — grouping, slicers & calculated fields",
-        "Pivot Charts & interactive summaries",
-        "Power Query — import, clean & transform data",
-        "Combining data from multiple sheets/files",
-        "What-If Analysis — Goal Seek, Scenario Manager, Data Tables",
-        "Building interactive dashboards",
-        "Charts — column, line, combo, waterfall & sparklines",
-        "Introduction to Macros & VBA basics",
-        "Business case study — sales/HR data analysis project"
+        "Lookup functions — VLOOKUP, XLOOKUP, INDEX+MATCH",
+        "SUMIFS, COUNTIFS, IFS & nested logic",
+        "Pivot tables & Power Query",
+        "Conditional formatting (formula-based)",
+        "Data validation & dashboards",
+        "VBA basics"
       ]
     },
     {
@@ -727,15 +494,12 @@ window.PORTAL_DATA = {
       "color": "#2a5db0",
       "name": "SQL & Databases",
       "topics": [
-        "Databases & SQL basics — SELECT, FROM, WHERE",
-        "Sorting & filtering — ORDER BY, DISTINCT, LIMIT, operators",
-        "Aggregate functions — COUNT, SUM, AVG, MIN, MAX",
-        "Grouping data — GROUP BY & HAVING",
-        "Joins — INNER, LEFT, RIGHT & FULL",
-        "Subqueries & nested queries",
-        "CASE statements & conditional logic",
-        "Data modification — INSERT, UPDATE, DELETE, CREATE TABLE",
-        "Real-world business queries & mini project"
+        "SELECT, WHERE, ORDER BY",
+        "GROUP BY, HAVING, aggregates",
+        "JOINs & relationships",
+        "CASE statements & subqueries",
+        "Temp tables",
+        "MySQL Workbench workflow"
       ]
     },
     {
@@ -774,7 +538,59 @@ window.PORTAL_DATA = {
       ]
     }
   ],
-  "RECORDINGS": [],
+  "RECORDINGS": [
+    {
+      "module": "Advanced Excel",
+      "items": [
+        {
+          "title": "Day 1 — Lookup functions",
+          "date": "08 Jul 2026",
+          "dur": "1:12:40",
+          "fileId": ""
+        },
+        {
+          "title": "Day 2 — SUMIFS & logic",
+          "date": "10 Jul 2026",
+          "dur": "58:20",
+          "fileId": ""
+        },
+        {
+          "title": "Day 3 — Pivot tables & Power Query",
+          "date": "11 Jul 2026",
+          "dur": "1:05:10",
+          "fileId": ""
+        }
+      ]
+    },
+    {
+      "module": "SQL & Databases",
+      "items": [
+        {
+          "title": "Day 4 — SELECT & filtering",
+          "date": "14 Jul 2026",
+          "dur": "1:08:00",
+          "fileId": ""
+        },
+        {
+          "title": "Day 5 — JOINs & GROUP BY",
+          "date": "15 Jul 2026",
+          "dur": "1:15:30",
+          "fileId": ""
+        }
+      ]
+    },
+    {
+      "module": "Power BI",
+      "items": [
+        {
+          "title": "Day 6 — Data modelling & DAX",
+          "date": "18 Jul 2026",
+          "dur": "1:20:00",
+          "fileId": ""
+        }
+      ]
+    }
+  ],
   "RESOURCES": [
     {
       "type": "pdf",
@@ -807,7 +623,43 @@ window.PORTAL_DATA = {
       "url": "#"
     }
   ],
-  "SCHEDULE": [],
+  "SCHEDULE": [
+    {
+      "day": "Mon",
+      "dd": "Live",
+      "title": "SQL — JOINs deep dive",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Tue",
+      "dd": "Live",
+      "title": "Power BI — DAX measures",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Wed",
+      "dd": "Live",
+      "title": "Tableau — dashboards",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Thu",
+      "dd": "Live",
+      "title": "AI tools for analysts",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    },
+    {
+      "day": "Fri",
+      "dd": "Live",
+      "title": "Project workshop",
+      "time": "7:30 AM / 8:00 PM",
+      "meet": true
+    }
+  ],
   "ANNOUNCEMENTS": [
     {
       "title": "New batch starts 8th July",
@@ -824,32 +676,7 @@ window.PORTAL_DATA = {
       "body": "Optional recorded videos add-on gives you lifetime access. Ask your instructor.",
       "time": "1 week ago"
     }
-  ],
-  "REVIEWS": [
-    {
-      "name": "Priya Sharma",
-      "role": "BA graduate · now Data Analyst",
-      "rating": 5,
-      "text": "The live classes and recordings made it easy to keep up. Got placed within 2 months of finishing!"
-    },
-    {
-      "name": "Rahul Kumar",
-      "role": "BA graduate",
-      "rating": 5,
-      "text": "Amin sir explains SQL and Power BI so clearly. The practice datasets were super helpful."
-    },
-    {
-      "name": "Sneha R.",
-      "role": "Working professional",
-      "rating": 5,
-      "text": "Perfect for someone with a full-time job — evening batch and lifetime recordings were exactly what I needed."
-    }
-  ],
-  "PRO": {
-    "enabled": true,
-    "title": "You're certified — now make it count 🎓",
-    "message": "Add your certificate to LinkedIn, mention Excel, SQL, Power BI & Tableau on your resume, and reach out to us anytime for job-assistance and interview prep."
-  }
+  ]
 };
 /*DATA_END*/
 </script>
@@ -868,6 +695,9 @@ async function sha256(str){
 function clone(x){ return JSON.parse(JSON.stringify(x)); }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function meetFor(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return normUrl((b&&b.meetLink)||DB.INSTITUTE.meetLink||"#"); }
+function batchTime(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return (b&&b.time)?String(b.time).trim():""; }
+function classTime(entry){ const bt=batchTime(CURRENT&&CURRENT.batch); const t=((entry&&entry.time)||"").trim();
+  if(bt && (!t || t.indexOf("/")>-1)) return bt; return t||bt; }
 function normUrl(u){ u=(u||"").trim(); if(!u||u==="#")return u; if(!/^https?:\/\//i.test(u)&&!/^mailto:/i.test(u)) u="https://"+u.replace(/^\/+/,""); return u; }
 function waLink(text){ const num=(DB.INSTITUTE.whatsapp||"").replace(/[^0-9]/g,""); return "https://wa.me/"+num+"?text="+encodeURIComponent(text); }
 function driveId(s){ s=(s||"").trim(); let m=s.match(/\/d\/([^/]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
@@ -893,6 +723,7 @@ function seedDB(src){
     PRO: clone(src.PRO||{enabled:true, title:"You're certified — now make it count 🎓", message:"Add your certificate to LinkedIn, mention Excel, SQL, Power BI & Tableau on your resume, and reach out to us anytime for job-assistance and interview prep."})
   };
   if(DB.INSTITUTE.whatsapp===undefined) DB.INSTITUTE.whatsapp="";
+  (DB.BATCHES||[]).forEach(b=>{ if(b.time===undefined) b.time=""; });
   const cd=DB.CERT;
   if(cd.roleLeft===undefined) cd.roleLeft="Director";
   if(cd.roleRight===undefined) cd.roleRight="CTO";
@@ -909,9 +740,39 @@ seedDB({
 let ORIGINAL_HTML="";
 document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html>\n"+document.documentElement.outerHTML; });
 
+/* ---------- CLOUD (Firebase) ---------- */
+const CLOUD = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && window.FIREBASE_CONFIG.apiKey.indexOf("PASTE")===-1 && typeof firebase!=="undefined");
+let fdb=null, fauth=null, cloudReady=false, saveT=null;
+function seedFromDB(o){ if(!o) return; seedDB({INSTITUTE:o.INSTITUTE,ADMIN_HASH:o.adminHash,WELCOME:o.WELCOME,CERT:o.CERT,BATCHES:o.BATCHES,STUDENTS:o.STUDENTS,SYLLABUS:o.SYLLABUS,RECORDINGS:o.RECORDINGS,RESOURCES:o.RESOURCES,SCHEDULE:o.SCHEDULE,ANNOUNCEMENTS:o.ANNOUNCEMENTS,REVIEWS:o.REVIEWS,PRO:o.PRO}); }
+if(CLOUD){
+  try{
+    firebase.initializeApp(window.FIREBASE_CONFIG); fdb=firebase.database(); fauth=firebase.auth();
+    fdb.ref("portal").on("value",snap=>{                 // live: students always get latest
+      const v=snap.val();
+      const adminOpen=document.getElementById("adminApp").classList.contains("show");
+      if(v && (v.STUDENTS||v.INSTITUTE) && !adminOpen){ seedFromDB(v); }
+      cloudReady=true;
+      if(!adminOpen && CURRENT && document.getElementById("studentApp").classList.contains("show")){
+        CURRENT={id:CURRENT.id,...DB.STUDENTS[CURRENT.id]};
+        const cur=(document.querySelector(".s-navitem.active")||{}).dataset ? (document.querySelector(".s-navitem.active").dataset.tab) : "home";
+        sBuildPanels(); sGoTab(cur||"home");
+      }
+    });
+  }catch(e){ console.error("Firebase init failed",e); }
+}
+function cloudSave(){
+  if(!CLOUD || !cloudReady) return;
+  setSaveStatus("Saving…");
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{ fdb.ref("portal").set(DB)
+    .then(()=>setSaveStatus("Saved ✓"))
+    .catch(e=>{ console.error(e); setSaveStatus("Save failed — check login"); }); },900);
+}
+function setSaveStatus(t){ const el=document.getElementById("dirtyText"); if(el) el.innerHTML=CLOUD?("<b>Cloud:</b> "+t):t; }
+
 /* ---------- login switching ---------- */
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
-function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); }
+function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); document.getElementById("adminEmailField").style.display=CLOUD?"block":"none"; }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
 function showRegister(){
   const sel=document.getElementById("rBatch");
@@ -934,15 +795,24 @@ function view(id,title,desc){
 }
 function doStudentLogin(){
   const id=document.getElementById("sid").value.trim().toUpperCase();
-  const pw=document.getElementById("spw").value;
+  const pw=document.getElementById("spw").value.trim();
   const s=DB.STUDENTS[id];
-  if(!s||s.pass!==pw){ return showErr("loginMsg","Incorrect ID or password. Try again."); }
+  const ok = s && (s.pass===pw || (s.pass||"").toLowerCase()===pw.toLowerCase());
+  if(!ok){ return showErr("loginMsg","Incorrect ID or password. Try again."); }
   document.getElementById("loginMsg").classList.remove("show");
   CURRENT={id,...s}; enterStudent();
 }
 async function doAdminLogin(){
   const pw=document.getElementById("apw").value;
   if(!pw) return;
+  if(CLOUD){
+    const email=document.getElementById("aemail").value.trim();
+    if(!email) return showErr("adminMsg","Enter your admin email.");
+    try{ await fauth.signInWithEmailAndPassword(email,pw); }
+    catch(e){ return showErr("adminMsg","Login failed. Check email/password."); }
+    document.getElementById("adminMsg").classList.remove("show");
+    enterAdmin(); return;
+  }
   if(await sha256(pw)!==DB.adminHash){ return showErr("adminMsg","Incorrect admin password."); }
   document.getElementById("adminMsg").classList.remove("show");
   enterAdmin();
@@ -956,6 +826,7 @@ document.addEventListener("keydown",e=>{
 });
 function logout(){
   CURRENT=null;
+  if(CLOUD && fauth && fauth.currentUser){ try{ fauth.signOut(); }catch(e){} }
   document.getElementById("studentApp").classList.remove("show");
   document.getElementById("adminApp").classList.remove("show");
   document.getElementById("authScreen").style.display="flex";
@@ -1039,7 +910,7 @@ function panelHome(){
     </div>
     <div class="grid grid-2" style="margin-top:16px;align-items:start">
       <div class="card next-class"><div class="lbl">Next live class</div><h3>${esc(next.title)}</h3>
-        <div class="when">${esc(next.day)} · ${esc(next.time)} · Google Meet</div>
+        <div class="when">${esc(next.day)} · ${esc(classTime(next))} · Google Meet</div>
         <a class="btn btn-primary" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join class</a></div>
       <div class="card"><div class="section-title">Announcements</div>
         ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
@@ -1104,7 +975,7 @@ function panelSchedule(){
     <div class="card">${DB.SCHEDULE.map(s=>`<div class="sched-row">
       <div class="sched-day"><div class="d">${esc(s.day)}</div><div class="dd">${esc(s.dd||"Live")}</div></div>
       <div class="sched-info"><h4>${esc(s.title)}</h4><p>${esc(DB.INSTITUTE.course)}</p></div>
-      <div class="sched-time">${esc(s.time)}</div>
+      <div class="sched-time">${esc(classTime(s))}</div>
       ${s.meet?`<a class="meet-btn" href="${esc(meetFor(CURRENT.batch))}" target="_blank" rel="noopener">Join</a>`:""}</div>`).join("")||'<div class="empty">No classes scheduled.</div>'}</div>
   </section>`;
 }
@@ -1181,6 +1052,7 @@ let CURSEC="students";
 function enterAdmin(){
   document.getElementById("authScreen").style.display="none";
   document.getElementById("adminApp").classList.add("show");
+  if(CLOUD){ document.getElementById("exportBtn").style.display="none"; setSaveStatus("Saved ✓ · changes publish automatically"); }
   aBuildNav(); aRender("students"); window.scrollTo(0,0);
 }
 function aBuildNav(){
@@ -1194,7 +1066,8 @@ function aRender(sec){
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
-  document.getElementById("dirtyText").innerHTML="<b>Unsaved changes.</b> Export &amp; upload index.html to publish."; }
+  if(CLOUD){ cloudSave(); }
+  else { document.getElementById("dirtyText").innerHTML="<b>Unsaved changes.</b> Export &amp; upload index.html to publish."; } }
 
 /* WELCOME */
 function secWelcome(){
@@ -1387,19 +1260,20 @@ function delSched(i){ confirmDel("Delete this class?",()=>{ DB.SCHEDULE.splice(i
 function secBatches(){
   const rows=DB.BATCHES.map((b,i)=>{const count=Object.values(DB.STUDENTS).filter(s=>s.batch===b.name).length; const linked=b.meetLink&&!/xxx-xxxx-xxx|yyy-yyyy-yyy/.test(b.meetLink);
     return `<div class="row"><div class="rico" style="background:var(--accent-2)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="18"><path d="M15 10l4.5-2.5v9L15 14M4 6h9a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg></div>
-    <div class="rmain"><h4>${esc(b.name)} ${linked?'<span class="tagx ok">Meet set</span>':'<span class="tagx no">set Meet link</span>'}</h4>
+    <div class="rmain"><h4>${esc(b.name)} ${b.time?`<span class="tagx ok">${esc(b.time)}</span>`:'<span class="tagx no">set time</span>'} ${linked?'<span class="tagx ok">Meet set</span>':'<span class="tagx no">set Meet link</span>'}</h4>
       <div class="credline"><span>${count} student${count===1?"":"s"}</span><span class="credchip" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.meetLink||"—")}</span></div></div>
     <div class="ract"><button class="iconbtn" onclick="editBatch(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
       <button class="iconbtn del" onclick="delBatch(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;}).join("")||'<div class="empty">No batches yet. Add one, then assign students to it.</div>';
   return `<div class="page-head"><h1>Batches</h1><p>Each batch has its own Google Meet link. Students automatically get their batch's link on every Join button.</p></div>
   <div class="sec-head"><h3>All batches</h3><button class="btn btn-primary btn-sm" onclick="editBatch(null)">+ Add batch</button></div>${rows}`;
 }
-function editBatch(i){ const isNew=i===null,b=isNew?{name:"",meetLink:""}:clone(DB.BATCHES[i]); const oldName=isNew?null:b.name;
+function editBatch(i){ const isNew=i===null,b=isNew?{name:"",meetLink:"",time:""}:clone(DB.BATCHES[i]); const oldName=isNew?null:b.name;
   openForm(isNew?"Add batch":"Edit batch",[
     {k:"name",label:"Batch name",type:"text",val:b.name,ph:"Morning — Jul 2026"},
+    {k:"time",label:"Class time",type:"text",val:b.time||"",ph:"8:00 PM",help:"Students in this batch see only this time on their schedule."},
     {k:"meetLink",label:"Google Meet link",type:"text",mono:true,val:b.meetLink,help:"This batch's own Meet link. Students in this batch join here."}
   ],v=>{ if(!v.name.trim())return toast("Batch name required");
-    const rec={name:v.name.trim(),meetLink:normUrl(v.meetLink.trim())};
+    const rec={name:v.name.trim(),time:v.time.trim(),meetLink:normUrl(v.meetLink.trim())};
     if(isNew)DB.BATCHES.push(rec); else { DB.BATCHES[i]=rec;
       if(oldName&&oldName!==rec.name) Object.values(DB.STUDENTS).forEach(s=>{ if(s.batch===oldName)s.batch=rec.name; }); }
     markDirty(); closeAModal(); aRender("batches"); toast("Batch saved"); }); }
@@ -1599,8 +1473,5 @@ function backupData(){
 window.addEventListener("load",()=>{ const p=new URLSearchParams(location.search).get("verify");
   if(p){ showVerify(); document.getElementById("pubCid").value=p; verifyPublic(); } });
 </script>
-
-
-
-
-</body></html>
+</body>
+</html>
