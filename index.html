@@ -700,12 +700,26 @@ window.PORTAL_DATA = {
       "color": "#217a56",
       "name": "Advanced Excel",
       "topics": [
-        "Lookup functions — VLOOKUP, XLOOKUP, INDEX+MATCH",
-        "SUMIFS, COUNTIFS, IFS & nested logic",
-        "Pivot tables & Power Query",
-        "Conditional formatting (formula-based)",
-        "Data validation & dashboards",
-        "VBA basics"
+        "Excel interface, shortcuts & efficient navigation",
+        "Cell referencing — relative, absolute & mixed ($)",
+        "Text functions — LEFT, RIGHT, MID, TRIM, CONCAT, TEXTSPLIT",
+        "Logical functions — IF, IFS, AND, OR, nested conditions",
+        "Lookup functions — VLOOKUP, HLOOKUP, XLOOKUP",
+        "INDEX + MATCH for flexible lookups",
+        "SUMIF, SUMIFS, COUNTIF, COUNTIFS, AVERAGEIFS",
+        "Data cleaning — remove duplicates, Flash Fill, Text to Columns",
+        "Data validation & dropdown lists",
+        "Conditional formatting (rules & formula-based)",
+        "Sorting, filtering & advanced filters",
+        "Pivot Tables — grouping, slicers & calculated fields",
+        "Pivot Charts & interactive summaries",
+        "Power Query — import, clean & transform data",
+        "Combining data from multiple sheets/files",
+        "What-If Analysis — Goal Seek, Scenario Manager, Data Tables",
+        "Building interactive dashboards",
+        "Charts — column, line, combo, waterfall & sparklines",
+        "Introduction to Macros & VBA basics",
+        "Business case study — sales/HR data analysis project"
       ]
     },
     {
@@ -713,12 +727,15 @@ window.PORTAL_DATA = {
       "color": "#2a5db0",
       "name": "SQL & Databases",
       "topics": [
-        "SELECT, WHERE, ORDER BY",
-        "GROUP BY, HAVING, aggregates",
-        "JOINs & relationships",
-        "CASE statements & subqueries",
-        "Temp tables",
-        "MySQL Workbench workflow"
+        "Databases & SQL basics — SELECT, FROM, WHERE",
+        "Sorting & filtering — ORDER BY, DISTINCT, LIMIT, operators",
+        "Aggregate functions — COUNT, SUM, AVG, MIN, MAX",
+        "Grouping data — GROUP BY & HAVING",
+        "Joins — INNER, LEFT, RIGHT & FULL",
+        "Subqueries & nested queries",
+        "CASE statements & conditional logic",
+        "Data modification — INSERT, UPDATE, DELETE, CREATE TABLE",
+        "Real-world business queries & mini project"
       ]
     },
     {
@@ -757,59 +774,7 @@ window.PORTAL_DATA = {
       ]
     }
   ],
-  "RECORDINGS": [
-    {
-      "module": "Advanced Excel",
-      "items": [
-        {
-          "title": "Day 1 — Lookup functions",
-          "date": "08 Jul 2026",
-          "dur": "1:12:40",
-          "fileId": ""
-        },
-        {
-          "title": "Day 2 — SUMIFS & logic",
-          "date": "10 Jul 2026",
-          "dur": "58:20",
-          "fileId": ""
-        },
-        {
-          "title": "Day 3 — Pivot tables & Power Query",
-          "date": "11 Jul 2026",
-          "dur": "1:05:10",
-          "fileId": ""
-        }
-      ]
-    },
-    {
-      "module": "SQL & Databases",
-      "items": [
-        {
-          "title": "Day 4 — SELECT & filtering",
-          "date": "14 Jul 2026",
-          "dur": "1:08:00",
-          "fileId": ""
-        },
-        {
-          "title": "Day 5 — JOINs & GROUP BY",
-          "date": "15 Jul 2026",
-          "dur": "1:15:30",
-          "fileId": ""
-        }
-      ]
-    },
-    {
-      "module": "Power BI",
-      "items": [
-        {
-          "title": "Day 6 — Data modelling & DAX",
-          "date": "18 Jul 2026",
-          "dur": "1:20:00",
-          "fileId": ""
-        }
-      ]
-    }
-  ],
+  "RECORDINGS": [],
   "RESOURCES": [
     {
       "type": "pdf",
@@ -842,43 +807,7 @@ window.PORTAL_DATA = {
       "url": "#"
     }
   ],
-  "SCHEDULE": [
-    {
-      "day": "Mon",
-      "dd": "Live",
-      "title": "SQL — JOINs deep dive",
-      "time": "7:30 AM / 8:00 PM",
-      "meet": true
-    },
-    {
-      "day": "Tue",
-      "dd": "Live",
-      "title": "Power BI — DAX measures",
-      "time": "7:30 AM / 8:00 PM",
-      "meet": true
-    },
-    {
-      "day": "Wed",
-      "dd": "Live",
-      "title": "Tableau — dashboards",
-      "time": "7:30 AM / 8:00 PM",
-      "meet": true
-    },
-    {
-      "day": "Thu",
-      "dd": "Live",
-      "title": "AI tools for analysts",
-      "time": "7:30 AM / 8:00 PM",
-      "meet": true
-    },
-    {
-      "day": "Fri",
-      "dd": "Live",
-      "title": "Project workshop",
-      "time": "7:30 AM / 8:00 PM",
-      "meet": true
-    }
-  ],
+  "SCHEDULE": [],
   "ANNOUNCEMENTS": [
     {
       "title": "New batch starts 8th July",
@@ -1670,6 +1599,7 @@ function backupData(){
 window.addEventListener("load",()=>{ const p=new URLSearchParams(location.search).get("verify");
   if(p){ showVerify(); document.getElementById("pubCid").value=p; verifyPublic(); } });
 </script>
+
 
 
 
