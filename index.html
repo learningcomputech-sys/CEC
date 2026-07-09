@@ -730,6 +730,7 @@ function seedDB(src){
   if(cd.sigDirector===undefined) cd.sigDirector="";
   if(cd.sigCTO===undefined) cd.sigCTO="";
   if(!Array.isArray(cd.skills)) cd.skills=["Advanced Excel","Power BI","SQL","Tableau","AI Tools"];
+  Object.keys(DB.STUDENTS).forEach(id=>{ const s=DB.STUDENTS[id]; if(s.recordingAccess===undefined) s.recordingAccess=true; });
 }
 const P = window.PORTAL_DATA || {};
 seedDB({
@@ -935,6 +936,17 @@ function panelSyllabus(){ const bro=normUrl(DB.INSTITUTE.brochureUrl);
   </section>`;
 }
 function panelVideos(){
+  if(CURRENT.recordingAccess===false){
+    const wa=waLink("Hi, I want to unlock the recorded videos (paid add-on). My Student ID is "+CURRENT.id+".");
+    return `<section class="tab-panel" data-tab="videos">
+      <div class="topbar"><div><h1>Recordings</h1><div class="sub">Class recordings</div></div></div>
+      <div class="card" style="text-align:center;padding:44px 24px">
+        <div style="width:66px;height:66px;border-radius:16px;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 16px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3 style="color:var(--ink);font-size:18px;margin-bottom:8px">Recordings are locked 🔒</h3>
+        <p style="color:var(--muted);font-size:14px;max-width:360px;margin:0 auto 20px;line-height:1.6">Recorded videos are a paid add-on with lifetime access. You have to contact the admin to unlock access to recordings.</p>
+        <a class="btn btn-primary" style="width:auto;display:inline-flex" href="${esc(wa)}" target="_blank" rel="noopener">Contact admin on WhatsApp</a>
+      </div></section>`;
+  }
   return `<section class="tab-panel" data-tab="videos">
     <div class="topbar"><div><h1>Recordings</h1><div class="sub">Class recordings — watch inside the portal</div></div></div>
     ${DB.RECORDINGS.map(g=>`<div class="rec-group"><h3>${esc(g.module)} <span class="tag">${g.items.length} videos</span></h3>
@@ -1094,17 +1106,19 @@ function genPass(len){ len=len||8; const a="abcdefghjkmnpqrstuvwxyz23456789"; le
 function nextCertId(){ const yr=new Date().getFullYear(),n=Object.keys(DB.STUDENTS).length+1; return `CEC-BA-${yr}-${String(n).padStart(4,"0")}`; }
 function studentRow(id){ const s=DB.STUDENTS[id];const pid="pw_"+id;
   return `<div class="row"><div class="rico" style="background:var(--ink-2)">${esc((s.name||"?")[0])}</div>
-      <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Cert ready</span>':'<span class="tagx no">'+(s.progress||0)+'%</span>'}</h4>
+      <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Cert ready</span>':'<span class="tagx no">'+(s.progress||0)+'%</span>'} ${s.recordingAccess?'<span class="tagx ok">🎥 Recordings</span>':'<span class="tagx no">🔒 No recordings</span>'}</h4>
         <div class="credline"><span class="credchip" style="background:var(--accent-soft);border-color:#f0dcae;color:#8a6410">${esc(s.batch||"no batch")}</span>${s.joined?`<span class="credchip">${esc(s.joined)}</span>`:""}<span>ID</span><span class="credchip">${esc(id)}</span>
           <span>Pass</span><span class="credchip pw" id="${pid}" data-pw="${esc(s.pass)}">••••••</span>
           <button class="linkbtn" onclick="togglePw('${pid}')">show</button>
-          <button class="linkbtn" onclick="copyLogin('${id}')">copy login</button></div></div>
+          <button class="linkbtn" onclick="copyLogin('${id}')">copy login</button>
+          <button class="linkbtn" onclick="toggleRec('${id}')">${s.recordingAccess?"disable recordings":"enable recordings"}</button></div></div>
       <div class="ract">
         <button class="iconbtn" onclick="resetPass('${id}')" title="New password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></button>
         <button class="iconbtn" onclick="editStudent('${id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
         <button class="iconbtn del" onclick="delStudent('${id}')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
       </div></div>`;
 }
+function toggleRec(id){ const s=DB.STUDENTS[id]; s.recordingAccess=!s.recordingAccess; markDirty(); refreshStudents(); toast(s.recordingAccess?"Recordings enabled":"Recordings disabled"); }
 function studentRows(){
   const fb=(document.getElementById("fBatch")||{}).value||"";
   const fj=(document.getElementById("fJoined")||{}).value||"";
@@ -1141,7 +1155,7 @@ function resetPass(id){ const np=genPass(8); DB.STUDENTS[id].pass=np; markDirty(
 function editStudent(id){
   const isNew=!id;
   const bNames=(DB.BATCHES||[]).map(b=>b.name);
-  const s=isNew?{name:"",batch:bNames[0]||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8)}:clone(DB.STUDENTS[id]);
+  const s=isNew?{name:"",batch:bNames[0]||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8),recordingAccess:true}:clone(DB.STUDENTS[id]);
   const sid=isNew?genId():id;
   const batchField= bNames.length
     ? {k:"batch",label:"Batch",type:"pick",val:(bNames.includes(s.batch)||!s.batch)?(s.batch||bNames[0]):s.batch,options:(bNames.includes(s.batch)||!s.batch)?bNames:[s.batch,...bNames],help:"Sets which batch Meet link this student joins. Manage in Batches."}
@@ -1151,6 +1165,7 @@ function editStudent(id){
     {k:"name",label:"Full name",type:"text",val:s.name},
     batchField,
     {k:"pass",label:"Password (auto — you can edit)",type:"text",mono:true,val:s.pass,help:"Students use this to log in. Visible to you anytime."},
+    {k:"recordingAccess",label:"Recordings access (paid add-on)",type:"checkbox",val:s.recordingAccess,help:"Turn OFF for students who haven't paid for recordings."},
     {k:"email",label:"Email",type:"email",val:s.email},
     {k:"joined",label:"Joined on",type:"text",val:s.joined},
     {k:"progress",label:"Course progress",type:"range",val:s.progress||0},
@@ -1163,7 +1178,7 @@ function editStudent(id){
     if(isNew && DB.STUDENTS[newId]) return toast("That ID already exists");
     if(!v.pass.trim()) return toast("Password required");
     DB.STUDENTS[newId]={name:v.name.trim(),batch:v.batch.trim(),email:v.email.trim(),joined:v.joined.trim(),
-      progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim()};
+      progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim(),recordingAccess:!!v.recordingAccess};
     markDirty(); closeAModal(); aRender("students"); toast("Student saved");
   });
 }
