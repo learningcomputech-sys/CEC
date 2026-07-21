@@ -133,6 +133,24 @@ a{color:inherit;text-decoration:none}
 .review p{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:8px}
 .review .rv-by{font-size:12px;color:var(--muted);font-weight:600}
 @media (max-width:860px){.reviews{grid-template-columns:1fr}.pro-card{flex-wrap:wrap}}
+.receipt-card{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.rcpt-info{display:flex;gap:13px;align-items:center}
+.rcpt-ico{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:22px;flex:none}
+.receipt-card h3{font-size:15px;color:var(--ink);margin-bottom:2px}.receipt-card p{font-size:13px;color:var(--muted)}
+.receipt{background:#fff;border:1px solid #e6e9f0;border-radius:16px;max-width:560px;margin:0 auto;padding:26px 28px;box-shadow:0 10px 40px rgba(20,30,60,.08);color:#1a2340;font-family:'Inter'}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #eef1f7;padding-bottom:16px}
+.rc-brand{display:flex;gap:11px;align-items:center}.rc-name{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#141c34}.rc-sub{font-size:11px;color:#8a93a8}
+.rc-badge{font-family:'Space Grotesk';font-weight:700;font-size:11px;text-align:right;color:#c58a26;letter-spacing:.06em;line-height:1.3}
+.rc-meta{display:flex;justify-content:space-between;margin:16px 0 4px}.rc-meta span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#98a1b5;margin-bottom:2px}.rc-meta b{font-family:'JetBrains Mono';font-size:13px;color:#141c34}
+.rc-to{margin:14px 0 6px}.rc-to span{font-size:11px;color:#98a1b5}.rc-to h3{font-size:19px;color:#141c34;margin:2px 0}.rc-idline{font-family:'JetBrains Mono';font-size:12px;color:#6b7590}
+.rc-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.5px}
+.rc-table td{padding:10px 0;border-bottom:1px solid #eef1f7;color:#3a4360}.rc-table td.amt{text-align:right;font-family:'JetBrains Mono';font-weight:600;color:#141c34;white-space:nowrap}
+.rc-table .rc-total td{font-weight:700;color:#141c34;border-bottom:2px solid #d7dcea;font-size:14.5px}
+.rc-table .rc-due td{color:#c0392b;font-weight:700}.rc-table .rc-clear td{color:#217a56;font-weight:700}
+.rc-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:24px}
+.rc-note{font-size:10.5px;color:#a2abbf;max-width:150px}
+.rc-sig{text-align:center;min-width:150px}.rc-sig .line{border-top:1px solid #b9c0d0;margin-bottom:5px}.rc-sig .role{font-size:11px;color:#6b7590}
+@media (max-width:560px){.receipt{padding:20px}}
 .section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
 .ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}.ann:last-child{border-bottom:none;padding-bottom:0}
 .ann-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
@@ -732,7 +750,11 @@ function seedDB(src){
   if(cd.sigDirector===undefined) cd.sigDirector="";
   if(cd.sigCTO===undefined) cd.sigCTO="";
   if(!Array.isArray(cd.skills)) cd.skills=["Advanced Excel","Power BI","SQL","Tableau","AI Tools"];
-  Object.keys(DB.STUDENTS).forEach(id=>{ const s=DB.STUDENTS[id]; if(s.recordingAccess===undefined) s.recordingAccess=true; });
+  if(DB.INSTITUTE.courseFee===undefined) DB.INSTITUTE.courseFee=3000;
+  if(DB.INSTITUTE.recordingFee===undefined) DB.INSTITUTE.recordingFee=500;
+  if(DB.INSTITUTE.currency===undefined) DB.INSTITUTE.currency="₹";
+  Object.keys(DB.STUDENTS).forEach(id=>{ const s=DB.STUDENTS[id]; if(s.recordingAccess===undefined) s.recordingAccess=true;
+    if(!s.payment) s.payment={courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""}; });
   if(DB.INSTITUTE.recFolderId===undefined) DB.INSTITUTE.recFolderId="";
   if(DB.INSTITUTE.driveApiKey===undefined) DB.INSTITUTE.driveApiKey="";
 }
@@ -922,6 +944,9 @@ function panelHome(){
         ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
     </div>
     ${(CURRENT.certReady && DB.PRO && DB.PRO.enabled)?`<div class="card pro-card"><div class="pro-badge">🎓</div><div><h3>${esc(DB.PRO.title)}</h3><p>${esc(DB.PRO.message)}</p></div></div>`:""}
+    ${(()=>{const t=receiptTotals(CURRENT);return `<div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico">🧾</div>
+      <div><h3>Payment receipt</h3><p>Total ${money(t.total)} · Paid ${money(t.paid)}${t.balance>0?` · <b style="color:var(--bad)">Balance ${money(t.balance)}</b>`:` · <b style="color:var(--good)">Fully paid</b>`}</p></div></div>
+      <button class="btn btn-primary wb-btn" onclick="printReceipt()">Download receipt</button></div>`;})()}
     <div class="card" style="margin-top:16px">
       <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px">What our students say
         <a class="pill" href="${esc(waLink('Hi, I want to share a review for the '+DB.INSTITUTE.course+' course:'))}" target="_blank" rel="noopener">★ Leave a review</a></div>
@@ -969,7 +994,7 @@ async function fillRecordings(){
     const fid=driveFolderId(DB.INSTITUTE.recFolderId), key=(DB.INSTITUTE.driveApiKey||"").trim();
     const url="https://www.googleapis.com/drive/v3/files?q='"+encodeURIComponent(fid)+"'+in+parents+and+trashed=false&key="+encodeURIComponent(key)+"&fields=files(id,name,mimeType,modifiedTime)&orderBy=name&pageSize=500&supportsAllDrives=true&includeItemsFromAllDrives=true";
     const res=await fetch(url); const data=await res.json();
-    if(data.error){ area.innerHTML='<div class="card" style="color:#a13333">Couldn\'t load the folder. Check the folder is shared as “Anyone with the link” and the API key is correct.</div>'; return; }
+    if(data.error){ area.innerHTML='<div class="card" style="color:#a13333">Couldn\'t load the folder.<br><small style="color:var(--muted)">'+esc((data.error&&data.error.message)||"Unknown error")+'</small></div>'; return; }
     const files=(data.files||[]).filter(f=>(f.mimeType||"").indexOf("folder")===-1);
     if(!files.length){ area.innerHTML='<div class="card">No videos in the folder yet.</div>'; return; }
     area.innerHTML=`<div class="rec-group"><h3>All recordings <span class="tag">${files.length} videos</span></h3>`+
@@ -1069,6 +1094,35 @@ function printCert(){
     <body>${card}<scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),400)</scr`+`ipt></body></html>`);
   w.document.close();
 }
+function money(n){ return (DB.INSTITUTE.currency||"₹")+Number(n||0).toLocaleString("en-IN"); }
+function receiptTotals(stu){ const p=stu.payment||{}; const course=+p.courseFee||0; const rec=stu.recordingAccess?(+p.recordingFee||0):0; const total=course+rec; const paid=+p.paid||0; return {course,rec,total,paid,balance:total-paid}; }
+function receiptHTML(stu){
+  const I=DB.INSTITUTE, p=stu.payment||{}, t=receiptTotals(stu);
+  const rows=[`<tr><td>${esc(I.course)} — course fee</td><td class="amt">${money(t.course)}</td></tr>`];
+  if(t.rec>0) rows.push(`<tr><td>Class recordings — lifetime access</td><td class="amt">${money(t.rec)}</td></tr>`);
+  return `<div class="receipt" id="receiptCard">
+    <div class="rc-top"><div class="rc-brand"><div class="logo-mark" style="width:44px;height:44px"><span>C</span></div>
+      <div><div class="rc-name">${esc(I.name)}</div><div class="rc-sub">${esc((DB.CERT&&DB.CERT.tagline)||"")}</div></div></div>
+      <div class="rc-badge">PAYMENT<br>RECEIPT</div></div>
+    <div class="rc-meta"><div><span>Receipt No</span><b>RCPT-${esc(stu.id||"")}</b></div><div style="text-align:right"><span>Date</span><b>${esc(p.date||"—")}</b></div></div>
+    <div class="rc-to"><span>Received with thanks from</span><h3>${esc(stu.name)}</h3><div class="rc-idline">${esc(stu.id||"")}${stu.batch?" · "+esc(stu.batch):""}</div></div>
+    <table class="rc-table"><tbody>${rows.join("")}
+      <tr class="rc-total"><td>Total</td><td class="amt">${money(t.total)}</td></tr>
+      <tr><td>Amount paid${p.mode?" · "+esc(p.mode):""}</td><td class="amt">${money(t.paid)}</td></tr>
+      <tr class="${t.balance>0?'rc-due':'rc-clear'}"><td>${t.balance>0?"Balance due":"Balance"}</td><td class="amt">${money(t.balance)}</td></tr></tbody></table>
+    <div class="rc-foot"><div class="rc-note">Computer-generated receipt — no signature required.</div>
+      <div class="rc-sig"><div class="line"></div><div class="role">${esc(I.name)}</div></div></div>
+  </div>`;
+}
+function printReceipt(){
+  const host=document.createElement("div"); host.innerHTML=receiptHTML(CURRENT); const card=host.firstElementChild.outerHTML;
+  const w=window.open("","_blank");
+  w.document.write(`<html><head><title>${esc(CURRENT.name)} — Receipt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>body{margin:0;padding:24px;font-family:Inter}${document.querySelector("style").innerHTML}.receipt{box-shadow:none;margin:0 auto}@media print{body{padding:0}}</style></head>
+    <body>${card}<scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),400)</scr`+`ipt></body></html>`);
+  w.document.close();
+}
 
 /* ================= ADMIN APP ================= */
 const SECTIONS=[
@@ -1131,7 +1185,7 @@ function nextCertId(){ const yr=new Date().getFullYear(),n=Object.keys(DB.STUDEN
 function studentRow(id){ const s=DB.STUDENTS[id];const pid="pw_"+id;
   return `<div class="row"><div class="rico" style="background:var(--ink-2)">${esc((s.name||"?")[0])}</div>
       <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Cert ready</span>':'<span class="tagx no">'+(s.progress||0)+'%</span>'} ${s.recordingAccess?'<span class="tagx ok">🎥 Recordings</span>':'<span class="tagx no">🔒 No recordings</span>'}</h4>
-        <div class="credline"><span class="credchip" style="background:var(--accent-soft);border-color:#f0dcae;color:#8a6410">${esc(s.batch||"no batch")}</span>${s.joined?`<span class="credchip">${esc(s.joined)}</span>`:""}<span>ID</span><span class="credchip">${esc(id)}</span>
+        <div class="credline"><span class="credchip" style="background:var(--accent-soft);border-color:#f0dcae;color:#8a6410">${esc(s.batch||"no batch")}</span>${s.joined?`<span class="credchip">${esc(s.joined)}</span>`:""}${(()=>{const t=receiptTotals(s);return `<span class="credchip" style="${t.balance>0?'background:var(--bad-soft);color:#a13333;border-color:#f0c9c9':'background:#e7f4ee;color:#217a56;border-color:#bfe3ce'}">${t.balance>0?"Due "+money(t.balance):"Paid "+money(t.paid)}</span>`;})()}<span>ID</span><span class="credchip">${esc(id)}</span>
           <span>Pass</span><span class="credchip pw" id="${pid}" data-pw="${esc(s.pass)}">••••••</span>
           <button class="linkbtn" onclick="togglePw('${pid}')">show</button>
           <button class="linkbtn" onclick="copyLogin('${id}')">copy login</button>
@@ -1179,7 +1233,8 @@ function resetPass(id){ const np=genPass(8); DB.STUDENTS[id].pass=np; markDirty(
 function editStudent(id){
   const isNew=!id;
   const bNames=(DB.BATCHES||[]).map(b=>b.name);
-  const s=isNew?{name:"",batch:bNames[0]||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8),recordingAccess:true}:clone(DB.STUDENTS[id]);
+  const s=isNew?{name:"",batch:bNames[0]||"",email:"",joined:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:genPass(8),recordingAccess:true,payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}}:clone(DB.STUDENTS[id]);
+  const pay=s.payment||{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""};
   const sid=isNew?genId():id;
   const batchField= bNames.length
     ? {k:"batch",label:"Batch",type:"pick",val:(bNames.includes(s.batch)||!s.batch)?(s.batch||bNames[0]):s.batch,options:(bNames.includes(s.batch)||!s.batch)?bNames:[s.batch,...bNames],help:"Sets which batch Meet link this student joins. Manage in Batches."}
@@ -1193,6 +1248,13 @@ function editStudent(id){
     {k:"email",label:"Email",type:"email",val:s.email},
     {k:"joined",label:"Joined on",type:"text",val:s.joined},
     {k:"progress",label:"Course progress",type:"range",val:s.progress||0},
+    {k:"__sec_pay",label:"— Payment & receipt —",type:"section"},
+    {k:"courseFee",label:"Course fee ("+DB.INSTITUTE.currency+")",type:"number",val:pay.courseFee,help:"The recordings add-on ("+DB.INSTITUTE.currency+DB.INSTITUTE.recordingFee+") is added automatically when Recordings access is ON."},
+    {k:"recordingFee",label:"Recordings add-on fee ("+DB.INSTITUTE.currency+")",type:"number",val:pay.recordingFee},
+    {k:"paid",label:"Amount paid ("+DB.INSTITUTE.currency+")",type:"number",val:pay.paid},
+    {k:"mode",label:"Payment mode",type:"pick",val:pay.mode||"Cash",options:["Cash","UPI","Card","Bank Transfer","Other"]},
+    {k:"payDate",label:"Payment date",type:"text",val:pay.date,ph:"15 Jul 2026"},
+    {k:"__sec_cert",label:"— Certificate —",type:"section"},
     {k:"certReady",label:"Certificate ready to view",type:"checkbox",val:s.certReady},
     {k:"certId",label:"Certificate ID",type:"text",mono:true,val:s.certId},
     {k:"certDate",label:"Certificate date",type:"text",val:s.certDate,ph:"15 Mar 2026"}
@@ -1202,7 +1264,8 @@ function editStudent(id){
     if(isNew && DB.STUDENTS[newId]) return toast("That ID already exists");
     if(!v.pass.trim()) return toast("Password required");
     DB.STUDENTS[newId]={name:v.name.trim(),batch:v.batch.trim(),email:v.email.trim(),joined:v.joined.trim(),
-      progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim(),recordingAccess:!!v.recordingAccess};
+      progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim(),recordingAccess:!!v.recordingAccess,
+      payment:{courseFee:+v.courseFee||0,recordingFee:+v.recordingFee||0,paid:+v.paid||0,mode:(v.mode||"").trim(),date:(v.payDate||"").trim()}};
     markDirty(); closeAModal(); aRender("students"); toast("Student saved");
   });
 }
@@ -1419,6 +1482,14 @@ function secSettings(){
       <div class="help">Shown as a button on the student Syllabus tab.</div></div>
     <div class="field"><label>Portal URL (for certificate QR &amp; shared logins)</label><input class="mono" value="${esc(t.verifyBase)}" oninput="DB.INSTITUTE.verifyBase=this.value;markDirty()" placeholder="https://you.github.io/CEC"></div>
   </div>
+  <div class="card"><div class="sec-head"><h3>Fees (defaults for new students)</h3></div>
+    <div class="grid2">
+      <div class="field"><label>Course fee (${esc(t.currency||'₹')})</label><input type="number" class="mono" value="${esc(t.courseFee!=null?t.courseFee:3000)}" oninput="DB.INSTITUTE.courseFee=+this.value||0;markDirty()"></div>
+      <div class="field"><label>Recordings add-on fee (${esc(t.currency||'₹')})</label><input type="number" class="mono" value="${esc(t.recordingFee!=null?t.recordingFee:500)}" oninput="DB.INSTITUTE.recordingFee=+this.value||0;markDirty()"></div>
+    </div>
+    <div class="field"><label>Currency symbol</label><input class="mono" style="max-width:120px" value="${esc(t.currency||'₹')}" oninput="DB.INSTITUTE.currency=this.value;markDirty()"></div>
+    <div class="help">These pre-fill each new student's payment. You can still change fees per student when adding them.</div>
+  </div>
   <div class="card"><div class="sec-head"><h3>Recordings folder (auto-sync)</h3></div>
     <div class="warn-banner" style="margin-bottom:14px"><span>🎥</span><div>Set both fields to auto-load videos from one Drive folder — just drop new videos in and they appear for students. Leave blank to add recordings manually in the Recordings tab.</div></div>
     <div class="field"><label>Google Drive folder link</label><input class="mono" value="${esc(t.recFolderId||'')}" oninput="DB.INSTITUTE.recFolderId=this.value;markDirty()" placeholder="https://drive.google.com/drive/folders/...">
@@ -1452,6 +1523,7 @@ function openForm(title,fields,onSave){
 }
 function fieldHTML(f){
   const id="f_"+f.k;
+  if(f.type==="section") return `<div style="margin:18px 0 4px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">${esc(f.label.replace(/—/g,"").trim())}</div>`;
   if(f.type==="checkbox") return `<div class="toggle-row"><div class="tl">${f.label}</div><label class="switch"><input type="checkbox" id="${id}" ${f.val?"checked":""}><span class="slider"></span></label></div>`;
   if(f.type==="range") return `<div class="field"><label>${f.label}</label><div class="rangewrap"><input type="range" min="0" max="100" id="${id}" value="${f.val||0}" oninput="document.getElementById('${id}_v').textContent=this.value+'%'"><span class="rv" id="${id}_v">${f.val||0}%</span></div></div>`;
   if(f.type==="textarea") return `<div class="field"><label>${f.label}</label><textarea id="${id}">${esc(f.val)}</textarea>${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
@@ -1461,7 +1533,7 @@ function fieldHTML(f){
   return `<div class="field"><label>${f.label}</label><input type="${f.type||"text"}" id="${id}" value="${esc(f.val)}" ${f.disabled?"disabled":""} ${f.mono?'class="mono"':""} placeholder="${f.ph||""}">${f.help?`<div class="help">${f.help}</div>`:""}</div>`;
 }
 function submitForm(){ const o=FORM_SAVE,v={};
-  o.fields.forEach(f=>{ const el=document.getElementById("f_"+f.k); v[f.k]=f.type==="checkbox"?el.checked:el.value; }); o.onSave(v); }
+  o.fields.forEach(f=>{ if(f.type==="section")return; const el=document.getElementById("f_"+f.k); v[f.k]=f.type==="checkbox"?el.checked:el.value; }); o.onSave(v); }
 function closeAModal(){ document.getElementById("aModal").classList.remove("show"); }
 function confirmDel(msg,onYes){
   document.getElementById("aModalTitle").textContent="Confirm";
