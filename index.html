@@ -151,6 +151,10 @@ a{color:inherit;text-decoration:none}
 .rc-note{font-size:10.5px;color:#a2abbf;max-width:150px}
 .rc-sig{text-align:center;min-width:150px}.rc-sig .line{border-top:1px solid #b9c0d0;margin-bottom:5px}.rc-sig .role{font-size:11px;color:#6b7590}
 @media (max-width:560px){.receipt{padding:20px}}
+.recadm{margin-top:4px}
+.recadm-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;background:var(--surface-2);font-size:13px;color:var(--ink)}
+.recadm-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recadm-item a{color:var(--muted);text-decoration:none;font-weight:700;padding:2px 6px}
 .section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
 .ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}.ann:last-child{border-bottom:none;padding-bottom:0}
 .ann-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
@@ -716,6 +720,7 @@ function meetFor(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); retur
 function batchTime(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return (b&&b.time)?String(b.time).trim():""; }
 function classTime(entry){ const bt=batchTime(CURRENT&&CURRENT.batch); const t=((entry&&entry.time)||"").trim();
   if(bt && (!t || t.indexOf("/")>-1)) return bt; return t||bt; }
+function mySchedule(){ const b=(CURRENT&&CURRENT.batch)||""; return (DB.SCHEDULE||[]).filter(s=>!s.batch||s.batch==="all"||s.batch===b); }
 function normUrl(u){ u=(u||"").trim(); if(!u||u==="#")return u; if(!/^https?:\/\//i.test(u)&&!/^mailto:/i.test(u)) u="https://"+u.replace(/^\/+/,""); return u; }
 function waLink(text){ const num=(DB.INSTITUTE.whatsapp||"").replace(/[^0-9]/g,""); return "https://wa.me/"+num+"?text="+encodeURIComponent(text); }
 function driveId(s){ s=(s||"").trim(); let m=s.match(/\/d\/([^/]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
@@ -923,7 +928,7 @@ function sBuildPanels(){
   if(CURRENT.recordingAccess!==false) fillRecordings();
 }
 function panelHome(){
-  const next=DB.SCHEDULE[0]||{title:"—",day:"",time:""}, W=DB.WELCOME, I=DB.INSTITUTE;
+  const next=mySchedule()[0]||{title:"—",day:"",time:""}, W=DB.WELCOME, I=DB.INSTITUTE;
   return `<section class="tab-panel show" data-tab="home">
     <div class="topbar"><div><h1>Hi, ${esc((CURRENT.name||"").split(" ")[0])} 👋</h1>
       <div class="sub">${esc(I.course)} · ${esc(CURRENT.batch||"")}</div></div>
@@ -1035,9 +1040,10 @@ function panelResources(){
   </section>`;
 }
 function panelSchedule(){
+  const list=mySchedule();
   return `<section class="tab-panel" data-tab="schedule">
     <div class="topbar"><div><h1>Schedule</h1><div class="sub">Weekly live classes · Google Meet</div></div></div>
-    <div class="card">${DB.SCHEDULE.map(s=>`<div class="sched-row">
+    <div class="card">${list.map(s=>`<div class="sched-row">
       <div class="sched-day"><div class="d">${esc(s.day)}</div><div class="dd">${esc(s.dd||"Live")}</div></div>
       <div class="sched-info"><h4>${esc(s.title)}</h4><p>${esc(DB.INSTITUTE.course)}</p></div>
       <div class="sched-time">${esc(classTime(s))}</div>
@@ -1157,6 +1163,7 @@ function aRender(sec){
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
   const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,reviews:secReviews,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
+  if(sec==="recordings") adminFillRecs();
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
@@ -1277,19 +1284,42 @@ function delStudent(id){ confirmDel("Delete "+id+"? This removes their login.",(
 
 /* RECORDINGS */
 function secRecordings(){
-  const total=DB.RECORDINGS.reduce((a,g)=>a+g.items.length,0);
-  const body=DB.RECORDINGS.map((g,gi)=>`<div class="card"><div class="sec-head"><h3>${esc(g.module)} <span style="font-size:12px;color:var(--muted);font-weight:400">· ${g.items.length}</span></h3>
-    <div style="display:flex;gap:7px"><button class="btn btn-ghost btn-sm" onclick="editVideo(${gi},null)">+ Video</button>
-      <button class="iconbtn del" onclick="delModRec(${gi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>
-    ${g.items.map((v,vi)=>{const fid=driveId(v.fileId);const dup=fid && DB.RECORDINGS.reduce((a,gg)=>a+gg.items.filter(x=>driveId(x.fileId)===fid).length,0)>1;
-      return `<div class="row"><div class="rico" style="background:var(--ink)"><svg viewBox="0 0 24 24" fill="var(--accent)" width="18"><path d="M8 5v14l11-7z"/></svg></div>
-      <div class="rmain"><h4>${esc(v.title)} ${v.fileId?'<span class="tagx ok">linked</span>':'<span class="tagx no">no link</span>'} ${dup?'<span class="tagx no" style="background:var(--bad-soft);color:#a13333">⚠ duplicate link</span>':''}</h4><p>${esc(v.date)} · ${esc(v.dur)}</p>
-        ${fid?`<div class="credline"><span class="credchip" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(fid)}</span><a class="linkbtn" href="https://drive.google.com/file/d/${esc(fid)}/view" target="_blank" rel="noopener">test ↗</a></div>`:""}</div>
-      <div class="ract"><button class="iconbtn" onclick="editVideo(${gi},${vi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-        <button class="iconbtn del" onclick="delVideo(${gi},${vi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;}).join("")||'<div class="empty" style="padding:16px">No videos yet.</div>'}</div>`).join("")||'<div class="empty">No recordings yet.</div>';
-  return `<div class="page-head"><h1>Recordings</h1><p>${total} video${total===1?"":"s"}. Paste Google Drive file IDs to enable playback.</p></div>
-  ${recFolderMode()?`<div class="warn-banner" style="margin-bottom:16px"><span>🔄</span><div><b>Auto-sync is ON.</b> Students see videos straight from your Drive folder — just drop new videos in the folder and they appear automatically. The manual list below is ignored while auto-sync is on. (Manage the folder in <b>Settings</b>.)</div></div>`:""}
-  <div class="sec-head"><h3></h3><button class="btn btn-primary btn-sm" onclick="addModRec()">+ Add module</button></div>${body}`;
+  const key=(DB.INSTITUTE.driveApiKey||"").trim();
+  const batchCards=DB.BATCHES.map((b,i)=>{
+    const folder=(b.recFolder||"").trim();
+    const count=Object.values(DB.STUDENTS).filter(s=>s.batch===b.name).length;
+    return `<div class="card"><div class="sec-head"><h3>${esc(b.name)} <span style="font-size:12px;color:var(--muted);font-weight:400">· ${count} student${count===1?"":"s"}</span></h3>
+      <div style="display:flex;gap:7px">
+        ${folder?`<a class="btn btn-ghost btn-sm" href="${esc(normUrl(folder))}" target="_blank" rel="noopener">Open in Drive ↗</a>`:""}
+        <button class="btn btn-primary btn-sm" onclick="editBatch(${i})">${folder?"Change folder":"Set folder"}</button>
+      </div></div>
+      ${folder
+        ? `<div id="recadm_${i}" class="recadm"><div style="color:var(--muted);font-size:13px;padding:6px 0">Loading videos…</div></div>`
+        : `<div class="empty" style="padding:16px">No recordings folder for this batch yet. Tap <b>Set folder</b>, paste this batch's Drive folder link, then drop videos into that folder — they'll appear here and for the batch's students.</div>`}
+    </div>`;
+  }).join("");
+  return `<div class="page-head"><h1>Recordings</h1><p>Recordings are organised by batch. Drop a video into a batch's Drive folder and it appears here — and only for that batch's students.</p></div>
+    ${!key?`<div class="warn-banner" style="margin-bottom:16px"><span>⚠️</span><div>Add your <b>Google API key</b> in <b>Settings</b> first — without it, folder videos can't load for you or students.</div></div>`:""}
+    ${batchCards||'<div class="empty">No batches yet. Add batches in the Batches tab first, then set a recordings folder for each.</div>'}
+    <div class="card"><div class="sec-head"><h3>Common folder (fallback)</h3><button class="btn btn-ghost btn-sm" onclick="aRender('settings')">Edit in Settings</button></div>
+      <p style="font-size:13px;color:var(--muted)">${DB.INSTITUTE.recFolderId?"Used for any batch without its own folder.":"Not set. Batches without their own folder will show no recordings."}</p></div>`;
+}
+async function adminFillRecs(){
+  const key=(DB.INSTITUTE.driveApiKey||"").trim(); if(!key) return;
+  for(let i=0;i<DB.BATCHES.length;i++){ const b=DB.BATCHES[i]; const folder=(b.recFolder||"").trim(); if(!folder) continue;
+    const el=document.getElementById("recadm_"+i); if(!el) continue;
+    try{
+      const fid=driveFolderId(folder);
+      const url="https://www.googleapis.com/drive/v3/files?q='"+encodeURIComponent(fid)+"'+in+parents+and+trashed=false&key="+encodeURIComponent(key)+"&fields=files(id,name,mimeType)&orderBy=name&pageSize=500";
+      const res=await fetch(url); const data=await res.json();
+      if(data.error){ el.innerHTML='<div style="color:#a13333;font-size:12.5px;padding:6px 0">'+esc((data.error&&data.error.message)||"Couldn't load folder")+'</div>'; continue; }
+      const files=(data.files||[]).filter(f=>(f.mimeType||'').indexOf('folder')===-1);
+      el.innerHTML = files.length
+        ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${files.length} video${files.length===1?"":"s"} in this folder</div>`+
+          files.map(f=>`<div class="recadm-item"><svg viewBox="0 0 24 24" fill="var(--accent)" width="15"><path d="M8 5v14l11-7z"/></svg><span>${esc(f.name)}</span><a href="https://drive.google.com/file/d/${esc(f.id)}/view" target="_blank" rel="noopener">↗</a></div>`).join("")
+        : '<div style="font-size:12.5px;color:var(--muted);padding:6px 0">Folder is empty — drop videos into it in Drive and they\'ll show here.</div>';
+    }catch(e){ el.innerHTML='<div style="color:#a13333;font-size:12.5px;padding:6px 0">Couldn\'t load this folder. Check it\'s shared “Anyone with the link”.</div>'; }
+  }
 }
 function addModRec(){ openForm("New module",[{k:"module",label:"Module name",type:"text",val:"",ph:"Tableau"}],v=>{
   if(!v.module.trim())return toast("Enter a name"); DB.RECORDINGS.push({module:v.module.trim(),items:[]}); markDirty(); closeAModal(); aRender("recordings"); toast("Module added"); }); }
@@ -1348,20 +1378,33 @@ function editReview(i){ const isNew=i===null,r=isNew?{name:"",role:"",rating:5,t
 function delReview(i){ confirmDel("Delete this review?",()=>{ DB.REVIEWS.splice(i,1); markDirty(); aRender("reviews"); }); }
 
 /* SCHEDULE */
-function secSched(){
-  const rows=DB.SCHEDULE.map((s,i)=>`<div class="row"><div class="rico" style="background:var(--accent-2)">${esc(s.day)}</div>
-    <div class="rmain"><h4>${esc(s.title)}</h4><p>${esc(s.time)} · ${s.meet?'<span class="tagx ok">Meet on</span>':'<span class="tagx no">No link</span>'}</p></div>
+function schedRows(){
+  const fb=(document.getElementById("schFilter")||{}).value||"";
+  let items=DB.SCHEDULE.map((s,i)=>({s,i}));
+  if(fb) items=items.filter(o=>(!o.s.batch||o.s.batch==="all")||o.s.batch===fb);
+  return items.map(({s,i})=>{const blabel=(!s.batch||s.batch==="all")?"All batches":s.batch;
+    return `<div class="row"><div class="rico" style="background:var(--accent-2)">${esc(s.day)}</div>
+    <div class="rmain"><h4>${esc(s.title)} <span class="tagx ${(!s.batch||s.batch==='all')?'no':'ok'}">${esc(blabel)}</span></h4><p>${esc(s.time||"batch time")} · ${s.meet?'<span class="tagx ok">Meet on</span>':'<span class="tagx no">No link</span>'}</p></div>
     <div class="ract"><button class="iconbtn" onclick="editSched(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-      <button class="iconbtn del" onclick="delSched(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No classes scheduled.</div>';
-  return `<div class="page-head"><h1>Schedule</h1><p>Weekly live classes. Join buttons use the Meet link in Settings.</p></div>
-  <div class="sec-head"><h3>Classes</h3><button class="btn btn-primary btn-sm" onclick="editSched(null)">+ Add class</button></div>${rows}`;
+      <button class="iconbtn del" onclick="delSched(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;}).join("")||'<div class="empty">No classes for this batch.</div>';
 }
-function editSched(i){ const isNew=i===null,s=isNew?{day:"",dd:"Live",title:"",time:"",meet:true}:clone(DB.SCHEDULE[i]);
+function refreshSched(){ const el=document.getElementById("schList"); if(el)el.innerHTML=schedRows(); }
+function secSched(){
+  const opt=`<option value="">All batches</option>`+DB.BATCHES.map(b=>`<option value="${esc(b.name)}">${esc(b.name)}</option>`).join("");
+  return `<div class="page-head"><h1>Schedule</h1><p>Each class can be for one batch or shared with all. Students see only their batch's classes.</p></div>
+  <div class="sec-head"><h3>Classes</h3><button class="btn btn-primary btn-sm" onclick="editSched(null)">+ Add class</button></div>
+  <div class="card" style="padding:14px;margin-bottom:14px"><div class="filterbar"><select id="schFilter" onchange="refreshSched()">${opt}</select></div></div>
+  <div id="schList">${schedRows()}</div>`;
+}
+function editSched(i){ const isNew=i===null,s=isNew?{day:"",dd:"Live",title:"",time:"",meet:true,batch:""}:clone(DB.SCHEDULE[i]);
+  const bOpts=["All batches",...DB.BATCHES.map(b=>b.name)];
+  const curBatch=(!s.batch||s.batch==="all")?"All batches":s.batch;
   openForm(isNew?"Add class":"Edit class",[
+    {k:"batch",label:"For which batch?",type:"pick",val:bOpts.includes(curBatch)?curBatch:"All batches",options:bOpts,help:"Pick a batch, or “All batches” to show it to everyone."},
     {k:"day",label:"Day",type:"text",val:s.day,ph:"Mon"},{k:"title",label:"Topic",type:"text",val:s.title},
-    {k:"time",label:"Time",type:"text",val:s.time,ph:"7:00 PM"},{k:"meet",label:"Show Join (Meet) button",type:"checkbox",val:s.meet}
+    {k:"time",label:"Time (leave blank to use the batch's time)",type:"text",val:s.time,ph:"7:00 PM"},{k:"meet",label:"Show Join (Meet) button",type:"checkbox",val:s.meet}
   ],v=>{ if(!v.day.trim()||!v.title.trim())return toast("Day and topic required");
-    const rec={day:v.day.trim(),dd:"Live",title:v.title.trim(),time:v.time.trim(),meet:!!v.meet};
+    const rec={day:v.day.trim(),dd:"Live",title:v.title.trim(),time:v.time.trim(),meet:!!v.meet,batch:(v.batch==="All batches"?"":v.batch)};
     if(isNew)DB.SCHEDULE.push(rec); else DB.SCHEDULE[i]=rec;
     markDirty(); closeAModal(); aRender("schedule"); toast("Saved"); }); }
 function delSched(i){ confirmDel("Delete this class?",()=>{ DB.SCHEDULE.splice(i,1); markDirty(); aRender("schedule"); }); }
