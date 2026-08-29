@@ -202,6 +202,16 @@ a{color:inherit;text-decoration:none}
 .ld-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
 .ld-ci{font-size:28px;margin-bottom:10px}.ld-card h4{font-size:16px;color:var(--ink);margin-bottom:6px}.ld-card p{font-size:13.5px;color:var(--muted);line-height:1.55}
 .ld-times{margin-top:22px;text-align:center;font-size:14.5px;color:var(--ink-2);background:var(--accent-soft);border:1px solid #f0dcae;border-radius:12px;padding:14px}
+.ld-modules{display:grid;gap:12px;max-width:720px;margin:0 auto}
+.ld-module{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.ld-mnum{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-family:'Space Grotesk';font-size:15px;flex:none}
+.ld-minfo h4{font-size:16px;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ld-mtag{font-size:11px;font-weight:700;color:#8a6410;background:var(--accent-soft);border:1px solid #f0dcae;padding:2px 9px;border-radius:20px}
+.ld-minfo p{font-size:13.5px;color:var(--muted);line-height:1.5}
+.ld-syl{text-align:center;margin:24px 0 16px}
+.ld-pdf{max-width:720px;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,32,61,.1)}
+.ld-pdf iframe{width:100%;height:520px;border:0;display:block}
+@media (max-width:760px){.ld-pdf iframe{height:400px}}
 .ld-reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .ld-review{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
 .ld-stars{color:var(--accent);font-size:14px;letter-spacing:1px;margin-bottom:8px}
@@ -1870,7 +1880,23 @@ function renderLanding(){
   <section class="ld-sec"><h2>What you'll master</h2>
     <div class="ld-skills">${skills.map(s=>`<div class="ld-skill">${esc(s)}</div>`).join("")}</div></section>
 
-  <section class="ld-sec ld-alt"><h2>Course at a glance</h2>
+  <section class="ld-sec ld-alt"><h2>Course structure</h2>
+    <div class="ld-modules">
+      ${[
+        {t:"Advanced Excel",c:"Basic → Advanced",d:"Formulas, Pivot Tables, dashboards, data cleaning & automation."},
+        {t:"SQL",c:"10 classes",d:"SELECT, filtering, JOINs, GROUP BY, subqueries & real database practice."},
+        {t:"Power BI",c:"6 classes",d:"Power Query, data modelling, DAX & interactive dashboards."},
+        {t:"Tableau",c:"3 classes",d:"Charts, maps, filters & visual storytelling."},
+        {t:"AI Tools & Microsoft Copilot",c:"Included",d:"Use Claude & Copilot for faster analysis, instant formulas, SQL & reports."}
+      ].map((m,i)=>`<div class="ld-module"><div class="ld-mnum">${i+1}</div>
+        <div class="ld-minfo"><h4>${esc(m.t)} <span class="ld-mtag">${esc(m.c)}</span></h4><p>${esc(m.d)}</p></div></div>`).join("")}
+    </div>
+    ${(()=>{const syl=normUrl(I.brochureUrl||"https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view");const sid=driveId(I.brochureUrl||"https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view");
+      return `<div class="ld-syl"><a class="ld-btn" href="${esc(syl)}" target="_blank" rel="noopener">📄 View / download full syllabus</a></div>
+      <div class="ld-pdf"><iframe src="https://drive.google.com/file/d/${esc(sid)}/preview" allow="autoplay" loading="lazy"></iframe></div>`;})()}
+  </section>
+
+  <section class="ld-sec"><h2>What you'll gain</h2>
     <div class="ld-cards">
       <div class="ld-card"><div class="ld-ci">🎓</div><h4>Certificate</h4><p>Get an industry-recognised, verifiable certificate on completion.</p></div>
       <div class="ld-card"><div class="ld-ci">🎥</div><h4>Lifetime recordings</h4><p>Miss a class? Watch anytime. Recordings stay with you for life.</p></div>
