@@ -255,6 +255,22 @@ a{color:inherit;text-decoration:none}
 .ld-whocard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
 .ld-whocard b{font-size:15.5px;color:var(--ink);display:block;margin-bottom:6px}.ld-whocard p{font-size:13.5px;color:var(--muted);line-height:1.55}
 @media (max-width:760px){.ld-batches{grid-template-columns:1fr}.ld-who{grid-template-columns:1fr}.ld-navlink{display:none}.ld-stat{min-width:70px;padding:12px 16px}.ld-stat b{font-size:23px}}
+.ld-btn-lg{font-size:16.5px;padding:17px 32px}
+.ld-cta2{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.ld-btn2-dark{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.ld-why{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:820px;margin:0 auto}
+.ld-whyc{background:linear-gradient(160deg,var(--ink),var(--ink-2));color:#fff;border-radius:16px;padding:22px 16px;text-align:center}
+.ld-whyc b{display:block;font-family:'Space Grotesk';font-size:26px;color:var(--accent);line-height:1.05;margin-bottom:6px}
+.ld-whyc span{font-size:12px;color:#c2cbe0;line-height:1.4}
+.ld-whytext{max-width:680px;margin:26px auto 0;text-align:center;font-size:15px;color:var(--ink-2);line-height:1.7}
+.ld-mod{border-left:4px solid var(--mc,var(--accent))}
+.ld-numbers{background:linear-gradient(150deg,#141c34,#1e2a4d 70%,#2a3358);color:#fff;padding:56px 22px;text-align:center}
+.ld-nhead{max-width:720px;margin:0 auto 34px}
+.ld-nhead h2{font-family:'Space Grotesk';font-size:28px;color:#fff;margin-top:6px}
+.ld-ngrid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;max-width:920px;margin:0 auto}
+.ld-nstat b{display:block;font-family:'Space Grotesk';font-size:34px;color:var(--accent);line-height:1}
+.ld-nstat span{font-size:12px;color:#aeb8d2;margin-top:6px;display:block;line-height:1.35}
+@media (max-width:760px){.ld-why{grid-template-columns:repeat(2,1fr)}.ld-ngrid{grid-template-columns:repeat(2,1fr);gap:22px 16px}.ld-nstat b{font-size:30px}.ld-numbers{padding:44px 20px}.ld-nhead h2{font-size:23px}}
 @media (max-width:760px){.ld-hero h1{font-size:32px}.ld-cards{grid-template-columns:1fr}.ld-reviews{grid-template-columns:1fr}.ld-sec h2{font-size:23px}}
 .section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
 .ann{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2)}.ann:last-child{border-bottom:none;padding-bottom:0}
@@ -429,6 +445,7 @@ a{color:inherit;text-decoration:none}
           <button onclick="showAdmin()">Staff login</button>
         </div>
         <div style="margin-top:14px;text-align:center"><button class="btn btn-ghost btn-block" onclick="showRegister()">New student? Register here →</button></div>
+        <div style="margin-top:8px;text-align:center"><button class="btn btn-ghost btn-block" onclick="renderLanding()" style="color:var(--accent-2);font-weight:600">✨ Explore our Business Analyst course →</button></div>
       </div>
       <div id="adminView" style="display:none">
         <div class="auth-msg" id="adminMsg"></div>
@@ -1588,11 +1605,22 @@ function delQ(ti,qi){ confirmDel("Delete this question?",()=>{ DB.PRACTICE[ti].q
 
 /* ENQUIRIES (leads) */
 function secEnquiries(){
+  const base=(DB.INSTITUTE.verifyBase||(location.origin+location.pathname)).replace(/\/+$/,"");
+  const link=base+"/?join";
   return `<div class="page-head"><h1>Enquiries</h1><p>People who clicked “I'm interested” on your enquiry page. Newest first.</p></div>
+  <div class="card" style="margin-bottom:14px"><div class="sec-head"><h3>Your enquiry / admission page</h3></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Share this link on WhatsApp, Instagram bio, status, etc. Anyone who opens it sees your course & can enquire.</p>
+    <div class="credline" style="margin-bottom:12px"><span class="credchip mono" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(link)}</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="copyEnqLink('${esc(link)}')">📋 Copy link</button>
+      <a class="btn btn-ghost btn-sm" href="${esc(link)}" target="_blank" rel="noopener">↗ Open page</a>
+      <a class="btn btn-ghost btn-sm" href="${esc(waLink('Check out our Business Analyst course & enquire here: '+link))}" target="_blank" rel="noopener">Share on WhatsApp</a>
+    </div></div>
   ${!CLOUD?'<div class="warn-banner"><span>⚠️</span><div>Enquiries need cloud sync (Firebase) to be collected.</div></div>':''}
   <div class="sec-head"><h3>Leads</h3><button class="btn btn-ghost btn-sm" onclick="fillEnquiries()">↻ Refresh</button></div>
   <div id="enqList"><div class="empty">Loading…</div></div>`;
 }
+function copyEnqLink(link){ (navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(()=>toast("Link copied")).catch(()=>{ prompt("Copy this link:",link); }); }
 function fillEnquiries(){
   if(!CLOUD||!fdb){ const el=document.getElementById("enqList"); if(el)el.innerHTML='<div class="empty">Cloud not connected.</div>'; return; }
   fdb.ref("enquiries").on("value",snap=>{
@@ -1886,6 +1914,7 @@ function landingBatchOptions(){
   return opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("");
 }
 const LD_BATCHES=["Morning · 7:30 – 8:30 AM","Mid-Morning · 9:30 – 10:30 AM","Evening · 7:00 – 8:00 PM"];
+const MOD_COLORS=["#217a56","#1b6e4c","#2a5db0","#c58a26","#0e7c86","#8a3bb0"];
 const LD_MODULES=[
   {n:"01",phase:"Foundation Phase",title:"Basic MS Excel",days:"Days 1–10",count:"10 days",topics:["Introduction to MS Excel","Data Entry & Formatting","Basic Formulas & Functions","Logical & Text Functions","Sorting, Filtering & Find","Date & Time Functions","Basic Charts & Graphs","Data Validation & Protection","Conditional Formatting","Mini Dashboard & Revision"]},
   {n:"02",phase:"Power User Phase",title:"Advanced MS Excel",days:"Days 11–20",count:"10 days",topics:["VLOOKUP & HLOOKUP","INDEX, MATCH & XLOOKUP","Pivot Tables — Part 1","Pivot Tables — Part 2 & Charts","SUMIF, COUNTIF & Stats","Advanced Charts & KPI Dashboards","Data Cleaning & Power Query","Named Ranges & What-If Analysis","Macros & Introduction to VBA","Capstone Project & Assessment"]},
@@ -1901,88 +1930,108 @@ function brochureLinks(){
   return {view:normUrl(raw), dl:"https://drive.google.com/uc?export=download&id="+id};
 }
 function renderLanding(){
-  const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]).slice(0,6), cur=I.currency||"₹";
+  const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]).slice(0,6), cur=I.currency||"\u20b9";
   const skills=(C.skills&&C.skills.length?C.skills:["Advanced Excel","SQL","Power BI","Tableau","AI Tools"]);
   const feeMain=cur+Number(I.courseFee||3000).toLocaleString("en-IN");
   const bro=brochureLinks();
-  const waBtn=`<a class="ld-wa" href="${esc(waLink('Hi, I want details about the '+I.course+' course.'))}" target="_blank" rel="noopener">💬 WhatsApp us</a>`;
+  const waBtn=`<a class="ld-wa" href="${esc(waLink('Hi, I want details about the '+I.course+' course.'))}" target="_blank" rel="noopener">\ud83d\udcac WhatsApp us</a>`;
   const L=document.getElementById("landing");
   L.innerHTML=`
   <header class="ld-nav"><div class="ld-brand"><div class="logo-mark"><span>C</span></div><b>${esc(I.name)}</b></div>
-    <div class="ld-navbtns"><a class="ld-navlink" href="${esc(bro.dl)}" target="_blank" rel="noopener">⬇ Brochure</a><button class="ld-login" onclick="hideLanding()">Login →</button></div></header>
+    <div class="ld-navbtns"><a class="ld-navlink" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Brochure</a><button class="ld-login" onclick="hideLanding()">Login \u2192</button></div></header>
 
   <section class="ld-hero">
     <div class="ld-hero-in">
-      <div class="ld-badge">★ ISO Certified · Since 1999 · Tumkur</div>
-      <div class="ld-kicker">Professional Programme</div>
-      <h1>Business <span>Analyst</span> Programme</h1>
-      <p class="ld-sub">Excel (Basic to Advanced) · SQL · Power BI · Tableau · AI Tools<br>A complete <b>39-day</b> career transformation — 100% live online.</p>
-      <div class="ld-cta"><button class="ld-btn" onclick="enqScroll()">Yes, I'm interested →</button><a class="ld-btn2" href="${esc(bro.dl)}" target="_blank" rel="noopener">⬇ Download brochure</a></div>
+      <div class="ld-badge">\u2605 2\u00d7 ISO Certified \u00b7 Since 1999 \u00b7 Tumkur</div>
+      <div class="ld-kicker">Welcome to ${esc(I.name)}</div>
+      <h1>Become a <span>Business Analyst</span></h1>
+      <p class="ld-sub">Learn Excel, SQL, Power BI, Tableau & AI Tools in a complete <b>39-day</b> live programme \u2014 and step into one of India's most in-demand careers.</p>
+      <div class="ld-cta"><button class="ld-btn ld-btn-lg" onclick="enqScroll()">Want to become a Business Analyst? \u2192</button></div>
+      <div class="ld-cta2"><a class="ld-btn2" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Download brochure</a>${waBtn}</div>
       <div class="ld-stats">
         <div class="ld-stat"><b>39</b><span>Days</span></div>
         <div class="ld-stat"><b>6</b><span>Modules</span></div>
-        <div class="ld-stat"><b>25+</b><span>Years</span></div>
-        <div class="ld-stat"><b>ISO</b><span>Certified</span></div>
+        <div class="ld-stat"><b>2\u00d7</b><span>ISO Certified</span></div>
+        <div class="ld-stat"><b>100%</b><span>Live Online</span></div>
       </div>
     </div>
   </section>
 
-  <section class="ld-sec"><div class="ld-head"><h2>What you'll master</h2><p>Five industry tools every Business Analyst needs — taught hands-on.</p></div>
-    <div class="ld-skills">${skills.map(s=>`<div class="ld-skill">${esc(s)}</div>`).join("")}</div></section>
+  <section class="ld-sec"><div class="ld-head"><h2>Why become a Business Analyst?</h2><p>It's one of the most in-demand and highest-paying career paths in India today.</p></div>
+    <div class="ld-why">
+      <div class="ld-whyc"><b>\u20b96\u201310 LPA</b><span>Average salary in India</span></div>
+      <div class="ld-whyc"><b>#1</b><span>Most in-demand data skill</span></div>
+      <div class="ld-whyc"><b>1000s</b><span>New openings every month</span></div>
+      <div class="ld-whyc"><b>Every industry</b><span>IT \u00b7 Finance \u00b7 E-commerce \u00b7 Healthcare</span></div>
+    </div>
+    <p class="ld-whytext">Every company today runs on data \u2014 and Business Analysts turn that data into decisions. That's why roles like <b>Business Analyst, Data Analyst, MIS Executive and BI Developer</b> are hiring faster than ever. Best part? <b>You don't need a coding or IT background to start.</b></p>
+  </section>
 
-  <section class="ld-sec ld-alt"><div class="ld-head"><h2>Full course structure</h2><p>Tap any module to see the day-by-day plan. 39 days · 6 modules.</p></div>
+  <section class="ld-sec ld-alt"><div class="ld-head"><h2>The Programme</h2><p>Six focused modules \u00b7 39 days \u00b7 from absolute basics to job-ready. Tap any module for the full day-by-day plan.</p></div>
     <div class="ld-modules">
-      ${LD_MODULES.map(m=>`<details class="ld-mod"><summary>
-        <div class="ld-mnum">${esc(m.n)}</div>
-        <div class="ld-minfo"><div class="ld-mphase">Module ${esc(m.n)} · ${esc(m.phase)}</div><h4>${esc(m.title)}</h4></div>
+      ${LD_MODULES.map((m,mi)=>`<details class="ld-mod" style="--mc:${MOD_COLORS[mi]}"><summary>
+        <div class="ld-mnum" style="background:${MOD_COLORS[mi]}">${esc(m.n)}</div>
+        <div class="ld-minfo"><div class="ld-mphase">Module ${esc(m.n)} \u00b7 ${esc(m.phase)}</div><h4>${esc(m.title)}</h4></div>
         <div class="ld-mdays">${esc(m.count)}</div>
         <svg class="ld-mchev" viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </summary>
-        <ul class="ld-mtopics">${m.topics.map((t,ti)=>`<li><span class="ld-tday">${ti+1}</span>${esc(t)}</li>`).join("")}</ul>
+        <ul class="ld-mtopics">${m.topics.map((t,ti)=>`<li><span class="ld-tday" style="background:${MOD_COLORS[mi]}">${ti+1}</span>${esc(t)}</li>`).join("")}</ul>
       </details>`).join("")}
     </div>
-    <div class="ld-syl"><a class="ld-btn" href="${esc(bro.dl)}" target="_blank" rel="noopener">⬇ Download full brochure (PDF)</a><a class="ld-btn2" href="${esc(bro.view)}" target="_blank" rel="noopener">👁 View online</a></div>
+    <div class="ld-syl"><a class="ld-btn" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Download full brochure (PDF)</a><a class="ld-btn2 ld-btn2-dark" href="${esc(bro.view)}" target="_blank" rel="noopener">\ud83d\udc41 View online</a></div>
   </section>
 
-  <section class="ld-sec"><div class="ld-head"><h2>Why choose Computech</h2></div>
+  <section class="ld-sec"><div class="ld-head"><h2>Why choose ${esc(I.name)}</h2><p>25 years of trusted training \u2014 here's what makes us different.</p></div>
     <div class="ld-cards">
-      <div class="ld-card"><div class="ld-ci">🌐</div><h4>100% Live Online</h4><p>Interactive sessions with screen sharing, real datasets & live Q&A every day.</p></div>
-      <div class="ld-card"><div class="ld-ci">🎥</div><h4>Recorded Videos</h4><p>Missed a class? Session recordings are provided for revision.</p></div>
-      <div class="ld-card"><div class="ld-ci">🎓</div><h4>ISO Certificate</h4><p>Globally recognised ISO-standard certificate on successful completion.</p></div>
-      <div class="ld-card"><div class="ld-ci">🌍</div><h4>International Students</h4><p>Students from across the globe join — flexible timings for all time zones.</p></div>
-      <div class="ld-card"><div class="ld-ci">📊</div><h4>Two BI Tools</h4><p>Learn both Power BI & Tableau — stay flexible across employer tech stacks.</p></div>
-      <div class="ld-card"><div class="ld-ci">💰</div><h4>Course Fee</h4><p><b style="font-size:21px;color:var(--ink)">${feeMain}</b>${I.recordingFee?`<br><span style="font-size:12px">+ ${cur}${I.recordingFee} for lifetime recordings (optional)</span>`:""}</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83c\udf96\ufe0f</div><h4>2 ISO Certifications</h4><p>Two globally recognised, valid ISO-standard certificates on completion.</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83c\udfa5</div><h4>Lifetime Recordings</h4><p>Every class recorded \u2014 revise anytime, for life.</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83e\udd1d</div><h4>Lifetime Support</h4><p>Doubts even after the course? We're always here to help.</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83c\udfed</div><h4>Industrial Training</h4><p>Real-world, project-based industrial training \u2014 not just theory.</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83c\udf10</div><h4>100% Live Online</h4><p>Interactive live sessions with real datasets & daily practice.</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83d\udcb0</div><h4>Course Fee</h4><p><b style="font-size:21px;color:var(--ink)">${feeMain}</b>${I.recordingFee?`<br><span style="font-size:12px">+ ${cur}${I.recordingFee} lifetime recordings (optional)</span>`:""}</p></div>
     </div>
   </section>
 
-  <section class="ld-sec ld-alt"><div class="ld-head"><h2>Flexible batch timings</h2><p>Pick the slot that fits your day. Weekday batches available.</p></div>
-    <div class="ld-batches">${LD_BATCHES.map(b=>{const p=b.split(" · ");return `<div class="ld-batch"><div class="ld-bico">🕐</div><div><h4>${esc(p[0])}</h4><p>${esc(p[1]||"")}</p></div></div>`;}).join("")}</div>
+  <section class="ld-numbers">
+    <div class="ld-nhead"><div class="ld-kicker" style="color:var(--accent)">Trusted since 1999</div><h2>Two decades of shaping careers</h2></div>
+    <div class="ld-ngrid">
+      <div class="ld-nstat"><b>25+</b><span>Years of excellence</span></div>
+      <div class="ld-nstat"><b>60+</b><span>Batches conducted</span></div>
+      <div class="ld-nstat"><b>2,00,000+</b><span>Students trained offline</span></div>
+      <div class="ld-nstat"><b>5,000+</b><span>Online students</span></div>
+      <div class="ld-nstat"><b>2</b><span>ISO certifications</span></div>
+      <div class="ld-nstat"><b>\ud83c\udf0d</b><span>International students</span></div>
+    </div>
+  </section>
+
+  <section class="ld-sec ld-alt"><div class="ld-head"><h2>Flexible batch timings</h2><p>Pick the slot that fits your day.</p></div>
+    <div class="ld-batches">${LD_BATCHES.map(b=>{const p=b.split(" \u00b7 ");return `<div class="ld-batch"><div class="ld-bico">\ud83d\udd50</div><div><h4>${esc(p[0])}</h4><p>${esc(p[1]||"")}</p></div></div>`;}).join("")}</div>
   </section>
 
   <section class="ld-sec"><div class="ld-head"><h2>Who is this for?</h2></div>
     <div class="ld-who">
-      <div class="ld-whocard"><b>🎓 Fresh Graduates</b><p>Add job-ready BA skills and stand out in placements.</p></div>
-      <div class="ld-whocard"><b>💼 Working Professionals</b><p>Upskill in data tools to get promoted or switch to analytics.</p></div>
-      <div class="ld-whocard"><b>🌍 Career Switchers</b><p>Move into analytics from any background — no coding needed to start.</p></div>
+      <div class="ld-whocard"><b>\ud83c\udf93 Fresh Graduates</b><p>Add job-ready BA skills and stand out in placements.</p></div>
+      <div class="ld-whocard"><b>\ud83d\udcbc Working Professionals</b><p>Upskill in data tools to get promoted or switch to analytics.</p></div>
+      <div class="ld-whocard"><b>\ud83c\udf0d Career Switchers</b><p>Move into analytics from any background \u2014 no coding needed to start.</p></div>
     </div>
   </section>
 
   ${R.length?`<section class="ld-sec ld-alt"><div class="ld-head"><h2>What our students say</h2></div>
-    <div class="ld-reviews">${R.map(r=>`<div class="ld-review"><div class="ld-stars">${"★".repeat(Math.max(1,Math.min(5,r.rating||5)))}</div><p>"${esc(r.text)}"</p><div class="ld-by">— ${esc(r.name)}${r.role?", "+esc(r.role):""}</div></div>`).join("")}</div></section>`:""}
+    <div class="ld-reviews">${R.map(r=>`<div class="ld-review"><div class="ld-stars">${"\u2605".repeat(Math.max(1,Math.min(5,r.rating||5)))}</div><p>"${esc(r.text)}"</p><div class="ld-by">\u2014 ${esc(r.name)}${r.role?", "+esc(r.role):""}</div></div>`).join("")}</div></section>`:""}
 
   <section class="ld-sec" id="enqForm">
     <div class="ld-enq" id="enqFormWrap">
-      <h2>Interested? Let's talk 🎯</h2>
-      <p class="ld-enq-sub">Fill this and we'll reach out on WhatsApp with all the details & next batch date.</p>
+      <h2>Ready to start? \ud83c\udfaf</h2>
+      <p class="ld-enq-sub">Leave your details and we'll reach out on WhatsApp with the fees, next batch date & everything you need.</p>
       <div class="ld-msg" id="enqMsg"></div>
       <div class="ld-field"><label>Your name</label><input id="enqName" type="text" placeholder="Full name" autocapitalize="words"></div>
       <div class="ld-field"><label>Mobile number (WhatsApp)</label><input id="enqPhone" type="tel" placeholder="10-digit mobile" autocapitalize="none" autocorrect="off"></div>
       <div class="ld-field"><label>Preferred batch timing</label><select id="enqBatch">${landingBatchOptions()}</select></div>
-      <button class="ld-btn ld-btn-full" onclick="submitEnquiry()">✅ Yes, I'm interested</button>
+      <button class="ld-btn ld-btn-full" onclick="submitEnquiry()">\u2705 Yes, I'm interested</button>
     </div>
   </section>
 
-  <footer class="ld-foot"><div><b>${esc(I.name)}</b><br><span>Computer Training Centre · Tumkur, Karnataka · Since 1999</span></div>
+  <footer class="ld-foot"><div><b>${esc(I.name)}</b><br><span>Computer Training Centre \u00b7 Tumkur, Karnataka \u00b7 Since 1999</span></div>
     ${waBtn}</footer>`;
   L.style.display="block";
   document.getElementById("authScreen").style.display="none";
