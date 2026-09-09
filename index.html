@@ -846,6 +846,7 @@ function normUrl(u){ u=(u||"").trim(); if(!u||u==="#")return u; if(!/^https?:\/\
 function waLink(text){ const num=(DB.INSTITUTE.whatsapp||"").replace(/[^0-9]/g,""); return "https://wa.me/"+num+"?text="+encodeURIComponent(text); }
 function driveId(s){ s=(s||"").trim(); let m=s.match(/\/d\/([^/]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
 function driveFolderId(s){ s=(s||"").trim(); let m=s.match(/\/folders\/([^/?]+)/); if(m)return m[1]; m=s.match(/[?&]id=([^&]+)/); if(m)return m[1]; return s; }
+function natSort(a,b){ return String(a||"").localeCompare(String(b||""),undefined,{numeric:true,sensitivity:"base"}); }
 function batchRecFolder(batch){ const b=(DB.BATCHES||[]).find(x=>x.name===batch); return (b&&b.recFolder)?String(b.recFolder).trim():""; }
 function effectiveRecFolder(){ return batchRecFolder(typeof CURRENT!=="undefined"&&CURRENT?CURRENT.batch:"") || (DB.INSTITUTE.recFolderId||"").trim(); }
 function recFolderMode(){ if(!(DB.INSTITUTE.driveApiKey||"").trim()) return false;
@@ -1138,6 +1139,7 @@ async function fillRecordings(){
     const res=await fetch(url); const data=await res.json();
     if(data.error){ area.innerHTML='<div class="card" style="color:#a13333">Couldn\'t load the folder.<br><small style="color:var(--muted)">'+esc((data.error&&data.error.message)||"Unknown error")+'</small></div>'; return; }
     const files=(data.files||[]).filter(f=>(f.mimeType||"").indexOf("folder")===-1);
+    files.sort((a,b)=>natSort(a.name,b.name));
     if(!files.length){ area.innerHTML='<div class="card">No videos in the folder yet.</div>'; return; }
     area.innerHTML=`<div class="rec-group"><h3>All recordings <span class="tag">${files.length} videos</span></h3>`+
       files.map(f=>`<button class="vid-card" onclick="openVid('${esc((f.name||'').replace(/'/g,''))}','${esc(f.id)}')">
@@ -1498,6 +1500,7 @@ async function adminFillRecs(){
       const res=await fetch(url); const data=await res.json();
       if(data.error){ el.innerHTML='<div style="color:#a13333;font-size:12.5px;padding:6px 0">'+esc((data.error&&data.error.message)||"Couldn't load folder")+'</div>'; continue; }
       const files=(data.files||[]).filter(f=>(f.mimeType||'').indexOf('folder')===-1);
+      files.sort((a,b)=>natSort(a.name,b.name));
       el.innerHTML = files.length
         ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${files.length} video${files.length===1?"":"s"} in this folder</div>`+
           files.map(f=>`<div class="recadm-item"><svg viewBox="0 0 24 24" fill="var(--accent)" width="15"><path d="M8 5v14l11-7z"/></svg><span>${esc(f.name)}</span><a href="https://drive.google.com/file/d/${esc(f.id)}/view" target="_blank" rel="noopener">↗</a></div>`).join("")
