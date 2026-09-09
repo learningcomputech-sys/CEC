@@ -196,6 +196,12 @@ a{color:inherit;text-decoration:none}
 .bday-soon h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#8a6410;margin-bottom:8px}
 .bday-row2{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--ink-2)}
 .bday-in{color:var(--muted);font-size:12px}
+.det-top{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+.det-photo{width:84px;height:84px;border-radius:14px;background:var(--accent);color:#3a2a05;display:grid;place-items:center;font-size:32px;font-weight:800;overflow:hidden;flex:none}
+.det-photo img{width:100%;height:100%;object-fit:cover}
+.det-grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.det-row{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;background:var(--surface);font-size:13.5px}
+.det-row span{color:var(--muted)}.det-row b{color:var(--ink);text-align:right;font-weight:600}
 /* Resume builder */
 .resume-screen{position:fixed;inset:0;background:var(--surface-2);z-index:60;overflow-y:auto}
 .rs-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;z-index:5}
@@ -580,6 +586,13 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <!-- student profile modal -->
+<div class="modal" id="infoModal" onclick="if(event.target===this)closeInfoModal()">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Student details</h3>
+      <button class="modal-close" onclick="closeInfoModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" id="infoModalBody"></div>
+  </div>
+</div>
 <div class="modal" id="profModal">
   <div class="modal-box">
     <div class="modal-head"><h3>Complete your profile</h3>
@@ -1737,10 +1750,52 @@ const EXCEL_PACK=[
   {q:"A Pivot Table is mainly used to:",options:["draw pictures","summarise & analyse large data quickly","write macros","protect sheets"],answer:1,explain:"Pivot Tables summarise, group and analyse large datasets with drag-and-drop."},
   {q:"A Slicer in a Pivot Table is used to:",options:["delete data","filter visually with buttons","sort text","merge cells"],answer:1,explain:"Slicers are clickable buttons that filter Pivot Tables/Charts interactively."},
   {q:"Remove Duplicates is found under which ribbon tab?",options:["Home","Insert","Data","View"],answer:2,explain:"Remove Duplicates is on the Data tab — essential for cleaning analyst datasets."}
+ ]},
+ {topic:"SQL for Analysts", questions:[
+  {q:"Which SQL keyword removes duplicate rows from results?",options:["UNIQUE","DISTINCT","REMOVE","CLEAN"],answer:1,explain:"DISTINCT returns only unique rows."},
+  {q:"Which clause filters rows BEFORE grouping?",options:["HAVING","WHERE","ORDER BY","GROUP"],answer:1,explain:"WHERE filters before GROUP BY; HAVING filters groups after."},
+  {q:"To combine matching rows from two tables you use a:",options:["MERGE","JOIN","UNION only","LINK"],answer:1,explain:"JOIN (INNER/LEFT/etc.) combines rows from related tables."},
+  {q:"Which JOIN returns all rows from the left table even without a match?",options:["INNER JOIN","LEFT JOIN","CROSS JOIN","EQUI JOIN"],answer:1,explain:"LEFT JOIN keeps all left-table rows, filling NULLs where no match."},
+  {q:"Which function counts the number of rows?",options:["SUM()","COUNT()","TOTAL()","ADD()"],answer:1,explain:"COUNT() counts rows (or non-null values)."},
+  {q:"GROUP BY is used to:",options:["sort rows","summarise rows by category","delete rows","join tables"],answer:1,explain:"GROUP BY groups rows so aggregates (SUM, COUNT) apply per group."},
+  {q:"HAVING is used to filter:",options:["individual rows","grouped/aggregated results","columns","tables"],answer:1,explain:"HAVING filters after grouping (e.g. HAVING SUM(sales)>1000)."},
+  {q:"ORDER BY ... DESC sorts results in:",options:["ascending order","descending order","random order","no order"],answer:1,explain:"DESC sorts high-to-low; ASC (default) low-to-high."},
+  {q:"A subquery is:",options:["a query inside another query","a saved report","a table backup","a chart"],answer:0,explain:"A subquery is a query nested inside another query."},
+  {q:"Which returns the number of rows limited to top 10 (MySQL)?",options:["TOP 10","LIMIT 10","FIRST 10","ROWS 10"],answer:1,explain:"MySQL uses LIMIT 10; SQL Server uses TOP 10."}
+ ]},
+ {topic:"Power BI", questions:[
+  {q:"Power Query in Power BI is mainly used to:",options:["make charts","clean & transform data","publish reports","write DAX"],answer:1,explain:"Power Query handles data cleaning/transformation before modelling."},
+  {q:"DAX is the language used in Power BI to create:",options:["charts","measures & calculated columns","slicers","themes"],answer:1,explain:"DAX (Data Analysis Expressions) builds measures and calculated columns."},
+  {q:"A 'measure' in Power BI is:",options:["a static number","a calculation that responds to filters","a chart type","a data source"],answer:1,explain:"Measures recalculate based on the filter context of the visual."},
+  {q:"CALCULATE in DAX is used to:",options:["delete data","change the filter context of a calculation","sort visuals","refresh data"],answer:1,explain:"CALCULATE evaluates an expression under modified filters."},
+  {q:"A Slicer in a Power BI report is used to:",options:["write code","filter visuals interactively","export data","model data"],answer:1,explain:"Slicers are on-canvas filters users click to slice the report."},
+  {q:"To show data by month/quarter/year you should create a:",options:["Slicer table","Date/Calendar table","Measure table","Chart table"],answer:1,explain:"A dedicated Date table enables time-intelligence in DAX."},
+  {q:"Publishing a report makes it available on:",options:["Excel","Power BI Service (cloud)","Notepad","Google Drive"],answer:1,explain:"Reports are published to the Power BI Service to share online."},
+  {q:"Relationships between tables are defined in the:",options:["Report view","Model view","Data view","Query editor"],answer:1,explain:"The Model view is where you create/manage table relationships."}
+ ]},
+ {topic:"Tableau", questions:[
+  {q:"In Tableau, fields are split into:",options:["Rows & Errors","Dimensions & Measures","Charts & Tables","Filters & Pages"],answer:1,explain:"Dimensions are categories; Measures are numeric values."},
+  {q:"A Calculated Field in Tableau lets you:",options:["change colours only","create new data from formulas","import data","publish"],answer:1,explain:"Calculated fields derive new values using formulas."},
+  {q:"LOD expressions in Tableau control:",options:["colours","the level of detail of a calculation","fonts","filters"],answer:1,explain:"Level of Detail (LOD) expressions compute at a chosen granularity."},
+  {q:"A Tableau 'Story' is:",options:["a data source","a sequence of dashboards/sheets telling a narrative","a filter","a join"],answer:1,explain:"A Story is a sequence of sheets/dashboards presented in order."},
+  {q:"To share a free public dashboard you publish to:",options:["Tableau Public","OneDrive","Gmail","Excel"],answer:0,explain:"Tableau Public hosts free, shareable dashboards."},
+  {q:"Dragging a field to the Filters shelf will:",options:["colour it","restrict the data shown","sort it","join it"],answer:1,explain:"The Filters shelf limits which data appears in the view."},
+  {q:"Which is best for showing geographic data in Tableau?",options:["Pie chart","Map","Gantt","Histogram"],answer:1,explain:"Maps visualise geographic dimensions like state/city."},
+  {q:"Parameters in Tableau let users:",options:["delete data","input a dynamic value that changes the view","publish reports","clean data"],answer:1,explain:"Parameters accept user input to make views dynamic."}
+ ]},
+ {topic:"AI Tools & Copilot", questions:[
+  {q:"A 'prompt' when using AI tools like ChatGPT/Claude is:",options:["an error","the instruction you give the AI","a chart","a dataset"],answer:1,explain:"A prompt is the request/instruction you type for the AI."},
+  {q:"Microsoft Copilot in Excel can help you:",options:["only format cells","generate formulas & analyse data with plain English","print faster","save files"],answer:1,explain:"Copilot can write formulas, summarise and analyse data from natural-language requests."},
+  {q:"A good analyst prompt should be:",options:["as vague as possible","clear and specific with context","one word","in code only"],answer:1,explain:"Clear, specific prompts with context give better AI results."},
+  {q:"AI tools are BEST used by analysts to:",options:["replace all thinking","speed up formulas, SQL & reporting drafts","avoid learning","hide data"],answer:1,explain:"AI accelerates routine tasks; the analyst still validates the output."},
+  {q:"Copilot in Power BI can help:",options:["only change themes","suggest visuals & write DAX","delete reports","host data"],answer:1,explain:"Copilot can suggest visuals and generate DAX measures."},
+  {q:"Before trusting AI output, an analyst should always:",options:["publish immediately","verify the results for accuracy","delete the source","ignore it"],answer:1,explain:"Always fact-check and validate AI-generated results."},
+  {q:"AI can quickly turn raw notes into a:",options:["broken file","clean summary or report draft","virus","chart only"],answer:1,explain:"AI can summarise and draft reports from raw input, saving time."},
+  {q:"Which is a responsible use of AI at work?",options:["Sharing private client data publicly","Using it to draft & speed up your own analysis","Copying without checking","Faking results"],answer:1,explain:"Use AI to assist your work while protecting data and verifying output."}
  ]}
 ];
 function loadExcelPack(){
-  confirmDel("Add the Excel-for-BA question pack? Existing topics with the same name will be skipped.",()=>{
+  confirmDel("Load the full practice pack (Excel, SQL, Power BI, Tableau, AI)? Topics with the same name are skipped.",()=>{
     let added=0;
     EXCEL_PACK.forEach(pk=>{ if(!DB.PRACTICE.some(t=>t.topic===pk.topic)){ DB.PRACTICE.push(clone(pk)); added++; } });
     markDirty(); aRender("practice"); toast(added?("Added "+added+" topic"+(added===1?"":"s")):"Already added");
@@ -1759,7 +1814,7 @@ function secPractice(){
       <div class="ract"><button class="iconbtn" onclick="editQ(${ti},${qi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
         <button class="iconbtn del" onclick="delQ(${ti},${qi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty" style="padding:14px">No questions yet.</div>'}</div>`).join("")||'<div class="empty">No topics yet. Add one to start.</div>';
   return `<div class="page-head"><h1>Practice</h1><p>Multiple-choice quizzes by topic. Students get instant scoring inside the portal.</p></div>
-  <div class="sec-head"><h3>Topics</h3><div style="display:flex;gap:7px"><button class="btn btn-ghost btn-sm" onclick="loadExcelPack()">⚡ Excel BA pack</button><button class="btn btn-primary btn-sm" onclick="editTopic(null)">+ Add topic</button></div></div>${body}`;
+  <div class="sec-head"><h3>Topics</h3><div style="display:flex;gap:7px"><button class="btn btn-ghost btn-sm" onclick="loadExcelPack()">⚡ Load question pack</button><button class="btn btn-primary btn-sm" onclick="editTopic(null)">+ Add topic</button></div></div>${body}`;
 }
 function editTopic(ti){ const isNew=ti===null,t=isNew?{topic:"",questions:[]}:DB.PRACTICE[ti];
   openForm(isNew?"Add topic":"Edit topic",[{k:"topic",label:"Topic name",type:"text",val:t.topic,ph:"SQL, Advanced Excel, Power BI…"}],
@@ -1858,12 +1913,41 @@ function renderProfiles(){
   if(!items.length){ el.innerHTML='<div class="empty">No student details yet. They appear here once students fill their profile.</div>'; return; }
   el.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${items.length} student${items.length===1?"":"s"}</div>`+items.map(p=>{
     const num=(p.mobile||"").replace(/[^0-9]/g,""); const wa="https://wa.me/"+(num.length<=10?"91"+num:num);
-    return `<div class="row"><div class="rico info-photo">${p.photo?`<img src="${esc(p.photo)}">`:esc((p.name||"?")[0])}</div>
+    return `<div class="row" style="cursor:pointer" onclick="openStudentDetail('${esc(p.id)}')"><div class="rico info-photo">${p.photo?`<img src="${esc(p.photo)}">`:esc((p.name||"?")[0])}</div>
       <div class="rmain"><h4>${esc(p.name)}${p.dob?` <span class="tagx no">${age(p.dob)} yrs</span>`:""}</h4>
         <div class="credline"><span class="credchip">${esc(p.batch||"—")}</span><span class="credchip">📱 ${esc(p.mobile||"—")}</span><span class="credchip">🎂 ${esc(fmtDob(p.dob))}</span>${p.guardian?`<span class="credchip">${esc(p.guardianType||"Guardian")}: ${esc(p.guardian)}</span>`:""}</div>
         ${p.address?`<p style="font-size:12.5px;color:var(--muted);margin-top:4px">📍 ${esc(p.address)}</p>`:""}</div>
-      <div class="ract"><a class="iconbtn" href="${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></a></div></div>`;
+      <div class="ract"><a class="iconbtn" href="${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></a></div></div>`;
   }).join("");
+}
+function closeInfoModal(){ document.getElementById("infoModal").classList.remove("show"); }
+function openStudentDetail(id){
+  const p=PROFILES[id]||{}, s=DB.STUDENTS[id]||{};
+  const num=(p.mobile||"").replace(/[^0-9]/g,""); const wa="https://wa.me/"+(num.length<=10?"91"+num:num);
+  const row=(l,v)=>v?`<div class="det-row"><span>${l}</span><b>${esc(v)}</b></div>`:"";
+  const t=receiptTotals(s);
+  document.getElementById("infoModalBody").innerHTML=`
+    <div class="det-top"><div class="det-photo">${p.photo?`<img src="${esc(p.photo)}">`:esc((p.name||s.name||"?")[0])}</div>
+      <div><h2 style="font-size:19px;color:var(--ink);margin-bottom:2px">${esc(p.name||s.name||"")}</h2>
+        <div style="font-size:13px;color:var(--muted)">${esc(s.batch||p.batch||"")}</div>
+        <div class="credchip mono" style="margin-top:6px;display:inline-block">${esc(id)}</div></div></div>
+    <div class="det-grid">
+      ${row("Mobile", p.mobile)}
+      ${row("Date of birth", p.dob?fmtDob(p.dob)+" ("+age(p.dob)+" yrs)":"")}
+      ${row((p.guardianType||"Guardian")+"'s name", p.guardian)}
+      ${row("Address", p.address)}
+      ${row("Email", s.email)}
+      ${row("Joined", s.joined)}
+      ${row("Course progress", (s.progress||0)+"%")}
+      ${row("Recordings access", s.recordingAccess===false?"Locked":"Enabled")}
+      ${row("Certificate", s.certReady?"Ready ("+(s.certId||"")+")":"In progress")}
+      ${row("Payment", money(t.paid)+" of "+money(t.total)+(t.balance>0?" · Due "+money(t.balance):" · Paid"))}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      ${p.mobile?`<a class="btn btn-primary btn-sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn btn-ghost btn-sm" href="tel:${esc(p.mobile)}">Call</a>`:""}
+      <button class="btn btn-ghost btn-sm" onclick="closeInfoModal();editStudent('${esc(id)}')">Edit student</button>
+    </div>`;
+  document.getElementById("infoModal").classList.add("show");
 }
 function renderBirthdays(){
   const box=document.getElementById("bdayBox"); if(!box)return;
