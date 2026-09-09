@@ -175,6 +175,27 @@ a{color:inherit;text-decoration:none}
 .quiz-fb p{font-weight:400;font-size:13px;margin-top:5px;color:var(--ink-2)}
 .quiz-score{font-size:52px;font-weight:800;color:var(--accent-2);font-family:'Space Grotesk';line-height:1}
 .quiz-score span{font-size:26px;color:var(--muted-2)}
+.modal-body{padding:18px 20px;max-height:76vh;overflow-y:auto}
+.prof-photo{width:112px;height:112px;border-radius:16px;background:var(--surface-2);border:2px dashed var(--line);display:grid;place-items:center;margin:0 auto;cursor:pointer;overflow:hidden;color:var(--muted);font-size:13px;font-weight:600;text-align:center}
+.prof-photo img{width:100%;height:100%;object-fit:cover}
+.prof-msg{display:none;background:var(--bad-soft);color:#a13333;padding:10px 13px;border-radius:9px;font-size:13px;margin-bottom:12px}.prof-msg.show{display:block}
+.fld{margin-bottom:13px}.fld label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:14.5px;font-family:inherit;background:var(--surface-2)}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.info-photo{overflow:hidden;padding:0}.info-photo img{width:100%;height:100%;object-fit:cover}
+.cert-photo{width:76px;height:76px;border-radius:10px;overflow:hidden;margin:10px auto 0;border:2px solid var(--accent)}
+.cert-photo img{width:100%;height:100%;object-fit:cover}
+.bday-card{background:linear-gradient(135deg,#fff7e6,#fdeccb);border:1px solid #f0dcae;margin-bottom:16px}
+.bday-today h3{font-size:16px;color:#8a6410;margin-bottom:8px}
+.bday-row{display:flex;align-items:center;gap:12px;padding:8px 0}
+.bday-pic{width:42px;height:42px;border-radius:10px;background:var(--accent);color:#3a2a05;display:grid;place-items:center;font-weight:800;overflow:hidden;flex:none}
+.bday-pic img{width:100%;height:100%;object-fit:cover}
+.bday-row b{display:block;font-size:14px;color:var(--ink)}.bday-row span{font-size:12px;color:var(--muted)}
+.bday-row .linkbtn{margin-left:auto;white-space:nowrap}
+.bday-soon{border-top:1px solid #f0dcae;margin-top:10px;padding-top:10px}
+.bday-soon h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#8a6410;margin-bottom:8px}
+.bday-row2{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--ink-2)}
+.bday-in{color:var(--muted);font-size:12px}
 /* ---- Landing / Enquiry ---- */
 .landing{position:fixed;inset:0;overflow-y:auto;background:var(--surface);z-index:60;font-family:'Inter'}
 .ld-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:5}
@@ -531,6 +552,26 @@ a{color:inherit;text-decoration:none}
       <button class="modal-close" onclick="closeVid()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="vid-frame" id="vidFrame"></div>
     <div id="vidFoot" style="padding:12px 16px;border-top:1px solid var(--line);display:none"></div>
+  </div>
+</div>
+
+<!-- student profile modal -->
+<div class="modal" id="profModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Complete your profile</h3>
+      <button class="modal-close" id="profCloseBtn" onclick="closeProfile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Please fill your details. Your photo will appear on your certificate.</p>
+      <div class="prof-msg" id="profMsg"></div>
+      <div style="text-align:center;margin-bottom:16px"><div class="prof-photo" id="profPhotoPrev" onclick="document.getElementById('profPhotoInp').click()"><span>+ Add photo</span></div>
+        <input type="file" id="profPhotoInp" accept="image/*" style="display:none" onchange="pickProfPhoto(this.files[0])"><div style="font-size:11px;color:var(--muted);margin-top:6px">Tap to upload a passport-style photo</div></div>
+      <div class="fld"><label>Full name</label><input id="pfName" type="text" autocapitalize="words"></div>
+      <div class="fld"><label>Mobile number</label><input id="pfMobile" type="tel" autocapitalize="none" autocorrect="off"></div>
+      <div class="fld"><label>Guardian</label><select id="pfGType"><option value="Father">Father's name</option><option value="Husband">Husband's name</option></select><input id="pfGuardian" type="text" autocapitalize="words" style="margin-top:8px" placeholder="Guardian's name"></div>
+      <div class="fld"><label>Date of birth</label><input id="pfDob" type="date"></div>
+      <div class="fld"><label>Address</label><textarea id="pfAddr" rows="2"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="saveProfile()">Save my details</button>
+    </div>
   </div>
 </div>
 
@@ -1042,6 +1083,56 @@ function enterStudent(){
   document.getElementById("sideBatch").textContent=CURRENT.batch;
   document.getElementById("sideAvatar").textContent=(CURRENT.name||"?")[0];
   sBuildNav(); sBuildPanels(); sGoTab("home"); window.scrollTo(0,0);
+  loadMyProfile();
+}
+function loadMyProfile(){
+  if(!(CLOUD && fdb && CURRENT)) return;
+  fdb.ref("profiles/"+CURRENT.id).get().then(snap=>{
+    const p=snap.val();
+    if(p){ Object.assign(CURRENT,{photo:p.photo||"",mobile:p.mobile||"",guardian:p.guardian||"",guardianType:p.guardianType||"Father",dob:p.dob||"",address:p.address||"",profileDone:!!p.profileDone});
+      if(document.getElementById("sideAvatar")&&p.photo){ const a=document.getElementById("sideAvatar"); a.style.backgroundImage="url("+p.photo+")"; a.style.backgroundSize="cover"; a.textContent=""; }
+      sBuildPanels(); sGoTab(document.querySelector(".s-navitem.active")?.dataset.tab||"home");
+    }
+    if(!p||!p.profileDone) setTimeout(showProfile,400);
+  }).catch(()=>{});
+}
+let PROF_PHOTO="";
+function showProfile(){
+  PROF_PHOTO=CURRENT.photo||"";
+  const prev=document.getElementById("profPhotoPrev");
+  prev.innerHTML=PROF_PHOTO?`<img src="${PROF_PHOTO}">`:"<span>+ Add photo</span>";
+  document.getElementById("pfName").value=CURRENT.name||"";
+  document.getElementById("pfMobile").value=CURRENT.mobile||"";
+  document.getElementById("pfGType").value=CURRENT.guardianType||"Father";
+  document.getElementById("pfGuardian").value=CURRENT.guardian||"";
+  document.getElementById("pfDob").value=CURRENT.dob||"";
+  document.getElementById("pfAddr").value=CURRENT.address||"";
+  document.getElementById("profCloseBtn").style.display=CURRENT.profileDone?"grid":"none";
+  document.getElementById("profModal").classList.add("show");
+}
+function closeProfile(){ document.getElementById("profModal").classList.remove("show"); }
+function pickProfPhoto(file){ if(!file)return;
+  compressImage(file,420,d=>{ PROF_PHOTO=d; document.getElementById("profPhotoPrev").innerHTML=`<img src="${d}">`; });
+}
+function compressImage(file,max,cb){ const r=new FileReader();
+  r.onload=()=>{ const img=new Image(); img.onload=()=>{ let w=img.width,h=img.height;
+    if(w>h){ if(w>max){h=Math.round(h*max/w);w=max;} } else { if(h>max){w=Math.round(w*max/h);h=max;} }
+    const c=document.createElement("canvas"); c.width=w; c.height=h; c.getContext("2d").drawImage(img,0,0,w,h);
+    cb(c.toDataURL("image/jpeg",0.82)); }; img.src=r.result; };
+  r.readAsDataURL(file); }
+function saveProfile(){
+  const m=document.getElementById("profMsg");
+  const mobile=document.getElementById("pfMobile").value.trim();
+  const guardian=document.getElementById("pfGuardian").value.trim();
+  const dob=document.getElementById("pfDob").value;
+  if(!mobile||!guardian||!dob){ m.textContent="Please fill mobile, guardian name and date of birth."; m.classList.add("show"); return; }
+  if(!PROF_PHOTO){ m.textContent="Please add your photo."; m.classList.add("show"); return; }
+  m.classList.remove("show");
+  const rec={name:CURRENT.name,batch:CURRENT.batch||"",mobile,guardian,guardianType:document.getElementById("pfGType").value,dob,address:document.getElementById("pfAddr").value.trim(),photo:PROF_PHOTO,profileDone:true,updated:Date.now()};
+  Object.assign(CURRENT,rec);
+  if(CLOUD && fdb){ fdb.ref("profiles/"+CURRENT.id).set(rec).then(()=>toast("Details saved ✓")).catch(()=>toast("Saved on device (check connection)")); }
+  const a=document.getElementById("sideAvatar"); a.style.backgroundImage="url("+PROF_PHOTO+")"; a.style.backgroundSize="cover"; a.textContent="";
+  closeProfile(); sBuildPanels(); sGoTab(document.querySelector(".s-navitem.active")?.dataset.tab||"home");
 }
 function sBuildNav(){
   const dn=document.getElementById("sNav"), mn=document.getElementById("sMobileNav");
@@ -1087,6 +1178,9 @@ function panelHome(){
         ${DB.ANNOUNCEMENTS.map(a=>`<div class="ann"><div class="ann-dot"></div><div class="ann-body"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="t">${esc(a.time)}</div></div></div>`).join("")||'<p style="font-size:13px;color:var(--muted)">No announcements yet.</p>'}</div>
     </div>
     ${(CURRENT.certReady && DB.PRO && DB.PRO.enabled)?`<div class="card pro-card"><div class="pro-badge">🎓</div><div><h3>${esc(DB.PRO.title)}</h3><p>${esc(DB.PRO.message)}</p></div></div>`:""}
+    <div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico" style="overflow:hidden;padding:0">${CURRENT.photo?`<img src="${CURRENT.photo}" style="width:100%;height:100%;object-fit:cover">`:"👤"}</div>
+      <div><h3>My profile</h3><p>${CURRENT.profileDone?"Details saved · tap to update":"Please complete your details"}</p></div></div>
+      <button class="btn ${CURRENT.profileDone?'btn-ghost':'btn-primary'} wb-btn" onclick="showProfile()">${CURRENT.profileDone?"Edit profile":"Complete now"}</button></div>
     ${(()=>{const t=receiptTotals(CURRENT);return `<div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico">🧾</div>
       <div><h3>Payment receipt</h3><p>Total ${money(t.total)} · Paid ${money(t.paid)}${t.balance>0?` · <b style="color:var(--bad)">Balance ${money(t.balance)}</b>`:` · <b style="color:var(--good)">Fully paid</b>`}</p></div></div>
       <button class="btn btn-primary wb-btn" onclick="printReceipt()">Download receipt</button></div>`;})()}
@@ -1246,6 +1340,7 @@ function certHTML(stu){
       <div><div class="brand-name" style="font-size:15px;color:var(--ink)">${esc(I.name)}</div><div class="brand-sub">${esc(C.tagline||"")}</div></div></div>
       <div class="cert-seal">${esc(C.seal||"").replace(/ /,"<br>")}</div></div>
     <div class="cert-mid"><div class="kicker">Certificate of Completion</div>
+      ${stu.photo?`<div class="cert-photo"><img src="${stu.photo}" alt="photo"></div>`:""}
       <div class="awarded" style="margin-top:14px">This is proudly awarded to</div>
       <div class="cert-name">${esc(stu.name)}</div>
       <div class="desc">${desc}</div>
@@ -1321,6 +1416,7 @@ function printReceipt(){
 const SECTIONS=[
   {id:"welcome",label:"Welcome message",icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
   {id:"students",label:"Students",icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  {id:"info",label:"Student Info",icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/><circle cx="12" cy="7" r="0.5"/>'},
   {id:"recordings",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
   {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
   {id:"reviews",label:"Reviews",icon:'<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>'},
@@ -1346,10 +1442,11 @@ function aBuildNav(){
 function aRender(sec){
   CURSEC=sec;
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
-  const map={welcome:secWelcome,students:secStudents,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,settings:secSettings};
+  const map={welcome:secWelcome,students:secStudents,info:secInfo,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
   if(sec==="recordings") adminFillRecs();
   if(sec==="enquiries") fillEnquiries();
+  if(sec==="info") fillProfiles();
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
@@ -1641,6 +1738,59 @@ function fillEnquiries(){
   });
 }
 function delEnquiry(k){ confirmDel("Delete this enquiry?",()=>{ try{ fdb.ref("enquiries/"+k).remove(); }catch(e){} }); }
+
+/* STUDENT INFO (profiles + birthdays) */
+let PROFILES={};
+function dobParts(dob){ if(!dob)return null; const d=new Date(dob); if(isNaN(d))return null; return {m:d.getMonth(),day:d.getDate(),y:d.getFullYear()}; }
+function daysToBirthday(dob){ const p=dobParts(dob); if(!p)return null; const now=new Date(); const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let next=new Date(now.getFullYear(),p.m,p.day); if(next<today) next=new Date(now.getFullYear()+1,p.m,p.day);
+  return Math.round((next-today)/86400000); }
+function age(dob){ const p=dobParts(dob); if(!p)return ""; const now=new Date(); let a=now.getFullYear()-p.y; if(now.getMonth()<p.m||(now.getMonth()===p.m&&now.getDate()<p.day))a--; return a; }
+function fmtDob(dob){ const p=dobParts(dob); if(!p)return "—"; return new Date(dob).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}); }
+function secInfo(){
+  const batches=[...new Set(Object.values(DB.STUDENTS).map(s=>s.batch).filter(Boolean))];
+  const opt=`<option value="">All batches</option>`+batches.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  return `<div class="page-head"><h1>Student Info</h1><p>Full details students filled in — photo, mobile, DOB & more. Filter by batch.</p></div>
+  <div id="bdayBox"></div>
+  <div class="card" style="padding:14px;margin-bottom:14px"><div class="filterbar"><select id="infoBatch" onchange="renderProfiles()">${opt}</select><input id="infoSearch" type="text" placeholder="Search name or mobile…" oninput="renderProfiles()"></div></div>
+  <div id="infoList"><div class="empty">Loading…</div></div>`;
+}
+function fillProfiles(){
+  if(!(CLOUD&&fdb)){ const el=document.getElementById("infoList"); if(el)el.innerHTML='<div class="empty">Cloud not connected.</div>'; return; }
+  fdb.ref("profiles").on("value",snap=>{ PROFILES=snap.val()||{}; renderProfiles(); renderBirthdays(); });
+}
+function profileList(){
+  const fb=(document.getElementById("infoBatch")||{}).value||"";
+  const q=((document.getElementById("infoSearch")||{}).value||"").toLowerCase().trim();
+  let items=Object.keys(PROFILES).map(id=>({id,...PROFILES[id]}));
+  if(fb) items=items.filter(p=>p.batch===fb);
+  if(q) items=items.filter(p=>(p.name||"").toLowerCase().includes(q)||(p.mobile||"").includes(q));
+  return items.sort((a,b)=>natSort(a.name,b.name));
+}
+function renderProfiles(){
+  const el=document.getElementById("infoList"); if(!el)return;
+  const items=profileList();
+  if(!items.length){ el.innerHTML='<div class="empty">No student details yet. They appear here once students fill their profile.</div>'; return; }
+  el.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${items.length} student${items.length===1?"":"s"}</div>`+items.map(p=>{
+    const num=(p.mobile||"").replace(/[^0-9]/g,""); const wa="https://wa.me/"+(num.length<=10?"91"+num:num);
+    return `<div class="row"><div class="rico info-photo">${p.photo?`<img src="${esc(p.photo)}">`:esc((p.name||"?")[0])}</div>
+      <div class="rmain"><h4>${esc(p.name)}${p.dob?` <span class="tagx no">${age(p.dob)} yrs</span>`:""}</h4>
+        <div class="credline"><span class="credchip">${esc(p.batch||"—")}</span><span class="credchip">📱 ${esc(p.mobile||"—")}</span><span class="credchip">🎂 ${esc(fmtDob(p.dob))}</span>${p.guardian?`<span class="credchip">${esc(p.guardianType||"Guardian")}: ${esc(p.guardian)}</span>`:""}</div>
+        ${p.address?`<p style="font-size:12.5px;color:var(--muted);margin-top:4px">📍 ${esc(p.address)}</p>`:""}</div>
+      <div class="ract"><a class="iconbtn" href="${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></a></div></div>`;
+  }).join("");
+}
+function renderBirthdays(){
+  const box=document.getElementById("bdayBox"); if(!box)return;
+  const all=Object.keys(PROFILES).map(id=>({id,...PROFILES[id]})).filter(p=>p.dob);
+  const today=all.filter(p=>daysToBirthday(p.dob)===0);
+  const soon=all.filter(p=>{const d=daysToBirthday(p.dob);return d>0&&d<=7;}).sort((a,b)=>daysToBirthday(a.dob)-daysToBirthday(b.dob));
+  if(!today.length&&!soon.length){ box.innerHTML=""; return; }
+  box.innerHTML=`<div class="card bday-card">
+    ${today.length?`<div class="bday-today"><h3>🎉 Birthday today!</h3>${today.map(p=>`<div class="bday-row"><div class="bday-pic">${p.photo?`<img src="${esc(p.photo)}">`:esc((p.name||"?")[0])}</div><div><b>${esc(p.name)}</b><span>${esc(p.batch||"")} · turns ${age(p.dob)+1}</span></div>${p.mobile?`<a class="linkbtn" href="https://wa.me/${(p.mobile||'').replace(/[^0-9]/g,'').replace(/^(?!91)/,'91')}?text=${encodeURIComponent('Happy Birthday '+p.name+'! 🎂 — '+DB.INSTITUTE.name)}" target="_blank">Wish 🎂</a>`:""}</div>`).join("")}</div>`:""}
+    ${soon.length?`<div class="bday-soon"><h4>Upcoming this week</h4>${soon.map(p=>`<div class="bday-row2"><span>${esc(p.name)}</span><span class="bday-in">in ${daysToBirthday(p.dob)} day${daysToBirthday(p.dob)===1?"":"s"} · ${esc(fmtDob(p.dob).replace(/ \d{4}$/,""))}</span></div>`).join("")}</div>`:""}
+  </div>`;
+}
 
 /* SCHEDULE */
 function schedRows(){
