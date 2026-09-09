@@ -196,6 +196,29 @@ a{color:inherit;text-decoration:none}
 .bday-soon h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#8a6410;margin-bottom:8px}
 .bday-row2{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--ink-2)}
 .bday-in{color:var(--muted);font-size:12px}
+/* Resume builder */
+.resume-screen{position:fixed;inset:0;background:var(--surface-2);z-index:60;overflow-y:auto}
+.rs-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;z-index:5}
+.rs-bar b{font-size:16px}.rs-close{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600}
+.rs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto;padding:20px}
+.rs-form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.rs-note{background:var(--accent-soft);border:1px solid #f0dcae;color:#8a6410;font-size:12.5px;padding:10px 12px;border-radius:10px;margin-bottom:14px}
+.rs2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rs-chips{display:flex;flex-wrap:wrap;gap:7px}
+.rs-chip{font-size:12px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--muted);font-weight:600}
+.rs-chip.on{background:var(--accent);border-color:var(--accent);color:#3a2a05}
+.rs-preview-wrap{position:sticky;top:80px;align-self:start;max-height:calc(100vh - 100px);overflow-y:auto}
+.resume-doc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:34px 38px;color:#1a2340;font-family:'Inter';box-shadow:0 8px 30px rgba(20,32,61,.08)}
+.rd-head{text-align:center;border-bottom:2px solid #1a2340;padding-bottom:14px;margin-bottom:16px}
+.rd-head h1{font-size:26px;color:#141c34;letter-spacing:.5px;margin-bottom:3px}
+.rd-role{font-size:14px;color:#c58a26;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.rd-contact{font-size:12px;color:#4a5470}
+.rd-sec{margin-bottom:16px}
+.rd-sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#141c34;border-bottom:1px solid #d7dcea;padding-bottom:4px;margin-bottom:8px}
+.rd-sec p{font-size:13px;line-height:1.6;color:#3a4360}
+.rd-skills{font-size:12.5px;color:#3a4360;line-height:1.8}
+.rd-sec ul{margin:0;padding-left:18px}.rd-sec li{font-size:13px;line-height:1.55;color:#3a4360;margin-bottom:5px}
+@media (max-width:820px){.rs-wrap{grid-template-columns:1fr}.rs-preview-wrap{position:static;max-height:none}}
 /* ---- Landing / Enquiry ---- */
 .landing{position:fixed;inset:0;overflow-y:auto;background:var(--surface);z-index:60;font-family:'Inter'}
 .ld-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:5}
@@ -443,6 +466,7 @@ a{color:inherit;text-decoration:none}
 
 <!-- ============ ENQUIRY / LANDING ============ -->
 <div class="landing" id="landing" style="display:none"></div>
+<div class="resume-screen" id="resumeScreen" style="display:none"></div>
 
 <!-- ============ LOGIN ============ -->
 <div class="auth-wrap" id="authScreen">
@@ -1181,6 +1205,9 @@ function panelHome(){
     <div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico" style="overflow:hidden;padding:0">${CURRENT.photo?`<img src="${CURRENT.photo}" style="width:100%;height:100%;object-fit:cover">`:"👤"}</div>
       <div><h3>My profile</h3><p>${CURRENT.profileDone?"Details saved · tap to update":"Please complete your details"}</p></div></div>
       <button class="btn ${CURRENT.profileDone?'btn-ghost':'btn-primary'} wb-btn" onclick="showProfile()">${CURRENT.profileDone?"Edit profile":"Complete now"}</button></div>
+    <div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico">📄</div>
+      <div><h3>Resume Builder</h3><p>Build an ATS-friendly Business Analyst resume</p></div></div>
+      <button class="btn btn-primary wb-btn" onclick="openResume()">Build resume</button></div>
     ${(()=>{const t=receiptTotals(CURRENT);return `<div class="card receipt-card"><div class="rcpt-info"><div class="rcpt-ico">🧾</div>
       <div><h3>Payment receipt</h3><p>Total ${money(t.total)} · Paid ${money(t.paid)}${t.balance>0?` · <b style="color:var(--bad)">Balance ${money(t.balance)}</b>`:` · <b style="color:var(--good)">Fully paid</b>`}</p></div></div>
       <button class="btn btn-primary wb-btn" onclick="printReceipt()">Download receipt</button></div>`;})()}
@@ -1662,6 +1689,64 @@ function editReview(i){ const isNew=i===null,r=isNew?{name:"",role:"",rating:5,t
 function delReview(i){ confirmDel("Delete this review?",()=>{ DB.REVIEWS.splice(i,1); markDirty(); aRender("reviews"); }); }
 
 /* PRACTICE */
+
+const EXCEL_PACK=[
+ {topic:"Excel — Lookups & References", questions:[
+  {q:"VLOOKUP searches for a value in the ___ column of a range and returns a value from a column to its right.",options:["last","first","middle","hidden"],answer:1,explain:"VLOOKUP looks up the value in the leftmost (first) column of the table."},
+  {q:"To force an EXACT match in VLOOKUP, the 4th argument should be:",options:["TRUE","1","FALSE","APPROX"],answer:2,explain:"FALSE (or 0) forces an exact match; TRUE gives an approximate match."},
+  {q:"Which combo can look up a value and return one to its LEFT (which VLOOKUP can't)?",options:["SUMIF","INDEX + MATCH","COUNTIF","CONCAT"],answer:1,explain:"INDEX-MATCH can return values from any column, including to the left."},
+  {q:"MATCH returns the ___ of a value within a range.",options:["sum","position","average","text"],answer:1,explain:"MATCH returns the relative position (row/column number) of a lookup value."},
+  {q:"In INDEX(range, row, col), INDEX returns the:",options:["position of a value","value at that row/column","count of values","sum of the range"],answer:1,explain:"INDEX returns the actual value located at the given row and column of the range."},
+  {q:"A key advantage of XLOOKUP over VLOOKUP is that it:",options:["only works on numbers","can look left and right","needs no arguments","cannot handle errors"],answer:1,explain:"XLOOKUP can search in any direction and defaults to exact match."},
+  {q:"HLOOKUP searches for a value in the:",options:["first column","first row","last row","named range only"],answer:1,explain:"HLOOKUP searches the top (first) row and returns from a row below — the horizontal version of VLOOKUP."},
+  {q:"A #N/A error from VLOOKUP usually means:",options:["the formula is too long","the lookup value wasn't found","the file is read-only","too many columns"],answer:1,explain:"#N/A means the lookup value was not found in the first column of the table."},
+  {q:"To keep a cell reference fixed when copying a formula, you use:",options:["A1","$A$1","A1:A1","(A1)"],answer:1,explain:"$A$1 is an absolute reference — both column and row are locked."},
+  {q:"In VLOOKUP, col_index_num counts columns starting from the:",options:["lookup column as 1","column A of the sheet","last column","row headers"],answer:0,explain:"Column 1 is the lookup (leftmost) column of the table array, not sheet column A."},
+  {q:"Wrapping a lookup in IFERROR(VLOOKUP(...),\"Not found\") is used to:",options:["speed up Excel","replace errors with friendly text","sort the data","lock the cell"],answer:1,explain:"IFERROR replaces error results (like #N/A) with a value you choose."}
+ ]},
+ {topic:"Excel — Aggregation & Conditional Math", questions:[
+  {q:"SUMIF adds up numbers that meet:",options:["no condition","one condition","only two conditions","text only"],answer:1,explain:"SUMIF sums cells that meet a single criterion."},
+  {q:"To sum with MULTIPLE conditions, you use:",options:["SUM","SUMIF","SUMIFS","SUMPRODUCT only"],answer:2,explain:"SUMIFS allows multiple criteria ranges/conditions."},
+  {q:"COUNTIF is used to:",options:["add numbers","count cells meeting a condition","find the max","join text"],answer:1,explain:"COUNTIF counts the number of cells that meet a given condition."},
+  {q:"COUNTA counts cells that are:",options:["only numbers","not empty","only blank","only formulas"],answer:1,explain:"COUNTA counts all non-empty cells (numbers, text, etc.)."},
+  {q:"AVERAGEIF calculates the average of values that:",options:["are in column A","meet a condition","are text","are dates"],answer:1,explain:"AVERAGEIF averages only the cells that meet the criterion."},
+  {q:"In COUNTIF(range,\"North*\"), the * is a:",options:["multiplication sign","wildcard for any characters","error","cell reference"],answer:1,explain:"* is a wildcard matching any sequence of characters."},
+  {q:"RANK is used to:",options:["sort a column permanently","find a value's position in a list by size","count blanks","round numbers"],answer:1,explain:"RANK returns the rank (position by value) of a number within a list."},
+  {q:"SUBTOTAL is preferred over SUM in filtered lists because it:",options:["is faster to type","ignores hidden/filtered rows","rounds automatically","adds text"],answer:1,explain:"SUBTOTAL can ignore rows hidden by a filter, giving correct visible totals."},
+  {q:"ROUND(123.456, 2) returns:",options:["123","123.46","123.4","124"],answer:1,explain:"ROUND to 2 decimals gives 123.46."},
+  {q:"SUMPRODUCT is powerful because it can:",options:["only multiply two cells","multiply and sum arrays in one step","only count text","sort data"],answer:1,explain:"SUMPRODUCT multiplies corresponding array elements and sums the results — great for weighted/conditional totals."}
+ ]},
+ {topic:"Excel — Text & Logic", questions:[
+  {q:"The correct IF syntax is:",options:["IF(value, test, other)","IF(condition, value_if_true, value_if_false)","IF(true, false)","IF(range, sum)"],answer:1,explain:"IF(condition, value_if_true, value_if_false)."},
+  {q:"IFERROR is used to:",options:["create errors","handle/replace errors gracefully","count errors","hide columns"],answer:1,explain:"IFERROR returns a chosen value when a formula errors, else the formula's result."},
+  {q:"LEFT(\"Analyst\", 3) returns:",options:["\"lyst\"","\"Ana\"","\"Ans\"","\"yst\""],answer:1,explain:"LEFT returns the first N characters — here 'Ana'."},
+  {q:"MID(text, start, n) is used to:",options:["find the end","extract characters from the middle","count length","trim spaces"],answer:1,explain:"MID extracts n characters starting at a given position."},
+  {q:"TRIM is used to remove:",options:["all spaces","extra/leading/trailing spaces","numbers","formulas"],answer:1,explain:"TRIM removes extra spaces, leaving single spaces between words — great for cleaning data."},
+  {q:"LEN(\"Data\") returns:",options:["1","4","0","\"Data\""],answer:1,explain:"LEN returns the number of characters — 4."},
+  {q:"To join text from many cells with a delimiter, the best modern function is:",options:["SUM","TEXTJOIN","LEN","LEFT"],answer:1,explain:"TEXTJOIN joins multiple ranges/strings with a chosen delimiter and can ignore blanks."},
+  {q:"PROPER(\"john smith\") returns:",options:["\"JOHN SMITH\"","\"john smith\"","\"John Smith\"","\"Johnsmith\""],answer:2,explain:"PROPER capitalises the first letter of each word."},
+  {q:"Nesting IFs means:",options:["putting one IF inside another","using IF twice in a row","copying a formula","using IF with SUM"],answer:0,explain:"Nested IFs place an IF inside another to test multiple conditions (or use IFS)."},
+  {q:"AND(A1>0, B1>0) returns TRUE only when:",options:["either is true","both conditions are true","neither is true","A1 is text"],answer:1,explain:"AND is TRUE only if every condition is TRUE."}
+ ]},
+ {topic:"Excel — Dates & Analysis", questions:[
+  {q:"TODAY() returns:",options:["the current time only","the current date","a random date","the file date"],answer:1,explain:"TODAY() returns the current date, updating each day."},
+  {q:"DATEDIF is commonly used to calculate:",options:["a sum","the difference between two dates (e.g. age)","a lookup","a rank"],answer:1,explain:"DATEDIF returns the difference between dates in years/months/days — useful for age or tenure."},
+  {q:"EOMONTH returns:",options:["the first day of a month","the last day of a month","the weekday","the year"],answer:1,explain:"EOMONTH returns the last day of the month, a set number of months away."},
+  {q:"NETWORKDAYS counts:",options:["all days","working days excluding weekends/holidays","weekends only","hours"],answer:1,explain:"NETWORKDAYS counts workdays between two dates, excluding weekends and listed holidays."},
+  {q:"YEAR(A1) extracts the:",options:["month","year from a date","day","weekday"],answer:1,explain:"YEAR returns the 4-digit year from a date."},
+  {q:"A Pivot Table is mainly used to:",options:["draw pictures","summarise & analyse large data quickly","write macros","protect sheets"],answer:1,explain:"Pivot Tables summarise, group and analyse large datasets with drag-and-drop."},
+  {q:"A Slicer in a Pivot Table is used to:",options:["delete data","filter visually with buttons","sort text","merge cells"],answer:1,explain:"Slicers are clickable buttons that filter Pivot Tables/Charts interactively."},
+  {q:"Remove Duplicates is found under which ribbon tab?",options:["Home","Insert","Data","View"],answer:2,explain:"Remove Duplicates is on the Data tab — essential for cleaning analyst datasets."}
+ ]}
+];
+function loadExcelPack(){
+  confirmDel("Add the Excel-for-BA question pack? Existing topics with the same name will be skipped.",()=>{
+    let added=0;
+    EXCEL_PACK.forEach(pk=>{ if(!DB.PRACTICE.some(t=>t.topic===pk.topic)){ DB.PRACTICE.push(clone(pk)); added++; } });
+    markDirty(); aRender("practice"); toast(added?("Added "+added+" topic"+(added===1?"":"s")):"Already added");
+  });
+}
+
 function secPractice(){
   const P=DB.PRACTICE||[];
   const body=P.map((t,ti)=>`<div class="card"><div class="sec-head"><h3>${esc(t.topic)} <span style="font-size:12px;color:var(--muted);font-weight:400">· ${(t.questions||[]).length} Q</span></h3>
@@ -1674,7 +1759,7 @@ function secPractice(){
       <div class="ract"><button class="iconbtn" onclick="editQ(${ti},${qi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
         <button class="iconbtn del" onclick="delQ(${ti},${qi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty" style="padding:14px">No questions yet.</div>'}</div>`).join("")||'<div class="empty">No topics yet. Add one to start.</div>';
   return `<div class="page-head"><h1>Practice</h1><p>Multiple-choice quizzes by topic. Students get instant scoring inside the portal.</p></div>
-  <div class="sec-head"><h3>Topics</h3><button class="btn btn-primary btn-sm" onclick="editTopic(null)">+ Add topic</button></div>${body}`;
+  <div class="sec-head"><h3>Topics</h3><div style="display:flex;gap:7px"><button class="btn btn-ghost btn-sm" onclick="loadExcelPack()">⚡ Excel BA pack</button><button class="btn btn-primary btn-sm" onclick="editTopic(null)">+ Add topic</button></div></div>${body}`;
 }
 function editTopic(ti){ const isNew=ti===null,t=isNew?{topic:"",questions:[]}:DB.PRACTICE[ti];
   openForm(isNew?"Add topic":"Edit topic",[{k:"topic",label:"Topic name",type:"text",val:t.topic,ph:"SQL, Advanced Excel, Power BI…"}],
@@ -2082,6 +2167,67 @@ function brochureLinks(){
   const id=driveId(raw);
   return {view:normUrl(raw), dl:"https://drive.google.com/uc?export=download&id="+id};
 }
+
+const ATS_KEYWORDS=["Business Analysis","Requirement Gathering","Data Analysis","Advanced Excel","SQL","Power BI","Tableau","Data Visualization","Dashboarding","KPI Reporting","Stakeholder Management","Business Intelligence","Gap Analysis","Process Improvement","Documentation","DAX","Power Query","Data Cleaning","Pivot Tables","MIS Reporting","Problem Solving","Communication"];
+let RESUME_SKILLS=new Set(["Business Analysis","Advanced Excel","SQL","Power BI","Tableau","Data Analysis"]);
+function openResume(){
+  const c=DB.INSTITUTE, S=CURRENT;
+  const skillsChips=ATS_KEYWORDS.map(k=>`<button type="button" class="rs-chip ${RESUME_SKILLS.has(k)?'on':''}" onclick="toggleSkill('${k.replace(/'/g,"")}')">${esc(k)}</button>`).join("");
+  document.getElementById("resumeScreen").innerHTML=`
+  <div class="rs-bar"><b>Resume Builder</b><button class="rs-close" onclick="closeResume()">Close ✕</button></div>
+  <div class="rs-wrap">
+    <div class="rs-form">
+      <div class="rs-note">💡 Tip: keep it simple & keyword-rich — this format is ATS (Applicant Tracking System) friendly.</div>
+      <div class="fld"><label>Full name</label><input id="rsName" value="${esc(S.name||"")}" oninput="updateResume()"></div>
+      <div class="fld"><label>Target role</label><input id="rsRole" value="Business Analyst" oninput="updateResume()"></div>
+      <div class="rs2"><div class="fld"><label>Phone</label><input id="rsPhone" value="${esc(S.mobile||"")}" oninput="updateResume()"></div>
+        <div class="fld"><label>Email</label><input id="rsEmail" value="${esc(S.email||"")}" oninput="updateResume()"></div></div>
+      <div class="rs2"><div class="fld"><label>Location</label><input id="rsLoc" value="${esc(S.address? S.address.split(",").slice(-1)[0].trim():"")}" placeholder="City" oninput="updateResume()"></div>
+        <div class="fld"><label>LinkedIn (optional)</label><input id="rsLinked" placeholder="linkedin.com/in/you" oninput="updateResume()"></div></div>
+      <div class="fld"><label>Professional summary</label><textarea id="rsSummary" rows="3" oninput="updateResume()">Detail-oriented Business Analyst trained in Excel, SQL, Power BI, Tableau and AI tools. Skilled at turning raw data into clear, actionable insights through dashboards, reports and analysis. Strong problem-solving and stakeholder communication skills.</textarea></div>
+      <div class="fld"><label>Core skills (tap to add/remove — ATS keywords)</label><div class="rs-chips">${skillsChips}</div></div>
+      <div class="fld"><label>Education (one per line)</label><textarea id="rsEdu" rows="3" oninput="updateResume()" placeholder="B.Com, XYZ University — 2024\nPUC / 12th — ABC College — 2021">${esc(S.education||"")}</textarea></div>
+      <div class="fld"><label>Projects / Experience (one per line)</label><textarea id="rsExp" rows="4" oninput="updateResume()" placeholder="Sales Dashboard — built an interactive Power BI dashboard analysing 12 months of sales\nSQL Analysis — wrote queries to find top products and regional trends">Business Analyst Capstone Project — Analysed a real sales dataset using Excel, SQL & Power BI to build a KPI dashboard and present insights.</textarea></div>
+      <div class="fld"><label>Certifications</label><textarea id="rsCert" rows="2" oninput="updateResume()">Business Analyst Certification — ${esc(c.name)} (Excel, SQL, Power BI, Tableau, AI Tools)</textarea></div>
+      <button class="btn btn-primary btn-block" onclick="printResume()">⬇ Download / Print resume</button>
+    </div>
+    <div class="rs-preview-wrap"><div id="rsPreview" class="resume-doc"></div></div>
+  </div>`;
+  document.getElementById("resumeScreen").style.display="block";
+  document.getElementById("studentApp").classList.remove("show");
+  updateResume(); window.scrollTo(0,0);
+}
+function closeResume(){ document.getElementById("resumeScreen").style.display="none"; document.getElementById("studentApp").classList.add("show"); }
+function toggleSkill(k){ if(RESUME_SKILLS.has(k))RESUME_SKILLS.delete(k); else RESUME_SKILLS.add(k);
+  event.target.classList.toggle("on"); updateResume(); }
+function rv(id){ const e=document.getElementById(id); return e?e.value.trim():""; }
+function updateResume(){
+  const name=rv("rsName")||"Your Name", role=rv("rsRole"), phone=rv("rsPhone"), email=rv("rsEmail"), loc=rv("rsLoc"), linked=rv("rsLinked");
+  const contact=[phone,email,loc,linked].filter(Boolean).join("  |  ");
+  const skills=[...RESUME_SKILLS];
+  const eduLines=rv("rsEdu").split("\n").filter(x=>x.trim());
+  const expLines=rv("rsExp").split("\n").filter(x=>x.trim());
+  const certLines=rv("rsCert").split("\n").filter(x=>x.trim());
+  const sec=(title,body)=>body?`<div class="rd-sec"><h3>${title}</h3>${body}</div>`:"";
+  const list=arr=>`<ul>${arr.map(x=>`<li>${esc(x.trim())}</li>`).join("")}</ul>`;
+  document.getElementById("rsPreview").innerHTML=`
+    <div class="rd-head"><h1>${esc(name)}</h1><div class="rd-role">${esc(role)}</div><div class="rd-contact">${esc(contact)}</div></div>
+    ${sec("Professional Summary",rv("rsSummary")?`<p>${esc(rv("rsSummary"))}</p>`:"")}
+    ${sec("Core Skills", skills.length?`<div class="rd-skills">${skills.map(s=>esc(s)).join(" • ")}</div>`:"")}
+    ${sec("Projects & Experience", expLines.length?list(expLines):"")}
+    ${sec("Education", eduLines.length?list(eduLines):"")}
+    ${sec("Certifications", certLines.length?list(certLines):"")}`;
+}
+function printResume(){
+  const doc=document.getElementById("rsPreview").outerHTML;
+  const w=window.open("","_blank");
+  w.document.write(`<html><head><title>${esc(rv("rsName")||"Resume")} — Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body{margin:0;padding:32px;font-family:Inter;color:#1a2340}${document.querySelector("style").innerHTML}.resume-doc{box-shadow:none;border:0;max-width:720px;margin:0 auto}@media print{body{padding:0}}</style></head>
+    <body>${doc}<scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),400)</scr`+`ipt></body></html>`);
+  w.document.close();
+}
+
 function renderLanding(){
   const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]).slice(0,6), cur=I.currency||"\u20b9";
   const skills=(C.skills&&C.skills.length?C.skills:["Advanced Excel","SQL","Power BI","Tableau","AI Tools"]);
