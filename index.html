@@ -1795,11 +1795,10 @@ const EXCEL_PACK=[
  ]}
 ];
 function loadExcelPack(){
-  confirmDel("Load the full practice pack (Excel, SQL, Power BI, Tableau, AI)? Topics with the same name are skipped.",()=>{
-    let added=0;
-    EXCEL_PACK.forEach(pk=>{ if(!DB.PRACTICE.some(t=>t.topic===pk.topic)){ DB.PRACTICE.push(clone(pk)); added++; } });
-    markDirty(); aRender("practice"); toast(added?("Added "+added+" topic"+(added===1?"":"s")):"Already added");
-  });
+  let added=0, q=0;
+  EXCEL_PACK.forEach(pk=>{ if(!DB.PRACTICE.some(t=>t.topic===pk.topic)){ DB.PRACTICE.push(clone(pk)); added++; q+=pk.questions.length; } });
+  if(!added){ toast("All packs already loaded"); return; }
+  markDirty(); aRender("practice"); toast("Added "+added+" topics · "+q+" questions ✓");
 }
 
 function secPractice(){
