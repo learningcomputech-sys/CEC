@@ -308,6 +308,29 @@ a{color:inherit;text-decoration:none}
 .landing{padding-bottom:76px}
 @media (min-width:761px){.ld-sticky{display:none}.landing{padding-bottom:0}}
 @media (max-width:760px){.ld-trustbadges{grid-template-columns:1fr;margin-top:-20px}}
+.ld-global{background:linear-gradient(150deg,#141c34,#1e2a4d 70%,#2a3358);color:#fff;padding:56px 22px;text-align:center;position:relative;overflow:hidden}
+.ld-global:after{content:"🌍";position:absolute;font-size:340px;opacity:.05;right:-40px;top:20px;pointer-events:none}
+.ld-countries{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:820px;margin:6px auto 0;position:relative;z-index:1}
+.ld-country{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:40px;padding:10px 18px;font-size:14px;font-weight:600;color:#fff}
+.ld-flag{font-size:20px}
+.ld-globalnote{max-width:620px;margin:26px auto 0;font-size:14px;color:#c2cbe0;line-height:1.6;position:relative;z-index:1}.ld-globalnote b{color:#fff}
+.ld-courses{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ld-course{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;transition:border-color .15s,transform .1s}
+.ld-course:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ld-cico{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);display:grid;place-items:center;font-size:26px;margin-bottom:14px}
+.ld-cbody{flex:1}.ld-cbody h4{font-size:16.5px;color:var(--ink);margin-bottom:5px}.ld-cbody p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.ld-cmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.ld-cmeta span{font-size:12px;font-weight:600;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);padding:4px 11px;border-radius:20px}
+.ld-cfee{color:#8a6410!important;background:var(--accent-soft)!important;border-color:#f0dcae!important}
+.ld-cbtn{width:100%;background:var(--ink);color:#fff;font-weight:600;font-size:14px;padding:11px;border-radius:11px;margin-top:auto}
+.ld-cbtn:hover{background:var(--accent);color:#3a2a05}
+.ld-crow1{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.ld-coff{background:#e7f6ee;color:#1c7a4f;font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;letter-spacing:.02em}
+.ld-cprice{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+.ld-cprice s{color:var(--muted-2);font-size:15px;font-weight:600}
+.ld-cprice b{color:var(--ink);font-size:24px;font-family:'Space Grotesk';font-weight:700}
+.ld-cprice em{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:760px){.ld-courses{grid-template-columns:1fr}.ld-global:after{font-size:220px}}
 .ld-navbtns{display:flex;gap:8px;align-items:center}
 .ld-navlink{font-size:13px;font-weight:600;color:var(--ink);padding:9px 12px;border:1px solid var(--line);border-radius:10px}
 .ld-kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
@@ -2293,6 +2316,15 @@ function landingBatchOptions(){
 }
 const LD_BATCHES=["Morning · 7:30 – 8:30 AM","Mid-Morning · 9:30 – 10:30 AM","Evening · 7:00 – 8:00 PM","Night · 8:00 – 9:00 PM"];
 const MOD_COLORS=["#217a56","#1b6e4c","#2a5db0","#c58a26","#0e7c86","#8a3bb0"];
+const LD_COUNTRIES=[["🇺🇸","USA"],["🇬🇧","UK"],["🇿🇦","South Africa"],["🇦🇫","Africa"],["🇲🇾","Malaysia"],["🇸🇬","Singapore"],["🇰🇷","Korea"],["🇯🇵","Japan"],["🇦🇪","Dubai (UAE)"],["🇸🇦","Saudi Arabia"],["🇮🇳","India"]];
+const LD_COURSES=[
+ {ic:"📊",name:"Business Analyst Certification",tag:"Excel · SQL · Power BI · Tableau · AI Tools",dur:"40 days",mrp:"₹10,000",fee:"₹3,000"},
+ {ic:"📈",name:"Data Analytics Professional",tag:"End-to-end data analysis & reporting",dur:"40 days",mrp:"₹20,000",fee:"₹7,000"},
+ {ic:"🐍",name:"Python with AI",tag:"Programming, automation & AI tools",dur:"30 days",mrp:"₹15,000",fee:"₹5,000"},
+ {ic:"📉",name:"Microsoft Power BI Specialist",tag:"Dashboards, DAX & Power Query",dur:"15 days",mrp:"₹7,000",fee:"₹3,000"},
+ {ic:"📊",name:"Tableau Data Visualization",tag:"Interactive dashboards & stories",dur:"15 days",mrp:"₹5,000",fee:"₹2,000"},
+ {ic:"🗄️",name:"SQL Database Mastery",tag:"Queries, joins & data extraction",dur:"25 days",mrp:"₹10,000",fee:"₹5,000"}
+];
 const LD_MODULES=[
   {n:"01",phase:"Foundation Phase",title:"Basic MS Excel",days:"Days 1–10",count:"10 days",topics:["Introduction to MS Excel","Data Entry & Formatting","Basic Formulas & Functions","Logical & Text Functions","Sorting, Filtering & Find","Date & Time Functions","Basic Charts & Graphs","Data Validation & Protection","Conditional Formatting","Mini Dashboard & Revision"]},
   {n:"02",phase:"Power User Phase",title:"Advanced MS Excel",days:"Days 11–20",count:"10 days",topics:["VLOOKUP & HLOOKUP","INDEX, MATCH & XLOOKUP","Pivot Tables — Part 1","Pivot Tables — Part 2 & Charts","SUMIF, COUNTIF & Stats","Advanced Charts & KPI Dashboards","Data Cleaning & Power Query","Named Ranges & What-If Analysis","Macros & Introduction to VBA","Capstone Project & Assessment"]},
@@ -2302,6 +2334,7 @@ const LD_MODULES=[
   {n:"06",phase:"Future Skills Phase",title:"AI Tools for Business Analysts",days:"Days 37–39",count:"3 days",topics:["ChatGPT & Gemini for Business Analysts","Microsoft Copilot & Workflow Automation","Final Capstone & ISO Certification Day"]}
 ];
 function landingBatchOptions(){ return LD_BATCHES.concat(["Either is fine"]).map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join(""); }
+function offPct(mrp,fee){ const m=+String(mrp).replace(/[^0-9]/g,""), f=+String(fee).replace(/[^0-9]/g,""); if(!m||!f||f>=m)return ""; return Math.round((m-f)/m*100)+"% OFF"; }
 function brochureLinks(){
   const raw=(DB.INSTITUTE.brochureUrl||"").trim()||"https://drive.google.com/file/d/1fMKt5Q3Ov1fmSweljgFdcKK0QRg70i4m/view";
   const id=driveId(raw);
@@ -2479,7 +2512,22 @@ function renderLanding(){
     <div class="ld-batches">${LD_BATCHES.map(b=>{const p=b.split(" \u00b7 ");return `<div class="ld-batch"><div class="ld-bico">\ud83d\udd50</div><div><h4>${esc(p[0])}</h4><p>${esc(p[1]||"")}</p></div></div>`;}).join("")}</div>
   </section>
 
-  <section class="ld-sec"><div class="ld-head"><h2>Who is this for?</h2></div>
+  <section class="ld-global">
+    <div class="ld-head"><div class="ld-kicker" style="color:var(--accent)">Global presence</div><h2 style="color:#fff">Trusted by students across the world</h2><p style="color:#c2cbe0">We've trained learners online from 10+ countries \u2014 join a truly global classroom.</p></div>
+    <div class="ld-countries">${LD_COUNTRIES.map(c=>`<div class="ld-country"><span class="ld-flag">${c[0]}</span><span>${esc(c[1])}</span></div>`).join("")}</div>
+    <div class="ld-globalnote">\ud83c\udf0d Students from the <b>USA, UK, South Africa, Malaysia, Singapore, Korea, Japan, Dubai & Saudi Arabia</b> have trained with Computech.</div>
+  </section>
+
+  <section class="ld-sec"><div class="ld-head"><h2>Our courses</h2><p>Industry-focused programmes for every data & tech career path.</p></div>
+    <div class="ld-courses">${LD_COURSES.map(c=>`<div class="ld-course"><div class="ld-crow1"><div class="ld-cico">${c.ic}</div>${c.mrp&&c.fee?`<span class="ld-coff">${esc(offPct(c.mrp,c.fee))}</span>`:""}</div>
+      <div class="ld-cbody"><h4>${esc(c.name)}</h4><p>${esc(c.tag)}</p>
+        <div class="ld-cmeta"><span>\u23f1 ${esc(c.dur)}</span></div>
+        <div class="ld-cprice">${c.mrp?`<s>${esc(c.mrp)}</s>`:""}<b>${esc(c.fee||"Enquire")}</b>${c.mrp?`<em>only</em>`:""}</div></div>
+      <button class="ld-cbtn" onclick="enqScroll()">Enquire now \u2192</button></div>`).join("")}</div>
+    <p class="ld-whytext" style="margin-top:20px">Not sure which course fits you? <b>Tell us your goal</b> and we'll guide you to the right programme.</p>
+  </section>
+
+  <section class="ld-sec ld-alt"><div class="ld-head"><h2>Who is this for?</h2></div>
     <div class="ld-who">
       <div class="ld-whocard"><b>\ud83c\udf93 Fresh Graduates</b><p>Add job-ready BA skills and stand out in placements.</p></div>
       <div class="ld-whocard"><b>\ud83d\udcbc Working Professionals</b><p>Upskill in data tools to get promoted or switch to analytics.</p></div>
