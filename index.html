@@ -1089,7 +1089,7 @@ function seedDB(src){
   if(cd.sigDirector===undefined) cd.sigDirector="";
   if(cd.sigCTO===undefined) cd.sigCTO="";
   if(!Array.isArray(cd.skills)) cd.skills=["Advanced Excel","Power BI","SQL","Tableau","AI Tools"];
-  if(!cd.cert2 || !cd.cert2.v2){ cd.cert2={enabled:true,image:CERT2_IMG,v2:true}; }
+  if(!cd.cert2 || cd.cert2.v!==5){ const wasEnabled=cd.cert2?cd.cert2.enabled!==false:true; cd.cert2={enabled:wasEnabled,image:CERT2_IMG,v:5}; }
   if(!cd.cert2.image) cd.cert2.image=CERT2_IMG;
   if(DB.INSTITUTE.courseFee===undefined) DB.INSTITUTE.courseFee=3000;
   if(DB.INSTITUTE.recordingFee===undefined) DB.INSTITUTE.recordingFee=500;
