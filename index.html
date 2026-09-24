@@ -1083,9 +1083,8 @@ function seedDB(src){
   if(cd.sigDirector===undefined) cd.sigDirector="";
   if(cd.sigCTO===undefined) cd.sigCTO="";
   if(!Array.isArray(cd.skills)) cd.skills=["Advanced Excel","Power BI","SQL","Tableau","AI Tools"];
-  if(!cd.cert2) cd.cert2={enabled:true,image:CERT2_IMG};
+  if(!cd.cert2 || !cd.cert2.v2){ cd.cert2={enabled:true,image:CERT2_IMG,v2:true}; }
   if(!cd.cert2.image) cd.cert2.image=CERT2_IMG;
-  if(cd.cert2.enabled===undefined) cd.cert2.enabled=true;
   if(DB.INSTITUTE.courseFee===undefined) DB.INSTITUTE.courseFee=3000;
   if(DB.INSTITUTE.recordingFee===undefined) DB.INSTITUTE.recordingFee=500;
   if(DB.INSTITUTE.currency===undefined) DB.INSTITUTE.currency="₹";
