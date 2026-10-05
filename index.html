@@ -349,6 +349,15 @@ a{color:inherit;text-decoration:none}
 @keyframes fabpulse{0%,100%{box-shadow:0 6px 20px rgba(37,211,102,.5)}50%{box-shadow:0 6px 30px rgba(37,211,102,.85)}}
 @media (min-width:761px){.ld-fab{bottom:24px}}
 @media (max-width:760px){.ld-steps{gap:12px}.ld-sarrow{display:none}.ld-step{min-width:44%}.ld-igcards{grid-template-columns:1fr 1fr}}
+.ld-nextbatch{display:flex;gap:24px;align-items:center;background:linear-gradient(120deg,var(--ink),var(--ink-2));color:#fff;border-radius:20px;padding:24px;max-width:900px;margin:0 auto;flex-wrap:wrap;box-shadow:0 12px 40px rgba(20,32,61,.18)}
+.ld-nb-img{flex:0 0 240px;max-width:100%}
+.ld-nb-img img{width:100%;border-radius:14px;display:block}
+.ld-nb-body{flex:1;min-width:240px}
+.ld-nb-tag{display:inline-block;background:var(--accent);color:#3a2a05;font-weight:800;font-size:12px;padding:5px 13px;border-radius:30px;margin-bottom:10px}
+.ld-nb-body h2{color:#fff;font-family:'Space Grotesk';font-size:25px;margin-bottom:8px;text-align:left}
+.ld-nb-date{color:var(--accent);font-weight:700;font-size:14px;margin-bottom:8px}
+.ld-nb-body p{color:#c2cbe0;font-size:14.5px;line-height:1.6;margin-bottom:16px}
+@media (max-width:620px){.ld-nextbatch{padding:18px}.ld-nb-img{flex:1 1 100%}.ld-nb-body h2{font-size:21px}}
 .ld-navbtns{display:flex;gap:8px;align-items:center}
 .ld-navlink{font-size:13px;font-weight:600;color:var(--ink);padding:9px 12px;border:1px solid var(--line);border-radius:10px}
 .ld-kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
@@ -695,6 +704,13 @@ a{color:inherit;text-decoration:none}
     <div class="modal-head"><h3>Student details</h3>
       <button class="modal-close" onclick="closeInfoModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="modal-body" id="infoModalBody"></div>
+  </div>
+</div>
+<div class="modal" id="certViewModal" onclick="if(event.target===this)closeCertView()">
+  <div class="modal-box" style="max-width:840px">
+    <div class="modal-head"><h3 id="cvTitle">Certificate</h3>
+      <button class="modal-close" onclick="closeCertView()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" id="cvBody"></div>
   </div>
 </div>
 <div class="modal" id="profModal">
@@ -1082,6 +1098,7 @@ function seedDB(src){
   if(!Array.isArray(DB.PRACTICE)) DB.PRACTICE=[];
   if(DB.INSTITUTE.whatsapp===undefined) DB.INSTITUTE.whatsapp="";
   if(!DB.INSTITUTE.instagram) DB.INSTITUTE.instagram="computech_tumkur";
+  if(!DB.INSTITUTE.nextBatch) DB.INSTITUTE.nextBatch={enabled:false,title:"New batch starting soon!",text:"Limited seats · Enroll now for the Business Analyst program.",date:"",image:""};
   (DB.BATCHES||[]).forEach(b=>{ if(b.time===undefined) b.time=""; });
   const cd=DB.CERT;
   if(cd.roleLeft===undefined) cd.roleLeft="Director";
@@ -1700,8 +1717,8 @@ function renderIssue(){
     return `<div class="row"><div class="rico" style="background:${s.certReady?'var(--good)':'var(--ink-2)'}">${esc((s.name||"?")[0])}</div>
       <div class="rmain"><h4>${esc(s.name)} ${s.certReady?'<span class="tagx ok">Certified</span>':'<span class="tagx no">Not issued</span>'}</h4>
         <div class="credline"><span class="credchip mono">${esc(id)}</span>${s.certReady?`<span class="credchip">ID ${esc(s.certId||"—")}</span><span class="credchip">${esc(s.certDate||"")}</span>`:`<span style="color:var(--muted-2)">${(s.progress||0)}% complete</span>`}</div></div>
-      <div class="ract">${s.certReady
-        ? `<button class="btn btn-ghost btn-sm" onclick="revokeCert('${esc(id)}')">Revoke</button>`
+      <div class="ract" style="gap:6px">${s.certReady
+        ? `<button class="btn btn-primary btn-sm" onclick="viewStudentCert('${esc(id)}')">👁 View</button><button class="btn btn-ghost btn-sm" onclick="revokeCert('${esc(id)}')">Revoke</button>`
         : `<button class="btn btn-primary btn-sm" onclick="issueCert('${esc(id)}')">Issue</button>`}</div></div>`;
   }).join("");
   const adm=admissionDate(b), compl=completionDate(b), defDate=compl||todayStr();
@@ -1715,6 +1732,35 @@ function renderIssue(){
 }
 function issueCert(id){ const s=DB.STUDENTS[id]; if(!s)return; s.certReady=true; if(!s.certId)s.certId=uniqueCertId(); if(!s.certDate)s.certDate=issueDate(); markDirty(); renderIssue(); toast("Certificate issued to "+s.name); }
 function revokeCert(id){ const s=DB.STUDENTS[id]; if(!s)return; s.certReady=false; markDirty(); renderIssue(); toast("Certificate revoked"); }
+let CV_STU=null;
+function viewStudentCert(id){
+  const s={id,...DB.STUDENTS[id]};
+  if(typeof PROFILES!=="undefined" && PROFILES[id] && PROFILES[id].photo) s.photo=PROFILES[id].photo;
+  CV_STU=s;
+  const c2=DB.CERT.cert2||{}, has2=c2.enabled&&c2.image;
+  document.getElementById("cvTitle").textContent=(s.name||"Student")+" — Certificate";
+  document.getElementById("cvBody").innerHTML=`
+    ${has2?`<div class="cert2-tabs"><button class="cert2-tab active" id="cvt1" onclick="cvSwitch(1)">Certificate 1</button><button class="cert2-tab" id="cvt2" onclick="cvSwitch(2)">Certificate 2</button></div>`:""}
+    <div id="cvView1" class="cert-wrap">${certHTML(s)}
+      <div class="cert-actions"><button class="btn btn-primary" onclick="printAdminCert(1)">⬇ Download / Print</button></div></div>
+    ${has2?`<div id="cvView2" class="cert-wrap" style="display:none">${cert2HTML(s)}
+      <div class="cert-actions"><button class="btn btn-primary" onclick="printAdminCert(2)">⬇ Download / Print</button></div></div>`:""}`;
+  document.getElementById("certViewModal").classList.add("show");
+}
+function cvSwitch(n){ const v1=document.getElementById("cvView1"),v2=document.getElementById("cvView2"); if(!v1||!v2)return;
+  v1.style.display=n===1?"block":"none"; v2.style.display=n===2?"block":"none";
+  document.getElementById("cvt1").classList.toggle("active",n===1); document.getElementById("cvt2").classList.toggle("active",n===2); }
+function closeCertView(){ document.getElementById("certViewModal").classList.remove("show"); }
+function printAdminCert(n){
+  const card=document.getElementById(n===2?"cert2Card":"certCard").outerHTML;
+  const land=n===2?"@page{size:landscape}":"";
+  const w=window.open("","_blank");
+  w.document.write(`<html><head><title>${esc((CV_STU&&CV_STU.name)||"Certificate")} — Certificate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>body{margin:0;padding:24px;font-family:Inter}${document.querySelector("style").innerHTML}.certificate,.certificate2{box-shadow:none;margin:0 auto}@media print{body{padding:0}${land}}</style></head>
+    <body>${card}<scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),500)</scr`+`ipt></body></html>`);
+  w.document.close();
+}
 function issueAll(b){ const ids=Object.keys(DB.STUDENTS).filter(id=>DB.STUDENTS[id].batch===b&&!DB.STUDENTS[id].certReady);
   if(!ids.length){ toast("All already certified"); return; }
   confirmAct(`Issue certificates to all ${ids.length} pending student(s) in "${b}"?`,"Issue certificates",()=>{
@@ -2074,6 +2120,21 @@ function editQ(ti,qi){ const isNew=qi===null,q=isNew?{q:"",options:["","","",""]
 function delQ(ti,qi){ confirmDel("Delete this question?",()=>{ DB.PRACTICE[ti].questions.splice(qi,1); markDirty(); aRender("practice"); }); }
 
 /* ENQUIRIES (leads) */
+function secNextBatch(){
+  const n=DB.INSTITUTE.nextBatch||{};
+  return `<div class="card" style="margin-bottom:14px"><div class="sec-head"><h3>Next batch announcement</h3></div>
+    <div class="toggle-row"><div class="tl">Show on enquiry page<small>A highlighted banner (with your image) appears on the enquiry page.</small></div>
+      <label class="switch"><input type="checkbox" ${n.enabled?"checked":""} onchange="DB.INSTITUTE.nextBatch.enabled=this.checked;markDirty();aRender('enquiries')"><span class="slider"></span></label></div>
+    ${n.enabled?`<div class="field" style="margin-top:12px"><label>Title</label><input value="${esc(n.title||'')}" oninput="DB.INSTITUTE.nextBatch.title=this.value;markDirty()" placeholder="New batch starting soon!"></div>
+    <div class="field"><label>Details</label><textarea oninput="DB.INSTITUTE.nextBatch.text=this.value;markDirty()" placeholder="Limited seats · Enroll now…">${esc(n.text||'')}</textarea></div>
+    <div class="field"><label>Start date / timing (optional)</label><input value="${esc(n.date||'')}" oninput="DB.INSTITUTE.nextBatch.date=this.value;markDirty()" placeholder="Starts 15 Oct 2026 · 8–9 PM"></div>
+    <div class="field"><label>Banner image (poster)</label>
+      ${n.image?`<div style="margin-bottom:8px"><img src="${n.image}" style="max-width:100%;max-height:180px;border-radius:10px;border:1px solid var(--line)"> <button class="linkbtn" onclick="DB.INSTITUTE.nextBatch.image='';markDirty();aRender('enquiries')">remove</button></div>`:""}
+      <input type="file" accept="image/*" onchange="uploadNextBatch(this.files[0])"><div class="help">Upload your batch poster/flyer. It shows on the enquiry page.</div></div>
+    <a class="btn btn-ghost btn-sm" href="${esc((DB.INSTITUTE.verifyBase||'').replace(/\/+$/,'')+'/?join')}" target="_blank" rel="noopener">↗ Preview enquiry page</a>`:""}
+  </div>`;
+}
+function uploadNextBatch(file){ if(!file)return; compressImage(file,1000,d=>{ DB.INSTITUTE.nextBatch.image=d; markDirty(); aRender("enquiries"); toast("Banner image added"); }); }
 function secEnquiries(){
   const base=(DB.INSTITUTE.verifyBase||(location.origin+location.pathname)).replace(/\/+$/,"");
   const link=base+"/?join";
@@ -2086,6 +2147,7 @@ function secEnquiries(){
       <a class="btn btn-ghost btn-sm" href="${esc(link)}" target="_blank" rel="noopener">↗ Open page</a>
       <a class="btn btn-ghost btn-sm" href="${esc(waLink('Check out our Business Analyst course & enquire here: '+link))}" target="_blank" rel="noopener">Share on WhatsApp</a>
     </div></div>
+  ${secNextBatch()}
   ${!CLOUD?'<div class="warn-banner"><span>⚠️</span><div>Enquiries need cloud sync (Firebase) to be collected.</div></div>':''}
   <div class="sec-head"><h3>Leads</h3><button class="btn btn-ghost btn-sm" onclick="fillEnquiries()">↻ Refresh</button></div>
   <div id="enqList"><div class="empty">Loading…</div></div>`;
@@ -2626,6 +2688,14 @@ function renderLanding(){
     <div class="ld-tb"><div class="ld-tb-ic">\u23f3</div><div><b>Lifetime Access</b><span>Recordings & support for life</span></div></div>
     <div class="ld-tb"><div class="ld-tb-ic">\ud83c\udf1f</div><div><b>25+ Years</b><span>Trusted since 1999</span></div></div>
   </section>
+
+  ${(()=>{const nb=I.nextBatch||{};if(!nb.enabled)return"";return `<section class="ld-sec"><div class="ld-nextbatch">
+    ${nb.image?`<div class="ld-nb-img"><img src="${esc(nb.image)}" alt="Next batch"></div>`:""}
+    <div class="ld-nb-body"><div class="ld-nb-tag">\ud83d\udce2 New Batch</div><h2>${esc(nb.title||"New batch starting soon!")}</h2>
+      ${nb.date?`<div class="ld-nb-date">\ud83d\udcc5 ${esc(nb.date)}</div>`:""}
+      ${nb.text?`<p>${esc(nb.text)}</p>`:""}
+      <button class="ld-btn" onclick="enqScroll()">Reserve your seat \u2192</button></div>
+  </div></section>`;})()}
 
   <section class="ld-sec"><div class="ld-head"><h2>Here's what you get</h2></div>
     <div class="ld-checks">
