@@ -278,11 +278,16 @@ a{color:inherit;text-decoration:none}
 .ld-pdf{max-width:720px;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,32,61,.1)}
 .ld-pdf iframe{width:100%;height:520px;border:0;display:block}
 @media (max-width:760px){.ld-pdf iframe{height:400px}}
-.ld-reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.ld-review{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.ld-stars{color:var(--accent);font-size:14px;letter-spacing:1px;margin-bottom:8px}
-.ld-review p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin-bottom:10px}
-.ld-by{font-size:12.5px;color:var(--muted);font-weight:600}
+.ld-reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ld-review{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;box-shadow:0 4px 16px rgba(20,32,61,.05)}
+.ld-rv-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.ld-rv-av{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#3a2a05;display:grid;place-items:center;font-weight:800;font-family:'Space Grotesk';font-size:17px;flex:none}
+.ld-rv-id{display:flex;flex-direction:column;line-height:1.3}
+.ld-rv-id b{font-size:14.5px;color:var(--ink)}
+.ld-rv-id span{font-size:12px;color:var(--muted)}
+.ld-stars{color:var(--accent);font-size:15px;letter-spacing:2px;margin-bottom:10px}
+.ld-review p{font-size:13.5px;color:var(--ink-2);line-height:1.6;margin:0}
+@media (max-width:980px){.ld-reviews{grid-template-columns:1fr 1fr}}
 .ld-enq{max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:30px 26px;box-shadow:0 12px 40px rgba(20,32,61,.1)}
 .ld-enq h2{text-align:left;margin-bottom:6px}.ld-enq-sub{color:var(--muted);font-size:14px;margin-bottom:18px}
 .ld-field{margin-bottom:14px}.ld-field label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
@@ -2580,7 +2585,7 @@ const LD_MODULES=[
   {n:"03",phase:"Database Phase",title:"SQL for Business Analysts",days:"Days 21–27",count:"7 days",topics:["Intro to Databases & SQL","Filtering & Sorting Data","Aggregation & Grouping","JOINS — Combining Tables","Subqueries & CTEs","String, Date & Math Functions","SQL Capstone Project"]},
   {n:"04",phase:"Visualisation Phase",title:"Power BI Dashboards",days:"Days 28–32",count:"5 days",topics:["Power BI Desktop Intro","Power Query & Data Prep","DAX — Measures & Calculations","Interactive Dashboards","Publishing & Power BI Service"]},
   {n:"05",phase:"Visualisation Phase II",title:"Tableau for Business Analysts",days:"Days 33–36",count:"4 days",topics:["Tableau Desktop Intro","Calculated Fields & Table Calcs","Interactive Dashboards & Stories","Publishing & Capstone Project"]},
-  {n:"06",phase:"Future Skills Phase",title:"AI Tools for Business Analysts",days:"Days 37–39",count:"3 days",topics:["ChatGPT & Gemini for Business Analysts","Microsoft Copilot & Workflow Automation","Final Capstone & ISO Certification Day"]}
+  {n:"06",phase:"Future Skills Phase",title:"AI Tools for Business Analysts",days:"Days 37–40",count:"4 days",topics:["ChatGPT & Gemini for Business Analysts","Microsoft Copilot & Workflow Automation","Final Capstone & ISO Certification Day"]}
 ];
 function landingBatchOptions(){ return LD_BATCHES.concat(["Either is fine"]).map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join(""); }
 function offPct(mrp,fee){ const m=+String(mrp).replace(/[^0-9]/g,""), f=+String(fee).replace(/[^0-9]/g,""); if(!m||!f||f>=m)return ""; return Math.round((m-f)/m*100)+"% OFF"; }
@@ -2651,7 +2656,7 @@ function printResume(){
 }
 
 function renderLanding(){
-  const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]).slice(0,6), cur=I.currency||"\u20b9";
+  const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]), cur=I.currency||"\u20b9";
   const skills=(C.skills&&C.skills.length?C.skills:["Advanced Excel","SQL","Power BI","Tableau","AI Tools"]);
   const feeMain=cur+Number(I.courseFee||3000).toLocaleString("en-IN");
   const bro=brochureLinks();
@@ -2666,7 +2671,7 @@ function renderLanding(){
     <div class="ld-hero-in">
       <div class="ld-badge">\u2605 2\u00d7 ISO Certified \u00b7 Since 1999 \u00b7 Tumkur</div>
       <div class="ld-kicker">For anyone who wants a career in data</div>
-      <h1>Become a job-ready<br><span>Business Analyst</span> in 39 days</h1>
+      <h1>Become a job-ready<br><span>Business Analyst</span> in 40 days</h1>
       <p class="ld-sub">Learn <mark>Excel, SQL, Power BI, Tableau & AI Tools</mark> with live online classes \u2014 and step into one of India's most in-demand careers. <b>No coding background needed.</b></p>
       <div class="ld-trustbar">
         <div class="ld-avatars">${["A","R","S","K","P"].map((x,i)=>`<span class="ld-av" style="background:${MOD_COLORS[i]}">${x}</span>`).join("")}</div>
@@ -2675,7 +2680,7 @@ function renderLanding(){
       <div class="ld-cta"><button class="ld-btn ld-btn-lg" onclick="enqScroll()">\u2705 YES! I want to become a Business Analyst</button></div>
       <div class="ld-cta2"><a class="ld-btn2" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Download brochure</a>${waBtn}</div>
       <div class="ld-stats">
-        <div class="ld-stat"><b>39</b><span>Days</span></div>
+        <div class="ld-stat"><b>40</b><span>Days</span></div>
         <div class="ld-stat"><b>6</b><span>Modules</span></div>
         <div class="ld-stat"><b>2\u00d7</b><span>ISO Certified</span></div>
         <div class="ld-stat"><b>100%</b><span>Live Online</span></div>
@@ -2725,7 +2730,7 @@ function renderLanding(){
     </div>
   </section>
 
-  <section class="ld-sec ld-alt"><div class="ld-head"><h2>The Programme</h2><p>Six focused modules \u00b7 39 days \u00b7 from absolute basics to job-ready. Tap any module for the full day-by-day plan.</p></div>
+  <section class="ld-sec ld-alt"><div class="ld-head"><h2>The Programme</h2><p>Six focused modules \u00b7 40 days \u00b7 from absolute basics to job-ready. Tap any module for the full day-by-day plan.</p></div>
     <div class="ld-modules">
       ${LD_MODULES.map((m,mi)=>`<details class="ld-mod" style="--mc:${MOD_COLORS[mi]}"><summary>
         <div class="ld-mnum" style="background:${MOD_COLORS[mi]}">${esc(m.n)}</div>
@@ -2802,8 +2807,11 @@ function renderLanding(){
     </div>
   </section>
 
-  ${R.length?`<section class="ld-sec ld-alt"><div class="ld-head"><h2>What our students say</h2></div>
-    <div class="ld-reviews">${R.map(r=>`<div class="ld-review"><div class="ld-stars">${"\u2605".repeat(Math.max(1,Math.min(5,r.rating||5)))}</div><p>"${esc(r.text)}"</p><div class="ld-by">\u2014 ${esc(r.name)}${r.role?", "+esc(r.role):""}</div></div>`).join("")}</div></section>`:""}
+  ${R.length?`<section class="ld-sec ld-alt"><div class="ld-head"><h2>What our students say</h2><p>${R.length}+ happy students \u00b7 real reviews from our learners.</p></div>
+    <div class="ld-reviews">${R.map(r=>{const rt=Math.max(1,Math.min(5,r.rating||5));const initial=esc((r.name||"?").trim()[0]||"?").toUpperCase();
+      return `<div class="ld-review"><div class="ld-rv-top"><div class="ld-rv-av">${initial}</div><div class="ld-rv-id"><b>${esc(r.name)}</b>${r.role?`<span>${esc(r.role)}</span>`:""}</div></div>
+      <div class="ld-stars">${"\u2605".repeat(rt)}${"\u2606".repeat(5-rt)}</div>
+      <p>"${esc(r.text)}"</p></div>`;}).join("")}</div></section>`:""}
 
   ${(()=>{const ig=(I.instagram||"").trim();const url=ig?("https://instagram.com/"+ig.replace(/^@/,"")):"";return `<section class="ld-insta">
     <div class="ld-head"><h2 style="color:#fff">Follow us on <span style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Instagram</span></h2><p style="color:#e8ddff">See student wins, class highlights, tips &amp; new batch updates.</p></div>
