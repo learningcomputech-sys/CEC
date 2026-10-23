@@ -2396,19 +2396,31 @@ function renderJobCachePrev(){
     live.slice(0,8).map(j=>`<div class="rrow"><div class="rmain"><h4>${esc(j.title||"")}</h4><p>${esc(j.company||"")}${j.location?" · "+esc(j.location):""}</p></div></div>`).join("")+
     (live.length>8?`<div class="help">+${live.length-8} more</div>`:"");
 }
+function jobStatus(msg,kind){ const el=document.getElementById("jobCachePrev"); if(!el) return;
+  const col=kind==="err"?"#c81e1e":(kind==="ok"?"#217a56":"var(--muted)");
+  const bg=kind==="err"?"#fdecec":(kind==="ok"?"#e8f5ec":"var(--accent-soft)");
+  el.innerHTML=`<div style="background:${bg};color:${col};border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5;margin-bottom:10px"><b>${kind==="err"?"⚠️ ":kind==="ok"?"✓ ":""}</b>${esc(msg)}</div>`; }
 async function adminRefreshJobs(){
   const key=(DB.INSTITUTE.jobApiKey||"").trim();
   const q=(DB.INSTITUTE.jobKeywords||"Business Analyst India").trim();
   if(!key) return toast("Add your JSearch API key first");
   if(!CLOUD||!fdb) return toast("Cloud sync needed so students can see the feed");
-  toast("Fetching live jobs…");
+  toast("Fetching live jobs…"); jobStatus("Fetching live jobs…","");
   try{
-    const url="https://jsearch.p.rapidapi.com/search?query="+encodeURIComponent(q)+"&page=1&num_pages=1&date_posted=month";
+    const url="https://jsearch.p.rapidapi.com/search?query="+encodeURIComponent(q)+"&page=1&num_pages=1&country=in";
     const res=await fetch(url,{headers:{"X-RapidAPI-Key":key,"X-RapidAPI-Host":"jsearch.p.rapidapi.com"}});
-    if(!res.ok){ toast(res.status===403||res.status===401?"API key rejected — check your key":"Fetch failed ("+res.status+")"); return; }
+    if(!res.ok){
+      let m=""; try{ const b=await res.json(); m=b.message||b.error||""; }catch(e){ try{ m=await res.text(); }catch(e2){} }
+      let hint="";
+      if(res.status===404) hint=" — this usually means your key is NOT subscribed to JSearch yet. On rapidapi.com open the JSearch page and click Subscribe → Basic (Free).";
+      else if(res.status===401||res.status===403) hint=" — the key was rejected. Check you copied it fully, or that you're subscribed to JSearch.";
+      else if(res.status===429) hint=" — you've hit the free monthly limit. Try again next month or upgrade the plan.";
+      jobStatus("JSearch error "+res.status+(m?(': '+m):"")+hint,"err");
+      toast("Fetch failed ("+res.status+")"); return;
+    }
     const data=await res.json();
     const arr=(data&&data.data)||[];
-    if(!arr.length){ toast("No jobs found for those keywords"); return; }
+    if(!arr.length){ jobStatus("Connected OK, but no jobs matched \""+q+"\". Try simpler keywords like \"Business Analyst\".","err"); toast("No jobs found"); return; }
     const jobs=arr.slice(0,25).map(d=>{
       const loc=[d.job_city,d.job_state,d.job_country].filter(Boolean).join(", ");
       let sal=""; if(d.job_min_salary&&d.job_max_salary){ sal=(d.job_salary_currency||"")+d.job_min_salary+"–"+d.job_max_salary+(d.job_salary_period?"/"+d.job_salary_period.toLowerCase():""); }
@@ -2420,7 +2432,7 @@ async function adminRefreshJobs(){
     ADMIN_JOBCACHE=payload;
     toast("Live feed updated — "+jobs.length+" jobs");
     aRender("jobs");
-  }catch(e){ console.error(e); toast("Couldn't reach the job service"); }
+  }catch(e){ console.error(e); jobStatus("Couldn't reach the job service. This is usually a network/CORS block or no internet. Error: "+(e&&e.message?e.message:e),"err"); toast("Couldn't reach the job service"); }
 }
 
 /* ENQUIRIES (leads) */
