@@ -2364,7 +2364,7 @@ function secJobs(){
     <div class="field"><label>JSearch API key (RapidAPI) — only if NOT using a relay</label><input value="${esc(DB.INSTITUTE.jobApiKey||'')}" oninput="DB.INSTITUTE.jobApiKey=this.value;markDirty()" placeholder="Paste your RapidAPI key" class="mono"><div class="help">Direct browser calls are often blocked by RapidAPI — prefer the relay above.</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
       <button class="btn ${ready?'btn-primary':'btn-ghost'} btn-sm" onclick="adminRefreshJobs()" ${ready?"":"disabled"}>↻ Refresh live jobs</button>
-      <span style="font-size:12.5px;color:var(--muted)">${cacheCount} live job${cacheCount===1?"":"s"} cached · updated ${esc(upd)}</span></div>
+      <span id="jobCountLine" style="font-size:12.5px;color:var(--muted)">${cacheCount} live job${cacheCount===1?"":"s"} cached · updated ${esc(upd)}</span></div>
     ${!CLOUD?'<div class="warn-banner" style="margin-top:12px"><span>⚠️</span><div>Live feed needs cloud sync (Firebase) so students can read the saved jobs.</div></div>':''}
     ${!ready?'<div class="warn-banner" style="margin-top:12px"><span>💡</span><div>Add your Relay URL above to turn on the live feed. Hand-picked jobs work without it.</div></div>':''}
     <div id="jobCachePrev" style="margin-top:12px"></div>
@@ -2390,7 +2390,8 @@ function todayStr(){ try{ return new Date().toLocaleDateString("en-GB",{day:"num
 function adminLoadJobCache(){
   renderJobCachePrev();
   if(!CLOUD||!fdb) return;
-  try{ fdb.ref("jobcache").once("value").then(s=>{ const v=s.val(); if(v&&Array.isArray(v.jobs)){ ADMIN_JOBCACHE=v; if(CURSEC==="jobs"){ aRender("jobs"); } } }).catch(()=>{}); }catch(e){}
+  try{ fdb.ref("jobcache").once("value").then(s=>{ const v=s.val(); if(v&&Array.isArray(v.jobs)){ ADMIN_JOBCACHE=v; renderJobCachePrev();
+    const cl=document.getElementById("jobCountLine"); if(cl){ const n=v.jobs.length, u=v.updated?new Date(v.updated).toLocaleString():"never"; cl.textContent=n+" live job"+(n===1?"":"s")+" cached · updated "+u; } } }).catch(()=>{}); }catch(e){}
 }
 function renderJobCachePrev(){
   const el=document.getElementById("jobCachePrev"); if(!el) return;
