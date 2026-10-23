@@ -155,6 +155,25 @@ a{color:inherit;text-decoration:none}
 .recadm-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;background:var(--surface-2);font-size:13px;color:var(--ink)}
 .recadm-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .recadm-item a{color:var(--muted);text-decoration:none;font-weight:700;padding:2px 6px}
+.job-intro{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.ji-ico{font-size:26px;flex:none;line-height:1}
+.job-sec-h{font-size:14px;color:var(--ink);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.job-upd{font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:0}
+.job-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.job-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.job-head{display:flex;align-items:flex-start;gap:11px}
+.job-co-ico{width:40px;height:40px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.job-meta{flex:1;min-width:0}.job-meta h4{font-size:14.5px;color:var(--ink);margin-bottom:2px;line-height:1.3}
+.job-sub{font-size:12.5px;color:var(--muted)}
+.job-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;flex:none;letter-spacing:.02em}
+.job-tag.posted{background:#e8f5ec;color:#217a56}.job-tag.live{background:#eaf0fb;color:#2a5db0}
+html[data-theme="dark"] .job-tag.posted{background:#143022;color:#5fcf99}html[data-theme="dark"] .job-tag.live{background:#13223f;color:#8fb6f0}
+.job-chips{display:flex;flex-wrap:wrap;gap:6px}
+.job-chip{font-size:11.5px;color:var(--muted);background:var(--chip-bg,rgba(0,0,0,.04));border:1px solid var(--line);padding:3px 9px;border-radius:999px}
+html[data-theme="dark"] .job-chip{background:rgba(255,255,255,.05)}
+.job-desc{font-size:13px;color:var(--muted-2,var(--muted));line-height:1.55;margin:0}
+.job-foot{margin-top:auto}
+.jobapply{display:inline-flex;width:auto;text-decoration:none;padding:8px 18px;font-size:13px}
 .prac-grid{display:grid;gap:12px}
 .prac-topic{display:flex;align-items:center;gap:14px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-align:left;width:100%;transition:border-color .15s,transform .1s}
 .prac-topic:hover{border-color:var(--accent);transform:translateY(-1px)}
@@ -1122,7 +1141,10 @@ function seedDB(src){
     ])
   };
   if(!Array.isArray(DB.PRACTICE)) DB.PRACTICE=[];
+  if(!Array.isArray(DB.JOBS)) DB.JOBS=clone(src.JOBS||[]);
   if(DB.INSTITUTE.whatsapp===undefined) DB.INSTITUTE.whatsapp="";
+  if(DB.INSTITUTE.jobApiKey===undefined) DB.INSTITUTE.jobApiKey="";
+  if(DB.INSTITUTE.jobKeywords===undefined) DB.INSTITUTE.jobKeywords="Business Analyst India";
   if(!DB.INSTITUTE.instagram) DB.INSTITUTE.instagram="computech_tumkur";
   if(!DB.INSTITUTE.nextBatch) DB.INSTITUTE.nextBatch={enabled:false,title:"New batch starting soon!",text:"Limited seats · Enroll now for the Business Analyst program.",date:"",image:""};
   (DB.BATCHES||[]).forEach(b=>{ if(b.time===undefined) b.time=""; });
@@ -1146,7 +1168,7 @@ const P = window.PORTAL_DATA || {};
 seedDB({
   INSTITUTE:P.INSTITUTE, ADMIN_HASH:P.adminHash, WELCOME:P.WELCOME, CERT:P.CERT, BATCHES:P.BATCHES,
   STUDENTS:P.STUDENTS, SYLLABUS:P.SYLLABUS, RECORDINGS:P.RECORDINGS,
-  RESOURCES:P.RESOURCES, SCHEDULE:P.SCHEDULE, ANNOUNCEMENTS:P.ANNOUNCEMENTS, REVIEWS:P.REVIEWS, PRO:P.PRO, PRACTICE:P.PRACTICE
+  RESOURCES:P.RESOURCES, SCHEDULE:P.SCHEDULE, ANNOUNCEMENTS:P.ANNOUNCEMENTS, REVIEWS:P.REVIEWS, PRO:P.PRO, PRACTICE:P.PRACTICE, JOBS:P.JOBS
 });
 let ORIGINAL_HTML="";
 document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html>\n"+document.documentElement.outerHTML; });
@@ -1154,7 +1176,7 @@ document.addEventListener("DOMContentLoaded",()=>{ ORIGINAL_HTML="<!DOCTYPE html
 /* ---------- CLOUD (Firebase) ---------- */
 const CLOUD = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && window.FIREBASE_CONFIG.apiKey.indexOf("PASTE")===-1 && typeof firebase!=="undefined");
 let fdb=null, fauth=null, cloudReady=false, saveT=null;
-function seedFromDB(o){ if(!o) return; seedDB({INSTITUTE:o.INSTITUTE,ADMIN_HASH:o.adminHash,WELCOME:o.WELCOME,CERT:o.CERT,BATCHES:o.BATCHES,STUDENTS:o.STUDENTS,SYLLABUS:o.SYLLABUS,RECORDINGS:o.RECORDINGS,RESOURCES:o.RESOURCES,SCHEDULE:o.SCHEDULE,ANNOUNCEMENTS:o.ANNOUNCEMENTS,REVIEWS:o.REVIEWS,PRO:o.PRO,PRACTICE:o.PRACTICE}); }
+function seedFromDB(o){ if(!o) return; seedDB({INSTITUTE:o.INSTITUTE,ADMIN_HASH:o.adminHash,WELCOME:o.WELCOME,CERT:o.CERT,BATCHES:o.BATCHES,STUDENTS:o.STUDENTS,SYLLABUS:o.SYLLABUS,RECORDINGS:o.RECORDINGS,RESOURCES:o.RESOURCES,SCHEDULE:o.SCHEDULE,ANNOUNCEMENTS:o.ANNOUNCEMENTS,REVIEWS:o.REVIEWS,PRO:o.PRO,PRACTICE:o.PRACTICE,JOBS:o.JOBS}); }
 if(CLOUD){
   try{
     firebase.initializeApp(window.FIREBASE_CONFIG); fdb=firebase.database(); fauth=firebase.auth();
@@ -1400,6 +1422,7 @@ const TABS=[
   {id:"resources",label:"Resources",icon:'<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7"/>'},
   {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
   {id:"practice",label:"Practice",icon:'<path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'},
+  {id:"jobs",label:"Jobs",icon:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/>'},
   {id:"certificate",label:"Certificate",icon:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>'}
 ];
 function enterStudent(){
@@ -1474,9 +1497,10 @@ function sGoTab(id){
   window.scrollTo(0,0);
 }
 function sBuildPanels(){
-  document.getElementById("sPanels").innerHTML=panelHome()+panelSyllabus()+panelVideos()+panelResources()+panelSchedule()+panelPractice()+panelCertificate();
+  document.getElementById("sPanels").innerHTML=panelHome()+panelSyllabus()+panelVideos()+panelResources()+panelSchedule()+panelPractice()+panelJobs()+panelCertificate();
   loadCertQR();
   if(CURRENT.recordingAccess!==false) fillRecordings();
+  loadJobCache();
 }
 function panelHome(){
   const next=mySchedule()[0]||{title:"—",day:"",time:""}, W=DB.WELCOME, I=DB.INSTITUTE;
@@ -1656,6 +1680,47 @@ function quizResult(){
     <button class="btn btn-ghost" style="width:auto;display:inline-flex" onclick="practiceTopics()">Back to topics</button></div>`;
 }
 function practiceTopics(){ PQUIZ=null; document.getElementById("practiceArea").innerHTML=practiceTopicsHTML(); }
+/* ---------- JOBS (student) ---------- */
+let JOBCACHE={jobs:[],updated:0};
+function loadJobCache(){
+  if(!CLOUD || !fdb){ renderJobsLive(); return; }
+  try{ fdb.ref("jobcache").once("value").then(s=>{ const v=s.val(); if(v&&Array.isArray(v.jobs)){ JOBCACHE=v; } renderJobsLive(); }).catch(()=>renderJobsLive()); }
+  catch(e){ renderJobsLive(); }
+}
+function jobCard(j,posted){
+  const title=esc(j.title||"Opening"), co=esc(j.company||""), loc=esc(j.location||""), type=esc(j.type||"");
+  const desc=esc((j.desc||"").slice(0,220));
+  const when=posted&&j.date?("Posted "+esc(j.date)):"";
+  const link=j.link||j.url||"";
+  const applyBtn=link?`<a class="btn btn-primary jobapply" href="${esc(link)}" target="_blank" rel="noopener">Apply</a>`:"";
+  return `<div class="job-card">
+    <div class="job-head"><div class="job-co-ico">${esc((co||title||"?").trim()[0]||"J")}</div>
+      <div class="job-meta"><h4>${title}</h4><div class="job-sub">${co}${loc?" · "+loc:""}</div></div>
+      ${posted?'<span class="job-tag posted">Hand-picked</span>':'<span class="job-tag live">Live feed</span>'}</div>
+    <div class="job-chips">${type?`<span class="job-chip">${type}</span>`:""}${j.salary?`<span class="job-chip">${esc(j.salary)}</span>`:""}${when?`<span class="job-chip">${when}</span>`:""}</div>
+    ${desc?`<p class="job-desc">${desc}${(j.desc||"").length>220?"…":""}</p>`:""}
+    <div class="job-foot">${applyBtn}</div>
+  </div>`;
+}
+function panelJobs(){
+  const posted=(DB.JOBS||[]).slice().sort((a,b)=>natSort(b.date,a.date));
+  const live=(JOBCACHE.jobs||[]);
+  const upd=JOBCACHE.updated?new Date(JOBCACHE.updated).toLocaleDateString():"";
+  return `<section class="tab-panel" data-tab="jobs">
+    <div class="topbar"><div><h1>Jobs</h1><div class="sub">Openings for Business Analyst & data roles</div></div></div>
+    <div class="card job-intro"><div class="ji-ico">💼</div><div><b>Your next role starts here.</b><br><span style="color:var(--muted);font-size:13px">Hand-picked openings from your instructor, plus a live feed pulled from job sites. Tap <b>Apply</b> to go straight to the listing.</span></div></div>
+    ${posted.length?`<h3 class="job-sec-h">Recommended by Computech</h3><div class="job-grid">${posted.map(j=>jobCard(j,true)).join("")}</div>`:""}
+    <h3 class="job-sec-h">Live openings${upd?` <span class="job-upd">updated ${esc(upd)}</span>`:""}</h3>
+    <div class="job-grid" id="jobsLive">${live.length?live.map(j=>jobCard(j,false)).join(""):`<div class="card" style="color:var(--muted);font-size:13.5px">Fresh listings appear here as they come in. Check back soon${posted.length?"":" — and see the recommended roles above"}.</div>`}</div>
+  </section>`;
+}
+function renderJobsLive(){
+  const el=document.getElementById("jobsLive"); if(!el) return;
+  const live=(JOBCACHE.jobs||[]);
+  el.innerHTML=live.length?live.map(j=>jobCard(j,false)).join(""):`<div class="card" style="color:var(--muted);font-size:13.5px">Fresh listings appear here as they come in. Check back soon.</div>`;
+  const h=document.querySelector('[data-tab="jobs"] .job-upd');
+  if(h&&JOBCACHE.updated) h.textContent="updated "+new Date(JOBCACHE.updated).toLocaleDateString();
+}
 function certHTML(stu){
   const I=DB.INSTITUTE, C=DB.CERT||{};
   const base=(I.verifyBase||"").replace(/\/$/,"");
@@ -1787,6 +1852,7 @@ const SECTIONS=[
   {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
   {id:"reviews",label:"Reviews",icon:'<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>'},
   {id:"practice",label:"Practice",icon:'<path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'},
+  {id:"jobs",label:"Jobs",icon:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/>'},
   {id:"enquiries",label:"Enquiries",icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
   {id:"schedule",label:"Schedule",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
   {id:"batches",label:"Batches",icon:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18M9 16l2 2 4-4"/>'},
@@ -1810,12 +1876,13 @@ function aBuildNav(){
 function aRender(sec){
   CURSEC=sec;
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
-  const map={welcome:secWelcome,students:secStudents,admissions:secAdmissions,info:secInfo,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,issuecerts:secIssueCerts,verify:secVerifyCert,settings:secSettings};
+  const map={welcome:secWelcome,students:secStudents,admissions:secAdmissions,info:secInfo,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,jobs:secJobs,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,issuecerts:secIssueCerts,verify:secVerifyCert,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
   if(sec==="recordings") adminFillRecs();
   if(sec==="enquiries") fillEnquiries();
   if(sec==="info") fillProfiles();
   if(sec==="admissions") fillAdmissions();
+  if(sec==="jobs") adminLoadJobCache();
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
@@ -2271,6 +2338,90 @@ function editQ(ti,qi){ const isNew=qi===null,q=isNew?{q:"",options:["","","",""]
     if(isNew)DB.PRACTICE[ti].questions.push(rec); else DB.PRACTICE[ti].questions[qi]=rec;
     markDirty(); closeAModal(); aRender("practice"); toast("Question saved"); }); }
 function delQ(ti,qi){ confirmDel("Delete this question?",()=>{ DB.PRACTICE[ti].questions.splice(qi,1); markDirty(); aRender("practice"); }); }
+
+/* JOBS (admin) */
+let ADMIN_JOBCACHE={jobs:[],updated:0};
+function secJobs(){
+  const jobs=(DB.JOBS||[]).slice().sort((a,b)=>natSort(b.date,a.date));
+  const kw=esc(DB.INSTITUTE.jobKeywords||"Business Analyst India");
+  const hasKey=!!(DB.INSTITUTE.jobApiKey||"").trim();
+  const cacheCount=(ADMIN_JOBCACHE.jobs||[]).length;
+  const upd=ADMIN_JOBCACHE.updated?new Date(ADMIN_JOBCACHE.updated).toLocaleString():"never";
+  const posted=jobs.map((j,i)=>`<div class="rrow">
+      <div class="rmain"><h4>${esc(j.title||"Opening")}</h4><p>${esc(j.company||"")}${j.location?" · "+esc(j.location):""}${j.type?" · "+esc(j.type):""}${j.date?" · "+esc(j.date):""}</p></div>
+      <div class="ract"><button class="iconbtn" onclick="editJob(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" onclick="delJob(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`).join("")||'<div class="empty">No hand-picked jobs yet. Add one to feature it for every student.</div>';
+  return `<div class="page-head"><h1>Jobs</h1><p>Two feeds show on each student's Jobs tab: openings you add by hand, and a live feed you refresh from job sites.</p></div>
+  <div class="sec-head"><h3>Hand-picked jobs</h3><button class="btn btn-primary btn-sm" onclick="editJob(null)">+ Add job</button></div>
+  <div class="rlist">${posted}</div>
+  <div class="card" style="margin-top:18px"><div class="sec-head"><h3>Live job feed (auto)</h3></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Pulls real openings from job sites (via JSearch). You press <b>Refresh</b>, the results are saved once, and every student reads the same saved copy — so it stays within the free plan.</p>
+    <div class="field"><label>Search keywords</label><input value="${kw}" oninput="DB.INSTITUTE.jobKeywords=this.value;markDirty()" placeholder="Business Analyst India"><div class="help">e.g. “Business Analyst India”, “Data Analyst Bangalore”, “Power BI fresher”.</div></div>
+    <div class="field"><label>JSearch API key (RapidAPI)</label><input value="${esc(DB.INSTITUTE.jobApiKey||'')}" oninput="DB.INSTITUTE.jobApiKey=this.value;markDirty()" placeholder="Paste your RapidAPI key" class="mono"><div class="help">Free key from <b>rapidapi.com → JSearch</b>. Stored in your portal data only.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
+      <button class="btn ${hasKey?'btn-primary':'btn-ghost'} btn-sm" onclick="adminRefreshJobs()" ${hasKey?"":"disabled"}>↻ Refresh live jobs</button>
+      <span style="font-size:12.5px;color:var(--muted)">${cacheCount} live job${cacheCount===1?"":"s"} cached · updated ${esc(upd)}</span></div>
+    ${!CLOUD?'<div class="warn-banner" style="margin-top:12px"><span>⚠️</span><div>Live feed needs cloud sync (Firebase) so students can read the saved jobs.</div></div>':''}
+    ${!hasKey?'<div class="warn-banner" style="margin-top:12px"><span>💡</span><div>Add a free JSearch key above to turn on the live feed. Hand-picked jobs work without it.</div></div>':''}
+    <div id="jobCachePrev" style="margin-top:12px"></div>
+  </div>`;
+}
+function editJob(i){ const isNew=i===null,j=isNew?{title:"",company:"",location:"",type:"Full-time",salary:"",link:"",desc:"",date:todayStr()}:clone(DB.JOBS[i]);
+  openForm(isNew?"Add job":"Edit job",[
+    {k:"title",label:"Job title",type:"text",val:j.title,ph:"Business Analyst"},
+    {k:"company",label:"Company",type:"text",val:j.company,ph:"Infosys"},
+    {k:"location",label:"Location",type:"text",val:j.location,ph:"Bangalore / Remote"},
+    {k:"type",label:"Type",type:"pick",val:j.type||"Full-time",options:["Full-time","Part-time","Internship","Contract","Remote","Fresher"]},
+    {k:"salary",label:"Salary (optional)",type:"text",val:j.salary||"",ph:"₹3–5 LPA"},
+    {k:"link",label:"Apply link",type:"text",val:j.link||"",ph:"https://…"},
+    {k:"desc",label:"Short description",type:"textarea",val:j.desc||""},
+    {k:"date",label:"Posted date",type:"text",val:j.date||todayStr(),ph:"23 Oct 2026"}
+  ],v=>{
+    if(!v.title.trim())return toast("Job title required");
+    const rec={title:v.title.trim(),company:v.company.trim(),location:v.location.trim(),type:v.type,salary:(v.salary||"").trim(),link:(v.link||"").trim(),desc:(v.desc||"").trim(),date:(v.date||"").trim()};
+    if(isNew)DB.JOBS.unshift(rec); else DB.JOBS[i]=rec;
+    markDirty(); closeAModal(); aRender("jobs"); toast("Job saved"); }); }
+function delJob(i){ confirmDel("Remove this job?",()=>{ DB.JOBS.splice(i,1); markDirty(); aRender("jobs"); }); }
+function todayStr(){ try{ return new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }catch(e){ return ""; } }
+function adminLoadJobCache(){
+  renderJobCachePrev();
+  if(!CLOUD||!fdb) return;
+  try{ fdb.ref("jobcache").once("value").then(s=>{ const v=s.val(); if(v&&Array.isArray(v.jobs)){ ADMIN_JOBCACHE=v; if(CURSEC==="jobs"){ aRender("jobs"); } } }).catch(()=>{}); }catch(e){}
+}
+function renderJobCachePrev(){
+  const el=document.getElementById("jobCachePrev"); if(!el) return;
+  const live=(ADMIN_JOBCACHE.jobs||[]);
+  if(!live.length){ el.innerHTML=""; return; }
+  el.innerHTML=`<div style="font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Currently showing to students</div>`+
+    live.slice(0,8).map(j=>`<div class="rrow"><div class="rmain"><h4>${esc(j.title||"")}</h4><p>${esc(j.company||"")}${j.location?" · "+esc(j.location):""}</p></div></div>`).join("")+
+    (live.length>8?`<div class="help">+${live.length-8} more</div>`:"");
+}
+async function adminRefreshJobs(){
+  const key=(DB.INSTITUTE.jobApiKey||"").trim();
+  const q=(DB.INSTITUTE.jobKeywords||"Business Analyst India").trim();
+  if(!key) return toast("Add your JSearch API key first");
+  if(!CLOUD||!fdb) return toast("Cloud sync needed so students can see the feed");
+  toast("Fetching live jobs…");
+  try{
+    const url="https://jsearch.p.rapidapi.com/search?query="+encodeURIComponent(q)+"&page=1&num_pages=1&date_posted=month";
+    const res=await fetch(url,{headers:{"X-RapidAPI-Key":key,"X-RapidAPI-Host":"jsearch.p.rapidapi.com"}});
+    if(!res.ok){ toast(res.status===403||res.status===401?"API key rejected — check your key":"Fetch failed ("+res.status+")"); return; }
+    const data=await res.json();
+    const arr=(data&&data.data)||[];
+    if(!arr.length){ toast("No jobs found for those keywords"); return; }
+    const jobs=arr.slice(0,25).map(d=>{
+      const loc=[d.job_city,d.job_state,d.job_country].filter(Boolean).join(", ");
+      let sal=""; if(d.job_min_salary&&d.job_max_salary){ sal=(d.job_salary_currency||"")+d.job_min_salary+"–"+d.job_max_salary+(d.job_salary_period?"/"+d.job_salary_period.toLowerCase():""); }
+      let dt=""; if(d.job_posted_at_datetime_utc){ try{ dt=new Date(d.job_posted_at_datetime_utc).toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }catch(e){} }
+      return {title:d.job_title||"",company:d.employer_name||"",location:loc||(d.job_is_remote?"Remote":""),type:d.job_employment_type?String(d.job_employment_type).replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()):"",salary:sal,link:d.job_apply_link||d.job_google_link||"",desc:(d.job_description||"").slice(0,300),date:dt};
+    }).filter(j=>j.title);
+    const payload={jobs,updated:Date.now(),query:q};
+    await fdb.ref("jobcache").set(payload);
+    ADMIN_JOBCACHE=payload;
+    toast("Live feed updated — "+jobs.length+" jobs");
+    aRender("jobs");
+  }catch(e){ console.error(e); toast("Couldn't reach the job service"); }
+}
 
 /* ENQUIRIES (leads) */
 function secNextBatch(){
@@ -2756,7 +2907,7 @@ function importData(file){
       }
     }
     if(!d || (!d.STUDENTS && !d.INSTITUTE)) { toast("No portal data found in that file"); return; }
-    seedDB({INSTITUTE:d.INSTITUTE,ADMIN_HASH:d.adminHash||d.ADMIN_HASH,WELCOME:d.WELCOME,CERT:d.CERT,BATCHES:d.BATCHES,STUDENTS:d.STUDENTS,SYLLABUS:d.SYLLABUS,RECORDINGS:d.RECORDINGS,RESOURCES:d.RESOURCES,SCHEDULE:d.SCHEDULE,ANNOUNCEMENTS:d.ANNOUNCEMENTS,REVIEWS:d.REVIEWS,PRO:d.PRO,PRACTICE:d.PRACTICE});
+    seedDB({INSTITUTE:d.INSTITUTE,ADMIN_HASH:d.adminHash||d.ADMIN_HASH,WELCOME:d.WELCOME,CERT:d.CERT,BATCHES:d.BATCHES,STUDENTS:d.STUDENTS,SYLLABUS:d.SYLLABUS,RECORDINGS:d.RECORDINGS,RESOURCES:d.RESOURCES,SCHEDULE:d.SCHEDULE,ANNOUNCEMENTS:d.ANNOUNCEMENTS,REVIEWS:d.REVIEWS,PRO:d.PRO,PRACTICE:d.PRACTICE,JOBS:d.JOBS});
     const n=Object.keys(DB.STUDENTS).length; markDirty(); aRender(CURSEC);
     toast("Imported "+n+" student"+(n===1?"":"s")+" — now Export to save");
   }catch(e){ toast("Couldn't read that file"); } };
