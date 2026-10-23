@@ -220,6 +220,24 @@ a{color:inherit;text-decoration:none}
 .enq-bb-row b{flex:0 0 24px;text-align:right;color:var(--ink);font-family:'JetBrains Mono'}
 /* Resume builder */
 .resume-screen{position:fixed;inset:0;background:var(--surface-2);z-index:60;overflow-y:auto}
+.admission-screen{position:fixed;inset:0;background:var(--surface-2);z-index:60;overflow-y:auto}
+.adm-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;z-index:5}
+.adm-brand{display:flex;align-items:center;gap:10px;font-size:15px}
+.adm-close{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600}
+.adm-wrap{max-width:760px;margin:0 auto;padding:22px}
+.adm-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px}
+.adm-head h1{font-size:23px;color:var(--ink);margin-bottom:4px}
+.adm-head p{font-size:13.5px;color:var(--muted);margin-bottom:16px}
+.adm-photo-row{display:flex;gap:16px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:8px}
+.adm-photo{width:92px;height:92px;border-radius:12px;background:var(--surface);border:2px dashed var(--line);display:grid;place-items:center;cursor:pointer;overflow:hidden;color:var(--muted);font-size:12px;font-weight:600;text-align:center;flex:none}
+.adm-photo img{width:100%;height:100%;object-fit:cover}
+.adm-photo-h{font-size:14.5px;font-weight:700;color:var(--ink)}
+.adm-photo-s{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+.adm-sec{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-2);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.adm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.adm-grid .fld-full{grid-column:1 / -1}
+.adm-grid .fld{margin-bottom:0}
+@media (max-width:600px){.adm-grid{grid-template-columns:1fr}.adm-wrap{padding:14px}.adm-card{padding:18px}}
 .rs-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;z-index:5}
 .rs-bar b{font-size:16px}.rs-close{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600}
 .rs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto;padding:20px}
@@ -591,6 +609,7 @@ a{color:inherit;text-decoration:none}
 <!-- ============ ENQUIRY / LANDING ============ -->
 <div class="landing" id="landing" style="display:none"></div>
 <div class="resume-screen" id="resumeScreen" style="display:none"></div>
+<div class="admission-screen" id="admissionScreen" style="display:none"></div>
 
 <!-- ============ LOGIN ============ -->
 <div class="auth-wrap" id="authScreen">
@@ -604,8 +623,8 @@ a{color:inherit;text-decoration:none}
     <div class="auth-body">
       <div id="loginView">
         <div class="auth-msg" id="loginMsg"></div>
-        <div class="field"><label for="sid">Student ID</label>
-          <input id="sid" type="text" placeholder="e.g. BA2026001" autocomplete="username" autocapitalize="characters" autocorrect="off" spellcheck="false"></div>
+        <div class="field"><label for="sid">Email or Student ID</label>
+          <input id="sid" type="text" placeholder="you@example.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <div class="field"><label for="spw">Password</label>
           <input id="spw" type="password" placeholder="Your password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <button class="btn btn-primary btn-block" onclick="doStudentLogin()">Sign in</button>
@@ -634,12 +653,14 @@ a{color:inherit;text-decoration:none}
       </div>
       <div id="registerView" style="display:none">
         <div class="auth-msg" id="regMsg"></div>
-        <div class="field"><label for="rName">Full name</label><input id="rName" type="text" placeholder="Your name"></div>
-        <div class="field"><label for="rPhone">Phone (WhatsApp)</label><input id="rPhone" type="tel" placeholder="10-digit mobile"></div>
-        <div class="field"><label for="rEmail">Email</label><input id="rEmail" type="email" placeholder="you@example.com"></div>
+        <div class="field"><label for="rName">Full name</label><input id="rName" type="text" placeholder="Your name" autocapitalize="words"></div>
+        <div class="field"><label for="rPhone">Phone (WhatsApp)</label><input id="rPhone" type="tel" placeholder="10-digit mobile" autocapitalize="none" autocorrect="off"></div>
+        <div class="field"><label for="rEmail">Email (you'll log in with this)</label><input id="rEmail" type="email" placeholder="you@example.com" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
         <div class="field"><label for="rBatch">Preferred batch</label><select id="rBatch"></select></div>
-        <button class="btn btn-primary btn-block" onclick="submitRegister()">Send registration on WhatsApp</button>
-        <div class="demo-hint">We'll review your details and send your login ID &amp; password on WhatsApp.</div>
+        <div class="field"><label for="rPass">Create password</label><input id="rPass" type="password" placeholder="Choose a password" autocapitalize="none" autocorrect="off"></div>
+        <div class="field"><label for="rPass2">Confirm password</label><input id="rPass2" type="password" placeholder="Re-enter password" autocapitalize="none" autocorrect="off"></div>
+        <button class="btn btn-primary btn-block" onclick="submitRegister()">Create my account</button>
+        <div class="demo-hint">Your account is activated after admin approval. Then log in with your email &amp; password.</div>
         <div class="auth-foot"><button onclick="showLogin()">← Back to sign in</button></div>
       </div>
     </div>
@@ -1165,26 +1186,150 @@ function setSaveStatus(t){ const el=document.getElementById("dirtyText"); if(el)
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
 function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); document.getElementById("adminEmailField").style.display=CLOUD?"block":"none"; }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
-function showRegister(){
-  const sel=document.getElementById("rBatch");
-  const names=(DB.BATCHES||[]).map(b=>b.name);
-  sel.innerHTML=(names.length?names:["Morning batch","Evening batch"]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
-  view("registerView","Student registration","Fill your details to request enrolment.");
+function showRegister(){ renderAdmission(); }
+let ADM_PHOTO="";
+function renderAdmission(){
+  const I=DB.INSTITUTE;
+  const batches=(DB.BATCHES||[]).map(b=>b.name);
+  const batchOpts=(batches.length?batches:["Morning batch","Evening batch"]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  const courses=["Business Analyst Certification","Data Analytics","Python with AI","Microsoft Power BI","Tableau","SQL","Other"];
+  const sel=(id,opts,ph)=>`<select id="${id}">${ph?`<option value="">${ph}</option>`:""}${opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`;
+  ADM_PHOTO="";
+  const L=document.getElementById("admissionScreen");
+  L.innerHTML=`
+  <div class="adm-bar"><div class="adm-brand"><div class="logo-mark"><span>C</span></div><b>${esc(I.name)} · Admission Form</b></div>
+    <button class="adm-close" onclick="closeAdmission()">Close ✕</button></div>
+  <div class="adm-wrap">
+    <div class="adm-card">
+      <div class="adm-head"><h1>Course Admission Form</h1><p>Fill in your details below. Your account is activated after admin approval.</p></div>
+      <div class="ld-msg" id="admMsg"></div>
+
+      <div class="adm-photo-row">
+        <div class="adm-photo" id="admPhotoPrev" onclick="document.getElementById('admPhotoInp').click()"><span>+ Add<br>photo</span></div>
+        <div><div class="adm-photo-h">Passport photo</div><div class="adm-photo-s">Tap to upload a clear passport-style photo. It appears on your certificate.</div>
+          <input type="file" id="admPhotoInp" accept="image/*" style="display:none" onchange="pickAdmPhoto(this.files[0])"></div>
+      </div>
+
+      <div class="adm-sec">Personal details</div>
+      <div class="adm-grid">
+        <div class="fld"><label>Full name *</label><input id="aFName" type="text" autocapitalize="words"></div>
+        <div class="fld"><label>Date of birth *</label><input id="aDob" type="date"></div>
+        <div class="fld"><label>Gender</label>${sel("aGender",["Male","Female","Other"],"Select")}</div>
+        <div class="fld"><label>Marital status</label>${sel("aMarital",["Single","Married","Other"],"Select")}</div>
+      </div>
+
+      <div class="adm-sec">Contact</div>
+      <div class="adm-grid">
+        <div class="fld"><label>Email * (you'll log in with this)</label><input id="aEmail" type="email" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+        <div class="fld"><label>Phone / WhatsApp *</label><input id="aPhone" type="tel" autocapitalize="none" autocorrect="off"></div>
+        <div class="fld fld-full"><label>Address</label><textarea id="aAddr" rows="2"></textarea></div>
+      </div>
+
+      <div class="adm-sec">Education & work</div>
+      <div class="adm-grid">
+        <div class="fld"><label>Highest qualification *</label>${sel("aEdu",["10th / SSLC","12th / PUC","Diploma","B.Com","B.A","B.Sc","BCA","BBA","B.E / B.Tech","MBA","M.Sc / MCA","Other"],"Select")}</div>
+        <div class="fld"><label>Work status</label>${sel("aWork",["Student","Working professional","Job seeker","Business owner","Homemaker","Other"],"Select")}</div>
+        <div class="fld fld-full"><label>Current occupation / company (if any)</label><input id="aOcc" type="text"></div>
+      </div>
+
+      <div class="adm-sec">Course</div>
+      <div class="adm-grid">
+        <div class="fld"><label>Course interested *</label>${sel("aCourse",courses)}</div>
+        <div class="fld"><label>Preferred batch</label><select id="aBatch">${batchOpts}</select></div>
+      </div>
+
+      <div class="adm-sec">Create login</div>
+      <div class="adm-grid">
+        <div class="fld"><label>Password *</label><input id="aPass" type="password" autocapitalize="none" autocorrect="off"></div>
+        <div class="fld"><label>Confirm password *</label><input id="aPass2" type="password" autocapitalize="none" autocorrect="off"></div>
+      </div>
+
+      <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="submitAdmission()">✅ Submit admission form</button>
+      <div class="demo-hint" style="text-align:center;margin-top:10px">Fields marked * are required.</div>
+    </div>
+  </div>`;
+  L.style.display="block"; document.getElementById("authScreen").style.display="none"; window.scrollTo(0,0);
+}
+function closeAdmission(){ document.getElementById("admissionScreen").style.display="none"; document.getElementById("authScreen").style.display="flex"; showLogin(); }
+function pickAdmPhoto(file){ if(!file)return; compressImage(file,420,d=>{ ADM_PHOTO=d; document.getElementById("admPhotoPrev").innerHTML=`<img src="${d}">`; }); }
+function submitAdmission(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():"";};
+  const name=g("aFName"), dob=g("aDob"), gender=g("aGender"), marital=g("aMarital"),
+        email=g("aEmail").toLowerCase(), phone=g("aPhone"), addr=g("aAddr"),
+        edu=g("aEdu"), work=g("aWork"), occ=g("aOcc"), course=g("aCourse"), batch=g("aBatch"),
+        pw=g("aPass"), pw2=g("aPass2");
+  const m=document.getElementById("admMsg"); const bad=t=>{m.textContent=t;m.classList.add("show");window.scrollTo(0,0);};
+  if(!name||!email||!phone){ return bad("Please fill name, email and phone."); }
+  if(!dob){ return bad("Please select your date of birth."); }
+  if(!edu){ return bad("Please select your qualification."); }
+  if(!/^\S+@\S+\.\S+$/.test(email)){ return bad("Enter a valid email address."); }
+  if(pw.length<4){ return bad("Password must be at least 4 characters."); }
+  if(pw!==pw2){ return bad("Passwords do not match."); }
+  if(!(CLOUD&&fdb)){ return bad("This form needs internet. Please try again."); }
+  for(const k in DB.STUDENTS){ if((DB.STUDENTS[k].email||"").toLowerCase()===email){ return bad("This email is already registered — try logging in."); } }
+  m.classList.remove("show");
+  const rec={name,dob,gender,marital,email,phone,address:addr,education:edu,workStatus:work,occupation:occ,course,batch,pass:pw,photo:ADM_PHOTO||"",status:"pending",ts:Date.now(),date:new Date().toLocaleString("en-GB")};
+  try{ fdb.ref("registrations").push(rec); }catch(err){ return bad("Couldn't submit. Please try again."); }
+  document.querySelector("#admissionScreen .adm-card").innerHTML=`<div style="text-align:center;padding:40px 16px">
+    <div style="font-size:52px">🎉</div><h1 style="margin:12px 0 8px">Admission submitted!</h1>
+    <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:420px;margin:0 auto">Thank you, ${esc(name)}. Your admission form is received. Once our team approves it, you can log in with your <b>email &amp; password</b>.</p>
+    <button class="btn btn-primary" style="width:auto;margin-top:20px" onclick="closeAdmission()">Back to sign in</button></div>`;
 }
 function submitRegister(){
-  const n=document.getElementById("rName").value.trim(), p=document.getElementById("rPhone").value.trim(),
-        e=document.getElementById("rEmail").value.trim(), b=document.getElementById("rBatch").value;
-  if(!n||!p){ const m=document.getElementById("regMsg"); m.textContent="Please enter your name and phone number."; m.classList.add("show"); return; }
-  document.getElementById("regMsg").classList.remove("show");
-  const msg=`New registration — ${DB.INSTITUTE.course}\n\nName: ${n}\nPhone: ${p}\nEmail: ${e||"-"}\nPreferred batch: ${b}\n\nPlease send my login ID & password. 🙏`;
-  window.open(waLink(msg),"_blank");
+  const n=document.getElementById("rName").value.trim(),
+        p=document.getElementById("rPhone").value.trim(),
+        e=document.getElementById("rEmail").value.trim().toLowerCase(),
+        b=document.getElementById("rBatch").value,
+        pw=document.getElementById("rPass").value.trim(),
+        pw2=document.getElementById("rPass2").value.trim();
+  const m=document.getElementById("regMsg");
+  const bad=t=>{ m.textContent=t; m.classList.add("show"); };
+  if(!n||!p||!e){ return bad("Please fill name, phone and email."); }
+  if(!/^\S+@\S+\.\S+$/.test(e)){ return bad("Enter a valid email address."); }
+  if(pw.length<4){ return bad("Password must be at least 4 characters."); }
+  if(pw!==pw2){ return bad("Passwords do not match."); }
+  if(!(CLOUD&&fdb)){ return bad("Registration needs internet. Please try again."); }
+  for(const k in DB.STUDENTS){ if((DB.STUDENTS[k].email||"").toLowerCase()===e){ return bad("This email is already registered — try logging in."); } }
+  m.classList.remove("show");
+  const rec={name:n,phone:p,email:e,batch:b,pass:pw,status:"pending",ts:Date.now(),date:new Date().toLocaleString("en-GB")};
+  try{ fdb.ref("registrations").push(rec); }catch(err){ return bad("Couldn't submit. Please try again."); }
+  document.getElementById("registerView").innerHTML=`<div style="text-align:center;padding:24px 8px"><div style="font-size:44px">🎉</div>
+    <h3 style="color:var(--ink);margin:10px 0 6px">Registration received!</h3>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6">Thank you, ${esc(n)}. Your account will be activated after admin approval. You'll then log in with your <b>email &amp; password</b>.</p>
+    <button class="btn btn-ghost btn-block" style="margin-top:18px" onclick="showLogin()">← Back to sign in</button></div>`;
+}
+/* ---- device lock (one account = one device) ---- */
+function deviceId(){ try{ let d=localStorage.getItem("cec_device"); if(!d){ d="D"+Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem("cec_device",d); } return d; }catch(e){ return "nodev"; } }
+async function deviceAllowed(sid){
+  if(!(CLOUD&&fdb)) return true;
+  const mine=deviceId();
+  try{
+    const snap=await fdb.ref("devices/"+sid).get();
+    const v=snap.val();
+    if(!v||!v.deviceId){ await fdb.ref("devices/"+sid).set({deviceId:mine,boundAt:Date.now()}); return true; }
+    return v.deviceId===mine;
+  }catch(e){ return true; }
+}
+async function doStudentLogin(){
+  const raw=document.getElementById("sid").value.trim();
+  const pw=document.getElementById("spw").value.trim();
+  let sid=null,s=null;
+  const byId=DB.STUDENTS[raw.toUpperCase()];
+  if(byId){ sid=raw.toUpperCase(); s=byId; }
+  else { const em=raw.toLowerCase(); for(const k in DB.STUDENTS){ if((DB.STUDENTS[k].email||"").toLowerCase()===em){ sid=k; s=DB.STUDENTS[k]; break; } } }
+  const ok = s && (s.pass===pw || (s.pass||"").toLowerCase()===pw.toLowerCase());
+  if(!ok){ return showErr("loginMsg","Incorrect email/ID or password. Try again."); }
+  const allowed=await deviceAllowed(sid);
+  if(!allowed){ return showErr("loginMsg","This account is already active on another device. Please contact admin to reset it."); }
+  document.getElementById("loginMsg").classList.remove("show");
+  CURRENT={id:sid,...s}; enterStudent();
 }
 function view(id,title,desc){
   ["loginView","adminView","verifyView","registerView"].forEach(v=>document.getElementById(v).style.display=v===id?"block":"none");
   document.getElementById("authTitle").textContent=title;
   document.getElementById("authDesc").textContent=desc;
 }
-function doStudentLogin(){
+function doStudentLogin_old(){
   const id=document.getElementById("sid").value.trim().toUpperCase();
   const pw=document.getElementById("spw").value.trim();
   const s=DB.STUDENTS[id];
@@ -1636,6 +1781,7 @@ function printReceipt(){
 const SECTIONS=[
   {id:"welcome",label:"Welcome message",icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
   {id:"students",label:"Students",icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  {id:"admissions",label:"Admissions",icon:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6"/>'},
   {id:"info",label:"Student Info",icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/><circle cx="12" cy="7" r="0.5"/>'},
   {id:"recordings",label:"Recordings",icon:'<rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M10 9l5 3-5 3z"/>'},
   {id:"announcements",label:"Announcements",icon:'<path d="M3 11l18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6"/>'},
@@ -1664,11 +1810,12 @@ function aBuildNav(){
 function aRender(sec){
   CURSEC=sec;
   document.querySelectorAll(".a-navitem").forEach(n=>n.classList.toggle("active",n.dataset.sec===sec));
-  const map={welcome:secWelcome,students:secStudents,info:secInfo,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,issuecerts:secIssueCerts,verify:secVerifyCert,settings:secSettings};
+  const map={welcome:secWelcome,students:secStudents,admissions:secAdmissions,info:secInfo,recordings:secRecordings,announcements:secAnn,reviews:secReviews,practice:secPractice,enquiries:secEnquiries,schedule:secSched,batches:secBatches,resources:secRes,syllabus:secSyl,certificate:secCert,issuecerts:secIssueCerts,verify:secVerifyCert,settings:secSettings};
   document.getElementById("aPanels").innerHTML=map[sec]();
   if(sec==="recordings") adminFillRecs();
   if(sec==="enquiries") fillEnquiries();
   if(sec==="info") fillProfiles();
+  if(sec==="admissions") fillAdmissions();
   window.scrollTo(0,0);
 }
 function markDirty(){ dirty=true; document.getElementById("exportBar").classList.add("dirty");
@@ -2184,6 +2331,73 @@ function fillEnquiries(){
 }
 function delEnquiry(k){ confirmDel("Delete this enquiry?",()=>{ try{ fdb.ref("enquiries/"+k).remove(); }catch(e){} }); }
 
+/* ---- ADMISSIONS (self-registrations) ---- */
+let ADMISSIONS={};
+function secAdmissions(){
+  const base=(DB.INSTITUTE.verifyBase||(location.origin+location.pathname)).replace(/\/+$/,"");
+  const link=base+"/?register";
+  return `<div class="page-head"><h1>Admissions</h1><p>Students who registered via the admission form. Approve to activate their login.</p></div>
+  <div class="card" style="margin-bottom:14px"><div class="sec-head"><h3>Admission form link</h3></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Share this in your WhatsApp group. Students open it, register, and set their own password. They appear below for your approval.</p>
+    <div class="credline" style="margin-bottom:12px"><span class="credchip mono" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(link)}</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="copyEnqLink('${esc(link)}')">📋 Copy link</button>
+      <a class="btn btn-ghost btn-sm" href="${esc(link)}" target="_blank" rel="noopener">↗ Open form</a>
+      <a class="btn btn-ghost btn-sm" href="${esc(waLink('Register for our course here: '+link))}" target="_blank" rel="noopener">Share on WhatsApp</a>
+    </div></div>
+  ${!CLOUD?'<div class="warn-banner"><span>⚠️</span><div>Admissions need cloud sync (Firebase) to work.</div></div>':''}
+  <div class="sec-head"><h3>Pending registrations</h3><button class="btn btn-ghost btn-sm" onclick="fillAdmissions()">↻ Refresh</button></div>
+  <div id="admList"><div class="empty">Loading…</div></div>`;
+}
+function fillAdmissions(){
+  if(!(CLOUD&&fdb)){ const el=document.getElementById("admList"); if(el)el.innerHTML='<div class="empty">Cloud not connected.</div>'; return; }
+  fdb.ref("registrations").on("value",snap=>{
+    const el=document.getElementById("admList"); if(!el)return;
+    const v=snap.val()||{}; ADMISSIONS=v;
+    const items=Object.keys(v).map(k=>({k,...v[k]})).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    if(!items.length){ el.innerHTML='<div class="empty">No pending registrations yet. Share your admission link to collect sign-ups.</div>'; return; }
+    el.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${items.length} pending</div>`+items.map(it=>{
+      return `<div class="row" style="cursor:pointer" onclick="viewReg('${esc(it.k)}')"><div class="rico info-photo">${it.photo?`<img src="${esc(it.photo)}">`:esc((it.name||"?")[0])}</div>
+        <div class="rmain"><h4>${esc(it.name)}</h4>
+          <div class="credline"><span class="credchip">✉ ${esc(it.email||"—")}</span><span class="credchip">📱 ${esc(it.phone||"—")}</span><span class="credchip">${esc(it.course||it.batch||"—")}</span><span style="color:var(--muted-2)">${esc(it.date||"")}</span></div></div>
+        <div class="ract" style="gap:6px" onclick="event.stopPropagation()"><button class="btn btn-primary btn-sm" onclick="approveReg('${esc(it.k)}')">✓ Approve</button>
+          <button class="iconbtn del" onclick="rejectReg('${esc(it.k)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;
+    }).join("");
+  });
+}
+function viewReg(k){
+  const r=ADMISSIONS[k]; if(!r)return;
+  const num=(r.phone||"").replace(/[^0-9]/g,""); const wa="https://wa.me/"+(num.length<=10?"91"+num:num);
+  const row=(l,val)=>val?`<div class="det-row"><span>${l}</span><b>${esc(val)}</b></div>`:"";
+  document.getElementById("infoModalBody").innerHTML=`
+    <div class="det-top"><div class="det-photo">${r.photo?`<img src="${esc(r.photo)}">`:esc((r.name||"?")[0])}</div>
+      <div><h2 style="font-size:19px;color:var(--ink);margin-bottom:2px">${esc(r.name||"")}</h2><div style="font-size:13px;color:var(--muted)">${esc(r.course||"")}</div></div></div>
+    <div class="det-grid">
+      ${row("Email", r.email)}${row("Phone", r.phone)}${row("Date of birth", r.dob?fmtDate(r.dob):"")}${row("Gender", r.gender)}
+      ${row("Marital status", r.marital)}${row("Qualification", r.education)}${row("Work status", r.workStatus)}${row("Occupation", r.occupation)}
+      ${row("Course", r.course)}${row("Preferred batch", r.batch)}${row("Address", r.address)}${row("Submitted", r.date)}</div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="closeInfoModal();approveReg('${esc(k)}')">✓ Approve</button>
+      ${r.phone?`<a class="btn btn-ghost btn-sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
+      <button class="btn btn-ghost btn-sm" onclick="closeInfoModal();rejectReg('${esc(k)}')">Reject</button></div>`;
+  document.getElementById("infoModal").classList.add("show");
+}
+function approveReg(k){
+  const r=ADMISSIONS[k]; if(!r)return;
+  for(const id in DB.STUDENTS){ if((DB.STUDENTS[id].email||"").toLowerCase()===(r.email||"").toLowerCase()){ toast("That email is already a student"); try{fdb.ref("registrations/"+k).remove();}catch(e){} return; } }
+  const sid=genId();
+  DB.STUDENTS[sid]={name:(r.name||"").trim(),batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:r.pass||genPass(8),recordingAccess:true,
+    payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""}};
+  markDirty();
+  if(CLOUD&&fdb){ try{ fdb.ref("profiles/"+sid).set({name:r.name||"",batch:r.batch||"",mobile:r.phone||"",email:r.email||"",dob:r.dob||"",gender:r.gender||"",marital:r.marital||"",address:r.address||"",education:r.education||"",workStatus:r.workStatus||"",occupation:r.occupation||"",photo:r.photo||"",profileDone:true,updated:Date.now()}); }catch(e){} }
+  try{ fdb.ref("registrations/"+k).remove(); }catch(e){}
+  toast("Approved — "+(r.name||"student")+" can now log in");
+}
+function rejectReg(k){ confirmDel("Reject & delete this registration?",()=>{ try{ fdb.ref("registrations/"+k).remove(); }catch(e){} }); }
+function resetDevice(id){ if(!(CLOUD&&fdb)){ toast("Needs cloud"); return; }
+  confirmAct("Reset this student's device lock? They can then log in from a new device.","Reset device",()=>{ try{ fdb.ref("devices/"+id).remove(); }catch(e){} toast("Device reset — they can log in on a new device"); }); }
+
+
 /* STUDENT INFO (profiles + birthdays) */
 let PROFILES={};
 function dobParts(dob){ if(!dob)return null; const d=new Date(dob); if(isNaN(d))return null; return {m:d.getMonth(),day:d.getDate(),y:d.getFullYear()}; }
@@ -2253,6 +2467,7 @@ function openStudentDetail(id){
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
       ${p.mobile?`<a class="btn btn-primary btn-sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn btn-ghost btn-sm" href="tel:${esc(p.mobile)}">Call</a>`:""}
       <button class="btn btn-ghost btn-sm" onclick="closeInfoModal();editStudent('${esc(id)}')">Edit student</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetDevice('${esc(id)}')">🔓 Reset device</button>
     </div>`;
   document.getElementById("infoModal").classList.add("show");
 }
@@ -2559,6 +2774,7 @@ function backupData(){
 window.addEventListener("load",()=>{
   const qs=new URLSearchParams(location.search);
   if(qs.has("join")||qs.has("enquiry")){ setTimeout(renderLanding,250); return; }
+  if(qs.has("register")){ setTimeout(showRegister,250); return; }
   const p=qs.get("verify");
   if(p){ showVerify(); document.getElementById("pubCid").value=p; verifyPublic(); } });
 
