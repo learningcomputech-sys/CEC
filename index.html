@@ -2418,7 +2418,7 @@ async function adminRefreshJobs(){
       const rurl=rbase+(rbase.indexOf("?")>-1?"&":"?")+"query="+encodeURIComponent(q)+"&country=in";
       res=await fetch(rurl);
     } else {
-      const url="https://jsearch.p.rapidapi.com/search?query="+encodeURIComponent(q)+"&page=1&num_pages=1&country=in";
+      const url="https://jsearch.p.rapidapi.com/search-v2?query="+encodeURIComponent(q)+"&num_pages=1&country=in&date_posted=all";
       res=await fetch(url,{headers:{"X-RapidAPI-Key":key,"X-RapidAPI-Host":"jsearch.p.rapidapi.com"}});
     }
     if(!res.ok){
