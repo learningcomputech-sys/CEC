@@ -1211,7 +1211,9 @@ function setSaveStatus(t){ const el=document.getElementById("dirtyText"); if(el)
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
 function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); document.getElementById("adminEmailField").style.display=CLOUD?"block":"none"; }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
-function showRegister(){ renderAdmission(); }
+function showRegister(){ renderAdmission();
+  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=s.val(); if(Array.isArray(b)&&b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
+}
 let ADM_PHOTO="";
 function renderAdmission(){
   const I=DB.INSTITUTE;
