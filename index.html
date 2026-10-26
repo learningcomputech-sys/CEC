@@ -1187,6 +1187,8 @@ if(CLOUD){
       if(v && (v.STUDENTS||v.INSTITUTE) && !adminOpen){ seedFromDB(v); }
       cloudReady=true;
       if(document.getElementById("landing").style.display==="block") renderLanding();
+      const admEl=document.getElementById("admissionScreen");
+      if(admEl && admEl.style.display==="block") syncAdmBatches();
       if(!adminOpen && CURRENT && document.getElementById("studentApp").classList.contains("show")){
         CURRENT={id:CURRENT.id,...DB.STUDENTS[CURRENT.id]};
         const cur=(document.querySelector(".s-navitem.active")||{}).dataset ? (document.querySelector(".s-navitem.active").dataset.tab) : "home";
@@ -1272,6 +1274,14 @@ function renderAdmission(){
     </div>
   </div>`;
   L.style.display="block"; document.getElementById("authScreen").style.display="none"; window.scrollTo(0,0);
+}
+function syncAdmBatches(){
+  const sel=document.getElementById("rBatch"); if(!sel) return;
+  const cur=sel.value;
+  const names=(DB.BATCHES||[]).map(b=>b.name);
+  const list=names.length?names:["Morning batch","Evening batch"];
+  sel.innerHTML=list.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  if(list.indexOf(cur)>-1) sel.value=cur;
 }
 function closeAdmission(){ document.getElementById("admissionScreen").style.display="none"; document.getElementById("authScreen").style.display="flex"; showLogin(); }
 function pickAdmPhoto(file){ if(!file)return; compressImage(file,420,d=>{ ADM_PHOTO=d; document.getElementById("admPhotoPrev").innerHTML=`<img src="${d}">`; }); }
