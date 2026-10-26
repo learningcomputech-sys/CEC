@@ -1287,7 +1287,7 @@ function renderAdmission(){
   L.style.display="block"; document.getElementById("authScreen").style.display="none"; window.scrollTo(0,0);
 }
 function syncAdmBatches(){
-  const sel=document.getElementById("rBatch"); if(!sel) return;
+  const sel=document.getElementById("aBatch"); if(!sel) return;
   const cur=sel.value;
   const names=asArr(DB.BATCHES).map(b=>b&&b.name).filter(Boolean);
   const list=names.length?names:["Morning batch","Evening batch"];
