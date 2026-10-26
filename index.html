@@ -1211,8 +1211,9 @@ function setSaveStatus(t){ const el=document.getElementById("dirtyText"); if(el)
 function showLogin(){ view("loginView","Sign in","Enter the student ID and password shared by your instructor."); }
 function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); document.getElementById("adminEmailField").style.display=CLOUD?"block":"none"; }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
+function asArr(x){ if(Array.isArray(x)) return x; if(x&&typeof x==="object") return Object.keys(x).sort((a,b)=>(+a)-(+b)).map(k=>x[k]); return []; }
 function showRegister(){ renderAdmission();
-  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=s.val(); if(Array.isArray(b)&&b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
+  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=asArr(s.val()).filter(Boolean); if(b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
 }
 let ADM_PHOTO="";
 function renderAdmission(){
@@ -1280,7 +1281,7 @@ function renderAdmission(){
 function syncAdmBatches(){
   const sel=document.getElementById("rBatch"); if(!sel) return;
   const cur=sel.value;
-  const names=(DB.BATCHES||[]).map(b=>b.name);
+  const names=asArr(DB.BATCHES).map(b=>b&&b.name).filter(Boolean);
   const list=names.length?names:["Morning batch","Evening batch"];
   sel.innerHTML=list.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
   if(list.indexOf(cur)>-1) sel.value=cur;
