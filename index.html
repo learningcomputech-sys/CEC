@@ -1212,8 +1212,16 @@ function showLogin(){ view("loginView","Sign in","Enter the student ID and passw
 function showAdmin(){ view("adminView","Staff sign in","Admin access to manage the portal."); document.getElementById("adminEmailField").style.display=CLOUD?"block":"none"; }
 function showVerify(){ view("verifyView","Verify a certificate","Enter a certificate ID to confirm it was issued by Computech CEC."); }
 function asArr(x){ if(Array.isArray(x)) return x; if(x&&typeof x==="object") return Object.keys(x).sort((a,b)=>(+a)-(+b)).map(k=>x[k]); return []; }
+function loadAdmBatchesREST(){
+  try{
+    const base=(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.databaseURL?String(window.FIREBASE_CONFIG.databaseURL):"").replace(/\/+$/,"");
+    if(!base) return;
+    fetch(base+"/portal/BATCHES.json").then(r=>r.json()).then(b=>{ const arr=asArr(b).filter(x=>x&&x.name); if(arr.length){ DB.BATCHES=arr; syncAdmBatches(); } }).catch(()=>{});
+  }catch(e){}
+}
 function showRegister(){ renderAdmission();
-  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=asArr(s.val()).filter(Boolean); if(b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
+  loadAdmBatchesREST();
+  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=asArr(s.val()).filter(x=>x&&x.name); if(b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
 }
 let ADM_PHOTO="";
 function renderAdmission(){
