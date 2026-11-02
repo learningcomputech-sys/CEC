@@ -1429,11 +1429,28 @@ function admFinalSubmit(){
     agreedTerms:true,status:"pending",ts:Date.now(),date:new Date().toLocaleString("en-GB")};
   try{ fdb.ref("registrations").push(rec); }catch(err){ const m=document.getElementById("admMsg2"); if(m){ m.textContent="Couldn't submit. Please try again."; m.classList.add("show"); } return; }
   admCloseAgree();
+  const cur=DB.INSTITUTE.currency||'₹';
   const bal=collect?Math.max(0,fullAmt-paidNow):0;
+  const waNum=(DB.INSTITUTE.whatsapp||"").replace(/[^0-9]/g,"");
+  const waMsg=`*New Admission — ${DB.INSTITUTE.name||"Computech CEC"}*\n`+
+    `Name: ${rec.name}\n`+
+    `Phone: ${rec.phone}\n`+
+    `Email: ${rec.email}\n`+
+    `Course: ${rec.course}\n`+
+    `Batch: ${rec.batch}\n`+
+    `Qualification: ${rec.education}\n`+
+    (collect?`Paid now: ${cur}${Number(paidNow).toLocaleString("en-IN")}${bal>0?` (Balance ${cur}${Number(bal).toLocaleString("en-IN")})`:" (Full paid)"}\n`+
+      `UPI Ref: ${rec.payRef||"-"}\n`:"")+
+    `\nI have submitted the admission form. Please verify. 🙏`;
+  const waUrl="https://wa.me/"+waNum+"?text="+encodeURIComponent(waMsg);
   document.querySelector("#admissionScreen .adm-card").innerHTML=`<div style="text-align:center;padding:40px 16px">
     <div style="font-size:52px">🎉</div><h1 style="margin:12px 0 8px">Admission submitted!</h1>
-    <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:420px;margin:0 auto">Thank you, ${esc(rec.name)}. Your admission form is received.${collect?` We have noted your payment of <b>${esc(DB.INSTITUTE.currency||'₹')}${Number(paidNow).toLocaleString("en-IN")}</b>${bal>0?` (balance ${esc(DB.INSTITUTE.currency||'₹')}${Number(bal).toLocaleString("en-IN")})`:""}.`:""} Once our team approves it, you can log in with your <b>email &amp; password</b>.</p>
-    <button class="btn btn-primary" style="width:auto;margin-top:20px" onclick="closeAdmission()">Back to sign in</button></div>`;
+    <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:420px;margin:0 auto">Thank you, ${esc(rec.name)}. Your admission form is received.${collect?` We have noted your payment of <b>${esc(cur)}${Number(paidNow).toLocaleString("en-IN")}</b>${bal>0?` (balance ${esc(cur)}${Number(bal).toLocaleString("en-IN")})`:""}.`:""}</p>
+    <p style="color:var(--ink);font-size:14px;line-height:1.6;max-width:420px;margin:12px auto 0"><b>One last step:</b> tap below to send your details to us on WhatsApp so we can confirm faster.</p>
+    ${waNum?`<a class="btn btn-primary" style="width:auto;margin-top:18px;background:#25D366;border-color:#25D366;color:#fff" href="${esc(waUrl)}" target="_blank" rel="noopener">📲 Send my details on WhatsApp</a>`:""}
+    <div style="margin-top:14px"><button class="btn btn-ghost" style="width:auto" onclick="closeAdmission()">Back to sign in</button></div>
+    <p style="color:var(--muted);font-size:12px;margin-top:16px">Once our team approves it, you can log in with your <b>email &amp; password</b>.</p></div>`;
+  if(waNum){ try{ setTimeout(()=>{ window.open(waUrl,"_blank"); },400); }catch(e){} }
 }
 function submitRegister(){
   const n=document.getElementById("rName").value.trim(),
