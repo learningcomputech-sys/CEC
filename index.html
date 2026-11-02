@@ -256,7 +256,31 @@ html[data-theme="dark"] .job-chip{background:rgba(255,255,255,.05)}
 .adm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .adm-grid .fld-full{grid-column:1 / -1}
 .adm-grid .fld{margin-bottom:0}
-@media (max-width:600px){.adm-grid{grid-template-columns:1fr}.adm-wrap{padding:14px}.adm-card{padding:18px}}
+.adm-pay{background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.adm-pay-amt{font-size:15px;color:var(--ink)}
+.adm-pay-upi{font-size:13.5px;color:var(--ink);margin-top:8px;word-break:break-all}
+.adm-pay-qr{margin-top:12px;text-align:center}
+.adm-pay-qr img{max-width:180px;width:60%;border-radius:10px;border:1px solid var(--line);background:#fff;padding:6px}
+.adm-pay-qr-h{font-size:12px;color:var(--muted);margin-top:6px}
+.adm-pay-note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.adm-proof{width:100%;min-height:92px;border-radius:12px;background:var(--surface);border:2px dashed var(--line);display:grid;place-items:center;cursor:pointer;overflow:hidden;color:var(--muted);font-size:12px;font-weight:600;text-align:center}
+.adm-proof img{width:100%;height:100%;max-height:220px;object-fit:contain}
+.det-pay{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.det-pay-h{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-2);margin-bottom:8px}
+.adm-steps{display:flex;align-items:center;gap:8px;margin:4px 0 16px}
+.adm-stepdot{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.adm-stepdot span{width:24px;height:24px;border-radius:50%;background:var(--surface);border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--muted)}
+.adm-stepdot.active{color:var(--ink)}
+.adm-stepdot.active span{background:var(--accent);border-color:var(--accent);color:#3a2a05}
+.adm-stepline{flex:1;height:2px;background:var(--line);border-radius:2px}
+.adm-terms{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;max-height:46vh;overflow-y:auto;margin-bottom:14px}
+.adm-term{font-size:13.5px;line-height:1.6;color:var(--ink);padding:7px 0;border-bottom:1px dashed var(--line)}
+.adm-term:last-child{border-bottom:none}
+.adm-agree{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--ink);cursor:pointer;line-height:1.5}
+.adm-agree input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--accent)}
+.adm-agree-ov{position:fixed;inset:0;background:rgba(10,15,25,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}
+.adm-agree-card{background:var(--bg,#fff);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+@media (max-width:600px){.adm-grid{grid-template-columns:1fr}.adm-wrap{padding:14px}.adm-card{padding:18px}.adm-stepdot{font-size:11.5px}}
 .rs-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;z-index:5}
 .rs-bar b{font-size:16px}.rs-close{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600}
 .rs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto;padding:20px}
@@ -1164,6 +1188,12 @@ function seedDB(src){
     if(!s.payment) s.payment={courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""}; });
   if(DB.INSTITUTE.recFolderId===undefined) DB.INSTITUTE.recFolderId="";
   if(DB.INSTITUTE.driveApiKey===undefined) DB.INSTITUTE.driveApiKey="";
+  if(DB.INSTITUTE.upiId===undefined) DB.INSTITUTE.upiId="";
+  if(DB.INSTITUTE.upiName===undefined) DB.INSTITUTE.upiName="";
+  if(DB.INSTITUTE.upiQR===undefined) DB.INSTITUTE.upiQR="";
+  if(DB.INSTITUTE.admissionAmount===undefined) DB.INSTITUTE.admissionAmount=DB.INSTITUTE.courseFee||3000;
+  if(DB.INSTITUTE.collectPayment===undefined) DB.INSTITUTE.collectPayment=false;
+  if(DB.INSTITUTE.terms===undefined) DB.INSTITUTE.terms="1. All fees once paid are non-refundable and non-transferable under any circumstances.\n2. Students must attend classes regularly. Continuous absence without prior intimation may lead to removal from the course without any refund.\n3. The certificate is issued only after completing the course and clearing all pending dues.\n4. Login credentials are personal and must not be shared with anyone. Sharing may lead to suspension of the account.\n5. The institute may revise the class schedule, batch timing or syllabus when necessary, with prior information to students.";
 }
 const P = window.PORTAL_DATA || {};
 seedDB({
@@ -1223,68 +1253,131 @@ function showRegister(){ renderAdmission();
   loadAdmBatchesREST();
   if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=asArr(s.val()).filter(x=>x&&x.name); if(b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
 }
-let ADM_PHOTO="";
+let ADM_PHOTO="", ADM_PAYPROOF="";
 function renderAdmission(){
   const I=DB.INSTITUTE;
   const batches=(DB.BATCHES||[]).map(b=>b.name);
   const batchOpts=(batches.length?batches:["Morning batch","Evening batch"]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
   const courses=["Business Analyst Certification","Data Analytics","Python with AI","Microsoft Power BI","Tableau","SQL","Other"];
   const sel=(id,opts,ph)=>`<select id="${id}">${ph?`<option value="">${ph}</option>`:""}${opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`;
-  ADM_PHOTO="";
+  ADM_PHOTO=""; ADM_PAYPROOF="";
+  const curSym=I.currency||"₹";
+  const payAmt=I.admissionAmount!=null?I.admissionAmount:(I.courseFee||0);
+  const payHTML = I.collectPayment ? `
+      <div class="adm-pay">
+        <div class="adm-pay-amt">Full course fee: <b>${esc(curSym)}${Number(payAmt).toLocaleString("en-IN")}</b></div>
+        ${I.upiId?`<div class="adm-pay-upi">UPI ID: <b>${esc(I.upiId)}</b>${I.upiName?` <span style="color:var(--muted)">(${esc(I.upiName)})</span>`:""} <button type="button" class="linkbtn" onclick="copyUpi('${esc(I.upiId)}')">copy</button></div>`:""}
+        ${I.upiQR?`<div class="adm-pay-qr"><img src="${I.upiQR}" alt="UPI QR"><div class="adm-pay-qr-h">Scan with any UPI app (GPay, PhonePe, Paytm)</div></div>`:""}
+        <div class="adm-pay-note">Please pay the full fee for admission. If you are paying part now, enter the amount you have paid — the balance will be shown to the institute.</div>
+      </div>
+      <div class="adm-grid">
+        <div class="fld"><label>Amount you paid now (${esc(curSym)}) *</label><input id="aPaid" type="number" inputmode="numeric" value="${esc(payAmt)}" placeholder="${esc(payAmt)}"><div class="help">Full fee is ${esc(curSym)}${Number(payAmt).toLocaleString("en-IN")}. Change this only if you paid a part amount.</div></div>
+        <div class="fld"><label>UPI reference / transaction ID *</label><input id="aPayRef" type="text" autocapitalize="none" autocorrect="off" placeholder="e.g. 4312xxxxxxxx"></div>
+        <div class="fld fld-full"><label>Payment screenshot *</label>
+          <div class="adm-proof" id="admProofPrev" onclick="document.getElementById('admProofInp').click()"><span>+ Upload<br>payment screenshot</span></div>
+          <input type="file" id="admProofInp" accept="image/*" style="display:none" onchange="pickAdmProof(this.files[0])"></div>
+      </div>
+` : "";
+  const collect=!!I.collectPayment;
   const L=document.getElementById("admissionScreen");
   L.innerHTML=`
   <div class="adm-bar"><div class="adm-brand"><div class="logo-mark"><span>C</span></div><b>${esc(I.name)} · Admission Form</b></div>
     <button class="adm-close" onclick="closeAdmission()">Close ✕</button></div>
   <div class="adm-wrap">
     <div class="adm-card">
-      <div class="adm-head"><h1>Course Admission Form</h1><p>Fill in your details below. Your account is activated after admin approval.</p></div>
+      <div class="adm-head"><h1>Course Admission Form</h1><p>Your account is activated after admin approval.</p></div>
+      <div class="adm-steps">
+        <div class="adm-stepdot ${''}" id="admDot1"><span>1</span> Personal details</div>
+        <div class="adm-stepline"></div>
+        <div class="adm-stepdot" id="admDot2"><span>2</span> ${collect?"Payment & login":"Login"}</div>
+      </div>
       <div class="ld-msg" id="admMsg"></div>
 
-      <div class="adm-photo-row">
-        <div class="adm-photo" id="admPhotoPrev" onclick="document.getElementById('admPhotoInp').click()"><span>+ Add<br>photo</span></div>
-        <div><div class="adm-photo-h">Passport photo</div><div class="adm-photo-s">Tap to upload a clear passport-style photo. It appears on your certificate.</div>
-          <input type="file" id="admPhotoInp" accept="image/*" style="display:none" onchange="pickAdmPhoto(this.files[0])"></div>
+      <div id="admStep1" class="adm-step">
+        <div class="adm-photo-row">
+          <div class="adm-photo" id="admPhotoPrev" onclick="document.getElementById('admPhotoInp').click()"><span>+ Add<br>photo</span></div>
+          <div><div class="adm-photo-h">Passport photo</div><div class="adm-photo-s">Tap to upload a clear passport-style photo. It appears on your certificate.</div>
+            <input type="file" id="admPhotoInp" accept="image/*" style="display:none" onchange="pickAdmPhoto(this.files[0])"></div>
+        </div>
+        <div class="adm-sec">Personal details</div>
+        <div class="adm-grid">
+          <div class="fld"><label>Full name *</label><input id="aFName" type="text" autocapitalize="words"></div>
+          <div class="fld"><label>Date of birth *</label><input id="aDob" type="date"></div>
+          <div class="fld"><label>Gender</label>${sel("aGender",["Male","Female","Other"],"Select")}</div>
+          <div class="fld"><label>Marital status</label>${sel("aMarital",["Single","Married","Other"],"Select")}</div>
+        </div>
+        <div class="adm-sec">Contact</div>
+        <div class="adm-grid">
+          <div class="fld"><label>Email * (you'll log in with this)</label><input id="aEmail" type="email" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+          <div class="fld"><label>Phone / WhatsApp *</label><input id="aPhone" type="tel" autocapitalize="none" autocorrect="off"></div>
+          <div class="fld fld-full"><label>Address</label><textarea id="aAddr" rows="2"></textarea></div>
+        </div>
+        <div class="adm-sec">Education & work</div>
+        <div class="adm-grid">
+          <div class="fld"><label>Highest qualification *</label>${sel("aEdu",["10th / SSLC","12th / PUC","Diploma","B.Com","B.A","B.Sc","BCA","BBA","B.E / B.Tech","MBA","M.Sc / MCA","Other"],"Select")}</div>
+          <div class="fld"><label>Work status</label>${sel("aWork",["Student","Working professional","Job seeker","Business owner","Homemaker","Other"],"Select")}</div>
+          <div class="fld fld-full"><label>Current occupation / company (if any)</label><input id="aOcc" type="text"></div>
+        </div>
+        <div class="adm-sec">Course</div>
+        <div class="adm-grid">
+          <div class="fld"><label>Course interested *</label>${sel("aCourse",courses)}</div>
+          <div class="fld"><label>Preferred batch</label><select id="aBatch">${batchOpts}</select></div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="admStep(2)">Next: ${collect?"Payment":"Create login"} →</button>
+        <div class="demo-hint" style="text-align:center;margin-top:10px">Fields marked * are required.</div>
       </div>
 
-      <div class="adm-sec">Personal details</div>
-      <div class="adm-grid">
-        <div class="fld"><label>Full name *</label><input id="aFName" type="text" autocapitalize="words"></div>
-        <div class="fld"><label>Date of birth *</label><input id="aDob" type="date"></div>
-        <div class="fld"><label>Gender</label>${sel("aGender",["Male","Female","Other"],"Select")}</div>
-        <div class="fld"><label>Marital status</label>${sel("aMarital",["Single","Married","Other"],"Select")}</div>
+      <div id="admStep2" class="adm-step" style="display:none">
+        ${collect?`<div class="adm-sec">Payment</div>${payHTML}`:""}
+        <div class="adm-sec">Create login</div>
+        <div class="adm-grid">
+          <div class="fld"><label>Password *</label><input id="aPass" type="password" autocapitalize="none" autocorrect="off"></div>
+          <div class="fld"><label>Confirm password *</label><input id="aPass2" type="password" autocapitalize="none" autocorrect="off"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="btn btn-ghost" style="flex:0 0 auto" onclick="admStep(1)">← Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="admReview()">Review &amp; Submit →</button>
+        </div>
+        <div class="demo-hint" style="text-align:center;margin-top:10px">Fields marked * are required.</div>
       </div>
-
-      <div class="adm-sec">Contact</div>
-      <div class="adm-grid">
-        <div class="fld"><label>Email * (you'll log in with this)</label><input id="aEmail" type="email" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
-        <div class="fld"><label>Phone / WhatsApp *</label><input id="aPhone" type="tel" autocapitalize="none" autocorrect="off"></div>
-        <div class="fld fld-full"><label>Address</label><textarea id="aAddr" rows="2"></textarea></div>
-      </div>
-
-      <div class="adm-sec">Education & work</div>
-      <div class="adm-grid">
-        <div class="fld"><label>Highest qualification *</label>${sel("aEdu",["10th / SSLC","12th / PUC","Diploma","B.Com","B.A","B.Sc","BCA","BBA","B.E / B.Tech","MBA","M.Sc / MCA","Other"],"Select")}</div>
-        <div class="fld"><label>Work status</label>${sel("aWork",["Student","Working professional","Job seeker","Business owner","Homemaker","Other"],"Select")}</div>
-        <div class="fld fld-full"><label>Current occupation / company (if any)</label><input id="aOcc" type="text"></div>
-      </div>
-
-      <div class="adm-sec">Course</div>
-      <div class="adm-grid">
-        <div class="fld"><label>Course interested *</label>${sel("aCourse",courses)}</div>
-        <div class="fld"><label>Preferred batch</label><select id="aBatch">${batchOpts}</select></div>
-      </div>
-
-      <div class="adm-sec">Create login</div>
-      <div class="adm-grid">
-        <div class="fld"><label>Password *</label><input id="aPass" type="password" autocapitalize="none" autocorrect="off"></div>
-        <div class="fld"><label>Confirm password *</label><input id="aPass2" type="password" autocapitalize="none" autocorrect="off"></div>
-      </div>
-
-      <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="submitAdmission()">✅ Submit admission form</button>
-      <div class="demo-hint" style="text-align:center;margin-top:10px">Fields marked * are required.</div>
     </div>
   </div>`;
   L.style.display="block"; document.getElementById("authScreen").style.display="none"; window.scrollTo(0,0);
+  admSetStep(1);
+}
+function admSetStep(n){
+  const s1=document.getElementById("admStep1"), s2=document.getElementById("admStep2");
+  if(!s1||!s2) return;
+  s1.style.display=n===1?"block":"none"; s2.style.display=n===2?"block":"none";
+  const d1=document.getElementById("admDot1"), d2=document.getElementById("admDot2");
+  if(d1) d1.classList.toggle("active",n>=1);
+  if(d2) d2.classList.toggle("active",n>=2);
+  try{ document.querySelector("#admissionScreen .adm-card").scrollIntoView({block:"start"}); }catch(e){} window.scrollTo(0,0);
+}
+function admBad(t){ const m=document.getElementById("admMsg"); if(m){ m.textContent=t; m.classList.add("show"); } window.scrollTo(0,0); }
+function admClearMsg(){ const m=document.getElementById("admMsg"); if(m) m.classList.remove("show"); }
+function admStep(n){
+  if(n===2){ const e=admValidate1(); if(e){ return admBad(e); } }
+  admClearMsg(); admSetStep(n);
+}
+function admValidate1(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():"";};
+  if(!g("aFName")||!g("aEmail")||!g("aPhone")) return "Please fill name, email and phone.";
+  if(!g("aDob")) return "Please select your date of birth.";
+  if(!/^\S+@\S+\.\S+$/.test(g("aEmail"))) return "Enter a valid email address.";
+  if(!g("aEdu")) return "Please select your qualification.";
+  return "";
+}
+function admValidate2(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():"";};
+  if(DB.INSTITUTE.collectPayment){
+    if(!(+g("aPaid")>0)) return "Please enter the amount you paid.";
+    if(!g("aPayRef")) return "Please enter your UPI reference / transaction ID.";
+    if(!ADM_PAYPROOF) return "Please upload your payment screenshot.";
+  }
+  if(g("aPass").length<4) return "Password must be at least 4 characters.";
+  if(g("aPass")!==g("aPass2")) return "Passwords do not match.";
+  return "";
 }
 function syncAdmBatches(){
   const sel=document.getElementById("aBatch"); if(!sel) return;
@@ -1296,27 +1389,50 @@ function syncAdmBatches(){
 }
 function closeAdmission(){ document.getElementById("admissionScreen").style.display="none"; document.getElementById("authScreen").style.display="flex"; showLogin(); }
 function pickAdmPhoto(file){ if(!file)return; compressImage(file,420,d=>{ ADM_PHOTO=d; document.getElementById("admPhotoPrev").innerHTML=`<img src="${d}">`; }); }
-function submitAdmission(){
+function pickAdmProof(file){ if(!file)return; compressImage(file,700,d=>{ ADM_PAYPROOF=d; const el=document.getElementById("admProofPrev"); if(el) el.innerHTML=`<img src="${d}">`; }); }
+function copyUpi(id){ (navigator.clipboard?navigator.clipboard.writeText(id):Promise.reject()).then(()=>toast("UPI ID copied")).catch(()=>{ prompt("Copy UPI ID:",id); }); }
+function admReview(){
+  const e=admValidate2(); if(e){ return admBad(e); }
+  if(!(CLOUD&&fdb)){ return admBad("This form needs internet. Please try again."); }
+  const email=(document.getElementById("aEmail").value||"").trim().toLowerCase();
+  for(const k in DB.STUDENTS){ if((DB.STUDENTS[k].email||"").toLowerCase()===email){ return admBad("This email is already registered — try logging in."); } }
+  admClearMsg();
+  const terms=(DB.INSTITUTE.terms||"").split("\n").filter(x=>x.trim());
+  let ov=document.getElementById("admAgreeOv");
+  if(ov) ov.remove();
+  ov=document.createElement("div");
+  ov.id="admAgreeOv"; ov.className="adm-agree-ov";
+  ov.innerHTML=`<div class="adm-agree-card">
+    <div class="adm-head"><h1>Terms &amp; Conditions</h1><p>Please read and accept to complete your admission.</p></div>
+    <div class="adm-terms">${terms.length?terms.map(t=>`<div class="adm-term">${esc(t)}</div>`).join(""):`<div class="adm-term">${esc(DB.INSTITUTE.terms||"")}</div>`}</div>
+    <label class="adm-agree"><input type="checkbox" id="aAgree"> <span>I have read and agree to the above terms and conditions.</span></label>
+    <div class="ld-msg" id="admMsg2"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:0 0 auto" onclick="admCloseAgree()">← Back</button>
+      <button class="btn btn-primary" style="flex:1" onclick="admFinalSubmit()">✅ Agree &amp; Submit</button>
+    </div></div>`;
+  document.getElementById("admissionScreen").appendChild(ov);
+}
+function admCloseAgree(){ const ov=document.getElementById("admAgreeOv"); if(ov) ov.remove(); }
+function admFinalSubmit(){
+  const ag=document.getElementById("aAgree");
+  if(!ag||!ag.checked){ const m=document.getElementById("admMsg2"); if(m){ m.textContent="Please tick the box to accept the terms before submitting."; m.classList.add("show"); } return; }
   const g=id=>{const el=document.getElementById(id);return el?el.value.trim():"";};
-  const name=g("aFName"), dob=g("aDob"), gender=g("aGender"), marital=g("aMarital"),
-        email=g("aEmail").toLowerCase(), phone=g("aPhone"), addr=g("aAddr"),
-        edu=g("aEdu"), work=g("aWork"), occ=g("aOcc"), course=g("aCourse"), batch=g("aBatch"),
-        pw=g("aPass"), pw2=g("aPass2");
-  const m=document.getElementById("admMsg"); const bad=t=>{m.textContent=t;m.classList.add("show");window.scrollTo(0,0);};
-  if(!name||!email||!phone){ return bad("Please fill name, email and phone."); }
-  if(!dob){ return bad("Please select your date of birth."); }
-  if(!edu){ return bad("Please select your qualification."); }
-  if(!/^\S+@\S+\.\S+$/.test(email)){ return bad("Enter a valid email address."); }
-  if(pw.length<4){ return bad("Password must be at least 4 characters."); }
-  if(pw!==pw2){ return bad("Passwords do not match."); }
-  if(!(CLOUD&&fdb)){ return bad("This form needs internet. Please try again."); }
-  for(const k in DB.STUDENTS){ if((DB.STUDENTS[k].email||"").toLowerCase()===email){ return bad("This email is already registered — try logging in."); } }
-  m.classList.remove("show");
-  const rec={name,dob,gender,marital,email,phone,address:addr,education:edu,workStatus:work,occupation:occ,course,batch,pass:pw,photo:ADM_PHOTO||"",status:"pending",ts:Date.now(),date:new Date().toLocaleString("en-GB")};
-  try{ fdb.ref("registrations").push(rec); }catch(err){ return bad("Couldn't submit. Please try again."); }
+  const collect=!!DB.INSTITUTE.collectPayment;
+  const fullAmt=DB.INSTITUTE.admissionAmount!=null?DB.INSTITUTE.admissionAmount:(DB.INSTITUTE.courseFee||0);
+  const paidNow=collect?(+g("aPaid")||0):0;
+  const rec={name:g("aFName"),dob:g("aDob"),gender:g("aGender"),marital:g("aMarital"),
+    email:g("aEmail").toLowerCase(),phone:g("aPhone"),address:g("aAddr"),
+    education:g("aEdu"),workStatus:g("aWork"),occupation:g("aOcc"),course:g("aCourse"),batch:g("aBatch"),
+    pass:g("aPass"),photo:ADM_PHOTO||"",
+    payRef:collect?g("aPayRef"):"",payProof:collect?(ADM_PAYPROOF||""):"",payAmount:collect?fullAmt:0,payPaid:paidNow,
+    agreedTerms:true,status:"pending",ts:Date.now(),date:new Date().toLocaleString("en-GB")};
+  try{ fdb.ref("registrations").push(rec); }catch(err){ const m=document.getElementById("admMsg2"); if(m){ m.textContent="Couldn't submit. Please try again."; m.classList.add("show"); } return; }
+  admCloseAgree();
+  const bal=collect?Math.max(0,fullAmt-paidNow):0;
   document.querySelector("#admissionScreen .adm-card").innerHTML=`<div style="text-align:center;padding:40px 16px">
     <div style="font-size:52px">🎉</div><h1 style="margin:12px 0 8px">Admission submitted!</h1>
-    <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:420px;margin:0 auto">Thank you, ${esc(name)}. Your admission form is received. Once our team approves it, you can log in with your <b>email &amp; password</b>.</p>
+    <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:420px;margin:0 auto">Thank you, ${esc(rec.name)}. Your admission form is received.${collect?` We have noted your payment of <b>${esc(DB.INSTITUTE.currency||'₹')}${Number(paidNow).toLocaleString("en-IN")}</b>${bal>0?` (balance ${esc(DB.INSTITUTE.currency||'₹')}${Number(bal).toLocaleString("en-IN")})`:""}.`:""} Once our team approves it, you can log in with your <b>email &amp; password</b>.</p>
     <button class="btn btn-primary" style="width:auto;margin-top:20px" onclick="closeAdmission()">Back to sign in</button></div>`;
 }
 function submitRegister(){
@@ -2485,6 +2601,7 @@ function secNextBatch(){
   </div>`;
 }
 function uploadNextBatch(file){ if(!file)return; compressImage(file,1000,d=>{ DB.INSTITUTE.nextBatch.image=d; markDirty(); aRender("announcements"); toast("Banner image added"); }); }
+function uploadUpiQR(file){ if(!file)return; compressImage(file,700,d=>{ DB.INSTITUTE.upiQR=d; markDirty(); aRender("settings"); toast("QR code added"); }); }
 function secEnquiries(){
   const base=(DB.INSTITUTE.verifyBase||(location.origin+location.pathname)).replace(/\/+$/,"");
   const link=base+"/?join";
@@ -2573,6 +2690,17 @@ function viewReg(k){
       ${row("Email", r.email)}${row("Phone", r.phone)}${row("Date of birth", r.dob?fmtDate(r.dob):"")}${row("Gender", r.gender)}
       ${row("Marital status", r.marital)}${row("Qualification", r.education)}${row("Work status", r.workStatus)}${row("Occupation", r.occupation)}
       ${row("Course", r.course)}${row("Preferred batch", r.batch)}${row("Address", r.address)}${row("Submitted", r.date)}</div>
+    ${(r.payRef||r.payProof||r.payAmount||r.payPaid)?(()=>{const cur=DB.INSTITUTE.currency||'₹';const full=+r.payAmount||0;const paid=+r.payPaid||0;const bal=Math.max(0,full-paid);return `<div class="det-pay">
+      <div class="det-pay-h">Payment</div>
+      <div class="det-grid">
+        ${full?`<div class="det-row"><span>Full fee</span><b>${esc(cur)}${Number(full).toLocaleString("en-IN")}</b></div>`:""}
+        <div class="det-row"><span>Paid now</span><b style="color:var(--good)">${esc(cur)}${Number(paid).toLocaleString("en-IN")}</b></div>
+        ${bal>0?`<div class="det-row"><span>Balance due</span><b style="color:#c81e1e">${esc(cur)}${Number(bal).toLocaleString("en-IN")}</b></div>`:(full?`<div class="det-row"><span>Balance</span><b style="color:var(--good)">Fully paid</b></div>`:"")}
+        ${r.payRef?`<div class="det-row"><span>UPI reference</span><b>${esc(r.payRef)}</b></div>`:`<div class="det-row"><span>UPI reference</span><b style="color:var(--muted)">not provided</b></div>`}
+      </div>
+      ${r.payProof?`<div style="margin-top:10px"><a href="${esc(r.payProof)}" target="_blank" rel="noopener"><img src="${esc(r.payProof)}" style="max-width:220px;max-height:260px;border-radius:10px;border:1px solid var(--line)"></a><div class="help">Tap to open the payment screenshot full-size.</div></div>`:'<div class="help" style="margin-top:8px">No screenshot uploaded.</div>'}
+      <div class="help" style="margin-top:6px">⚠️ Verify this payment in your UPI app before approving.</div>
+    </div>`;})():""}
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
       <button class="btn btn-primary btn-sm" onclick="closeInfoModal();approveReg('${esc(k)}')">✓ Approve</button>
       ${r.phone?`<a class="btn btn-ghost btn-sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
@@ -2583,8 +2711,9 @@ function approveReg(k){
   const r=ADMISSIONS[k]; if(!r)return;
   for(const id in DB.STUDENTS){ if((DB.STUDENTS[id].email||"").toLowerCase()===(r.email||"").toLowerCase()){ toast("That email is already a student"); try{fdb.ref("registrations/"+k).remove();}catch(e){} return; } }
   const sid=genId();
+  const paidAmt=+r.payPaid||((r.payRef||r.payProof)?(+r.payAmount||0):0);
   DB.STUDENTS[sid]={name:(r.name||"").trim(),batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:r.pass||genPass(8),recordingAccess:true,
-    payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""}};
+    payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:paidAmt,mode:paidAmt?"UPI":"",ref:r.payRef||"",date:paidAmt?todayStr():""}};
   markDirty();
   if(CLOUD&&fdb){ try{ fdb.ref("profiles/"+sid).set({name:r.name||"",batch:r.batch||"",mobile:r.phone||"",email:r.email||"",dob:r.dob||"",gender:r.gender||"",marital:r.marital||"",address:r.address||"",education:r.education||"",workStatus:r.workStatus||"",occupation:r.occupation||"",photo:r.photo||"",profileDone:true,updated:Date.now()}); }catch(e){} }
   try{ fdb.ref("registrations/"+k).remove(); }catch(e){}
@@ -2859,6 +2988,24 @@ function secSettings(){
     </div>
     <div class="field"><label>Currency symbol</label><input class="mono" style="max-width:120px" value="${esc(t.currency||'₹')}" oninput="DB.INSTITUTE.currency=this.value;markDirty()"></div>
     <div class="help">These pre-fill each new student's payment. You can still change fees per student when adding them.</div>
+  </div>
+  <div class="card"><div class="sec-head"><h3>Payment on admission form (UPI)</h3></div>
+    <div class="toggle-row"><div class="tl">Collect payment on the admission form<small>Shows your UPI details and asks the student for their payment reference + screenshot.</small></div>
+      <label class="switch"><input type="checkbox" ${t.collectPayment?"checked":""} onchange="DB.INSTITUTE.collectPayment=this.checked;markDirty();aRender('settings')"><span class="slider"></span></label></div>
+    ${t.collectPayment?`
+    <div class="grid2" style="margin-top:12px">
+      <div class="field"><label>Amount to collect (${esc(t.currency||'₹')})</label><input type="number" class="mono" value="${esc(t.admissionAmount!=null?t.admissionAmount:(t.courseFee||3000))}" oninput="DB.INSTITUTE.admissionAmount=+this.value||0;markDirty()"><div class="help">e.g. full fee, or a booking amount.</div></div>
+      <div class="field"><label>UPI ID</label><input class="mono" value="${esc(t.upiId||'')}" oninput="DB.INSTITUTE.upiId=this.value.trim();markDirty()" placeholder="computech@okaxis"></div>
+    </div>
+    <div class="field"><label>Name shown on UPI (optional)</label><input value="${esc(t.upiName||'')}" oninput="DB.INSTITUTE.upiName=this.value;markDirty()" placeholder="Computech CEC"></div>
+    <div class="field"><label>UPI QR code image (optional)</label>
+      ${t.upiQR?`<div style="margin-bottom:8px"><img src="${t.upiQR}" style="max-width:160px;border-radius:10px;border:1px solid var(--line)"> <button class="linkbtn" onclick="DB.INSTITUTE.upiQR='';markDirty();aRender('settings')">remove</button></div>`:""}
+      <input type="file" accept="image/*" onchange="uploadUpiQR(this.files[0])"><div class="help">Upload your UPI/GPay/PhonePe QR screenshot. Students can scan it to pay.</div></div>
+    <div class="warn-banner"><span>💡</span><div>This collects the student's payment <b>reference & screenshot</b> as proof. You verify it yourself when approving the admission — no money is processed by the portal.</div></div>`:''}
+  </div>
+  <div class="card"><div class="sec-head"><h3>Admission terms &amp; conditions</h3></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Shown on the admission form as an agreement the student must accept before submitting. One point per line.</p>
+    <div class="field"><textarea rows="8" style="font-size:13.5px;line-height:1.6" oninput="DB.INSTITUTE.terms=this.value;markDirty()">${esc(t.terms||'')}</textarea></div>
   </div>
   <div class="card"><div class="sec-head"><h3>Recordings folder (auto-sync)</h3></div>
     <div class="warn-banner" style="margin-bottom:14px"><span>🎥</span><div>This is the <b>common</b> folder used for any batch that doesn't have its own. To give each batch <b>different</b> recordings, set a folder per batch in the <b>Batches</b> tab. The API key below is shared by all folders.</div></div>
