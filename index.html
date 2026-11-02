@@ -1249,9 +1249,23 @@ function loadAdmBatchesREST(){
     fetch(base+"/portal/BATCHES.json").then(r=>r.json()).then(b=>{ const arr=asArr(b).filter(x=>x&&x.name); if(arr.length){ DB.BATCHES=arr; syncAdmBatches(); } }).catch(()=>{});
   }catch(e){}
 }
-function showRegister(){ renderAdmission();
-  loadAdmBatchesREST();
-  if(CLOUD && fdb){ try{ fdb.ref("portal/BATCHES").once("value").then(s=>{ const b=asArr(s.val()).filter(x=>x&&x.name); if(b.length){ DB.BATCHES=b; syncAdmBatches(); } }).catch(()=>{}); }catch(e){} }
+function showRegister(){
+  const L=document.getElementById("admissionScreen");
+  const as=document.getElementById("authScreen"); if(as) as.style.display="none";
+  if(L){ L.style.display="block";
+    L.innerHTML=`<div class="adm-bar"><div class="adm-brand"><div class="logo-mark"><span>C</span></div><b>${esc(DB.INSTITUTE.name||'Admission')} · Admission Form</b></div><button class="adm-close" onclick="closeAdmission()">Close ✕</button></div><div class="adm-wrap"><div class="adm-card"><div style="padding:48px 16px;text-align:center;color:var(--muted)">Loading form…</div></div></div>`;
+  }
+  let done=false; const go=()=>{ if(done)return; done=true; renderAdmission(); };
+  const base=(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.databaseURL?String(window.FIREBASE_CONFIG.databaseURL):"").replace(/\/+$/,"");
+  if(!base){ go(); return; }
+  setTimeout(go,3000); // fallback if the network hangs
+  Promise.all([
+    fetch(base+"/portal/INSTITUTE.json").then(r=>r.json()).catch(()=>null),
+    fetch(base+"/portal/BATCHES.json").then(r=>r.json()).catch(()=>null)
+  ]).then(([inst,bat])=>{
+    if(inst&&typeof inst==="object") Object.assign(DB.INSTITUTE, inst);
+    const arr=asArr(bat).filter(x=>x&&x.name); if(arr.length) DB.BATCHES=arr;
+  }).catch(()=>{}).finally(go);
 }
 let ADM_PHOTO="", ADM_PAYPROOF="";
 function renderAdmission(){
