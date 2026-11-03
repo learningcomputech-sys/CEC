@@ -2705,7 +2705,7 @@ function fillAdmissions(){
       return `<div class="row" style="cursor:pointer" onclick="viewReg('${esc(it.k)}')"><div class="rico info-photo">${it.photo?`<img src="${esc(it.photo)}">`:esc((it.name||"?")[0])}</div>
         <div class="rmain"><h4>${esc(it.name)}</h4>
           <div class="credline"><span class="credchip">✉ ${esc(it.email||"—")}</span><span class="credchip">📱 ${esc(it.phone||"—")}</span><span class="credchip">${esc(it.course||it.batch||"—")}</span><span style="color:var(--muted-2)">${esc(it.date||"")}</span></div></div>
-        <div class="ract" style="gap:6px" onclick="event.stopPropagation()"><button class="btn btn-primary btn-sm" onclick="approveReg('${esc(it.k)}')">✓ Approve</button>
+        <div class="ract" style="gap:6px" onclick="event.stopPropagation()"><button class="btn btn-primary btn-sm" onclick="viewReg('${esc(it.k)}')">✓ Review &amp; Approve</button>
           <button class="iconbtn del" onclick="rejectReg('${esc(it.k)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></div>`;
     }).join("");
   });
@@ -2732,23 +2732,77 @@ function viewReg(k){
       ${r.payProof?`<div style="margin-top:10px"><a href="${esc(r.payProof)}" target="_blank" rel="noopener"><img src="${esc(r.payProof)}" style="max-width:220px;max-height:260px;border-radius:10px;border:1px solid var(--line)"></a><div class="help">Tap to open the payment screenshot full-size.</div></div>`:'<div class="help" style="margin-top:8px">No screenshot uploaded.</div>'}
       <div class="help" style="margin-top:6px">⚠️ Verify this payment in your UPI app before approving.</div>
     </div>`;})():""}
+    ${(()=>{
+      const courses=["Business Analyst Certification","Data Analytics","Python with AI","Microsoft Power BI","Tableau","SQL","Other"];
+      if(r.course&&courses.indexOf(r.course)<0) courses.unshift(r.course);
+      const bNames=asArr(DB.BATCHES).map(b=>b&&b.name).filter(Boolean);
+      if(r.batch&&bNames.indexOf(r.batch)<0) bNames.unshift(r.batch);
+      const cOpt=courses.map(c=>`<option ${c===r.course?"selected":""} value="${esc(c)}">${esc(c)}</option>`).join("");
+      const bOpt=bNames.map(bn=>`<option ${bn===r.batch?"selected":""} value="${esc(bn)}">${esc(bn)}</option>`).join("");
+      return `<div class="det-pay"><div class="det-pay-h">Confirm course &amp; batch</div>
+        <p class="help" style="margin:0 0 8px">Correct these if the student picked wrong — the approved account will use what you set here.</p>
+        <div class="field"><label>Course</label><select id="regEditCourse">${cOpt}</select></div>
+        <div class="field"><label>Batch</label><select id="regEditBatch">${bOpt}</select></div></div>`;
+    })()}
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-      <button class="btn btn-primary btn-sm" onclick="closeInfoModal();approveReg('${esc(k)}')">✓ Approve</button>
+      <button class="btn btn-primary btn-sm" onclick="approveRegEdited('${esc(k)}')">✓ Approve</button>
       ${r.phone?`<a class="btn btn-ghost btn-sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
       <button class="btn btn-ghost btn-sm" onclick="closeInfoModal();rejectReg('${esc(k)}')">Reject</button></div>`;
   document.getElementById("infoModal").classList.add("show");
+}
+function approveRegEdited(k){
+  const r=ADMISSIONS[k]; if(!r){ closeInfoModal(); return; }
+  const cb=document.getElementById("regEditBatch"), cc=document.getElementById("regEditCourse");
+  if(cb&&cb.value) r.batch=cb.value;
+  if(cc&&cc.value) r.course=cc.value;
+  closeInfoModal();
+  approveReg(k);
 }
 function approveReg(k){
   const r=ADMISSIONS[k]; if(!r)return;
   for(const id in DB.STUDENTS){ if((DB.STUDENTS[id].email||"").toLowerCase()===(r.email||"").toLowerCase()){ toast("That email is already a student"); try{fdb.ref("registrations/"+k).remove();}catch(e){} return; } }
   const sid=genId();
+  const pass=r.pass||genPass(8);
   const paidAmt=+r.payPaid||((r.payRef||r.payProof)?(+r.payAmount||0):0);
-  DB.STUDENTS[sid]={name:(r.name||"").trim(),batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:r.pass||genPass(8),recordingAccess:true,
+  const stu={name:(r.name||"").trim(),batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:pass,recordingAccess:true,
     payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:paidAmt,mode:paidAmt?"UPI":"",ref:r.payRef||"",date:paidAmt?todayStr():""}};
+  DB.STUDENTS[sid]=stu;
   markDirty();
-  if(CLOUD&&fdb){ try{ fdb.ref("profiles/"+sid).set({name:r.name||"",batch:r.batch||"",mobile:r.phone||"",email:r.email||"",dob:r.dob||"",gender:r.gender||"",marital:r.marital||"",address:r.address||"",education:r.education||"",workStatus:r.workStatus||"",occupation:r.occupation||"",photo:r.photo||"",profileDone:true,updated:Date.now()}); }catch(e){} }
+  if(CLOUD&&fdb){
+    try{ fdb.ref("portal/STUDENTS/"+sid).set(stu); }catch(e){}   // immediate direct save (not just debounced whole-DB save)
+    try{ fdb.ref("profiles/"+sid).set({name:r.name||"",batch:r.batch||"",mobile:r.phone||"",email:r.email||"",dob:r.dob||"",gender:r.gender||"",marital:r.marital||"",address:r.address||"",education:r.education||"",workStatus:r.workStatus||"",occupation:r.occupation||"",photo:r.photo||"",profileDone:true,updated:Date.now()}); }catch(e){}
+  }
   try{ fdb.ref("registrations/"+k).remove(); }catch(e){}
   toast("Approved — "+(r.name||"student")+" can now log in");
+  showApproved(sid,stu,pass);
+}
+function showApproved(sid,stu,pass){
+  const link=((DB.INSTITUTE.verifyBase||(location.origin+location.pathname))).replace(/\/+$/,"");
+  const num=(stu.phone||"").replace(/[^0-9]/g,""); const wnum=num.length<=10?"91"+num:num;
+  const msg=`*Admission Approved — ${DB.INSTITUTE.name||"Computech CEC"}* 🎉\n\n`+
+    `Hi ${stu.name}, your admission is approved. You can now log in to the student portal.\n\n`+
+    `🔗 Portal: ${link}\n`+
+    `👤 Student ID: ${sid}\n`+
+    `✉ Email: ${stu.email}\n`+
+    `🔑 Password: ${pass}\n\n`+
+    `You can log in with your Email OR Student ID and this password. Welcome aboard! 🙌`;
+  const wa="https://wa.me/"+wnum+"?text="+encodeURIComponent(msg);
+  const row=(l,v)=>`<div class="det-row"><span>${l}</span><b>${esc(v)}</b></div>`;
+  document.getElementById("infoModalBody").innerHTML=`
+    <div style="text-align:center;margin-bottom:6px"><div style="font-size:40px">✅</div>
+      <h2 style="font-size:19px;color:var(--ink);margin:4px 0">Approved — ${esc(stu.name)}</h2>
+      <p style="font-size:13px;color:var(--muted)">They can log in now. Send them their login below.</p></div>
+    <div class="det-grid">
+      ${row("Student ID", sid)}
+      ${row("Email", stu.email)}
+      ${row("Password", pass)}
+      ${row("Batch", stu.batch||"—")}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      ${num?`<a class="btn btn-primary btn-sm" style="background:#25D366;border-color:#25D366;color:#fff" href="${esc(wa)}" target="_blank" rel="noopener">📲 Send login on WhatsApp</a>`:""}
+      <button class="btn btn-ghost btn-sm" onclick="closeInfoModal()">Done</button>
+    </div>`;
+  document.getElementById("infoModal").classList.add("show");
 }
 function rejectReg(k){ confirmDel("Reject & delete this registration?",()=>{ try{ fdb.ref("registrations/"+k).remove(); }catch(e){} }); }
 function resetDevice(id){ if(!(CLOUD&&fdb)){ toast("Needs cloud"); return; }
