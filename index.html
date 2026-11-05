@@ -1185,6 +1185,7 @@ function seedDB(src){
   if(DB.INSTITUTE.recordingFee===undefined) DB.INSTITUTE.recordingFee=500;
   if(DB.INSTITUTE.currency===undefined) DB.INSTITUTE.currency="₹";
   Object.keys(DB.STUDENTS).forEach(id=>{ const s=DB.STUDENTS[id]; if(s.recordingAccess===undefined) s.recordingAccess=true;
+    if(s.course===undefined) s.course=DB.INSTITUTE.course||"";
     if(!s.payment) s.payment={courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:0,mode:"",date:""}; });
   if(DB.INSTITUTE.recFolderId===undefined) DB.INSTITUTE.recFolderId="";
   if(DB.INSTITUTE.driveApiKey===undefined) DB.INSTITUTE.driveApiKey="";
@@ -1577,7 +1578,7 @@ function verifyPublic(){
 function renderVerifyResult(f,cid){
   if(f) return `<div class="vr-head"><div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
       <div><h3>Certificate verified</h3><p>Issued by ${esc(DB.INSTITUTE.name)}</p></div></div>
-    <dl class="vr-detail"><dt>Name</dt><dd>${esc(f.name)}</dd><dt>Course</dt><dd>${esc(DB.INSTITUTE.course)}</dd>
+    <dl class="vr-detail"><dt>Name</dt><dd>${esc(f.name)}</dd><dt>Course</dt><dd>${esc(f.course||DB.INSTITUTE.course)}</dd>
       <dt>Certificate ID</dt><dd class="mono">${esc(f.certId)}</dd><dt>Issued on</dt><dd>${esc(f.certDate)}</dd></dl>`;
   return `<div class="vr-head"><div class="vr-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
       <div><h3>Not found</h3><p>No valid certificate matches <span class="mono">${esc(cid||"—")}</span></p></div></div>`;
@@ -1894,7 +1895,7 @@ function certHTML(stu){
   const I=DB.INSTITUTE, C=DB.CERT||{};
   const base=(I.verifyBase||"").replace(/\/$/,"");
   const qr="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data="+encodeURIComponent(base+"/?verify="+encodeURIComponent(stu.certId||""));
-  const desc=esc(C.desc||"").split("{course}").join("<b>"+esc(I.course)+"</b>");
+  const desc=esc(C.desc||"").split("{course}").join("<b>"+esc(stu.course||I.course)+"</b>");
   const skillColors=["#217a56","#c58a26","#2a5db0","#8a3bb0","#1fa596","#d64545"];
   const skills=(C.skills||[]).map((s,i)=>`<span class="cert-skill" style="background:${skillColors[i%skillColors.length]}">${esc(s)}</span>`).join("");
   const sig=(img,role)=>`<div class="cert-sig">${img?`<img class="cert-sig-img" src="${img}" alt="signature">`:`<div style="height:34px"></div>`}<div class="line"></div><div class="role">${esc(role)}</div></div>`;
@@ -2178,7 +2179,7 @@ function doAdminVerify(){
   if(!cid){ box.innerHTML=""; return; }
   const f=findByCert(cid);
   if(f){ box.innerHTML=`<div class="vc-ok"><div class="vc-badge">✓</div><div><h3>Valid certificate</h3>
-    <div class="det-grid" style="margin-top:10px"><div class="det-row"><span>Name</span><b>${esc(f.name)}</b></div><div class="det-row"><span>Batch</span><b>${esc(f.batch||"—")}</b></div><div class="det-row"><span>Course</span><b>${esc(DB.INSTITUTE.course)}</b></div><div class="det-row"><span>Certificate ID</span><b>${esc(f.certId)}</b></div><div class="det-row"><span>Issued on</span><b>${esc(f.certDate||"—")}</b></div></div></div></div>`;
+    <div class="det-grid" style="margin-top:10px"><div class="det-row"><span>Name</span><b>${esc(f.name)}</b></div><div class="det-row"><span>Batch</span><b>${esc(f.batch||"—")}</b></div><div class="det-row"><span>Course</span><b>${esc(f.course||DB.INSTITUTE.course)}</b></div><div class="det-row"><span>Certificate ID</span><b>${esc(f.certId)}</b></div><div class="det-row"><span>Issued on</span><b>${esc(f.certDate||"—")}</b></div></div></div></div>`;
   } else { box.innerHTML=`<div class="vc-no"><div class="vc-badge">✕</div><div><h3>Not found</h3><p>No issued certificate matches that ID.</p></div></div>`; }
 }
 function studentRow(id){ const s=DB.STUDENTS[id];const pid="pw_"+id;
@@ -2241,6 +2242,7 @@ function editStudent(id){
   openForm(isNew?"Add student":"Edit student",[
     {k:"__id",label:"Student ID (auto)",type:"text",mono:true,val:sid,disabled:!isNew},
     {k:"name",label:"Full name",type:"text",val:s.name},
+    (()=>{const base=["Business Analyst Certification","Data Analytics","Python with AI","Microsoft Power BI","Tableau","SQL","Other"];const cv=s.course||DB.INSTITUTE.course;if(cv&&base.indexOf(cv)<0)base.unshift(cv);return {k:"course",label:"Course",type:"pick",val:cv||base[0],options:base,help:"This course name appears on the student's certificate."};})(),
     batchField,
     {k:"pass",label:"Password (auto — you can edit)",type:"text",mono:true,val:s.pass,help:"Students use this to log in. Visible to you anytime."},
     {k:"recordingAccess",label:"Recordings access (paid add-on)",type:"checkbox",val:s.recordingAccess,help:"Turn OFF for students who haven't paid for recordings."},
@@ -2262,7 +2264,7 @@ function editStudent(id){
     if(!newId) return toast("Student ID required");
     if(isNew && DB.STUDENTS[newId]) return toast("That ID already exists");
     if(!v.pass.trim()) return toast("Password required");
-    DB.STUDENTS[newId]={name:v.name.trim(),batch:v.batch.trim(),email:v.email.trim(),joined:v.joined.trim(),
+    DB.STUDENTS[newId]={name:v.name.trim(),course:(v.course||"").trim(),batch:v.batch.trim(),email:v.email.trim(),joined:v.joined.trim(),
       progress:+v.progress||0,certId:v.certId.trim(),certDate:v.certDate.trim(),certReady:!!v.certReady,pass:v.pass.trim(),recordingAccess:!!v.recordingAccess,
       payment:{courseFee:+v.courseFee||0,recordingFee:+v.recordingFee||0,paid:+v.paid||0,mode:(v.mode||"").trim(),date:(v.payDate||"").trim()}};
     markDirty(); closeAModal(); aRender("students"); toast("Student saved");
@@ -2764,7 +2766,7 @@ function approveReg(k){
   const sid=genId();
   const pass=r.pass||genPass(8);
   const paidAmt=+r.payPaid||((r.payRef||r.payProof)?(+r.payAmount||0):0);
-  const stu={name:(r.name||"").trim(),batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:pass,recordingAccess:true,
+  const stu={name:(r.name||"").trim(),course:r.course||DB.INSTITUTE.course||"",batch:r.batch||"",email:(r.email||"").toLowerCase(),phone:r.phone||"",joined:todayStr(),progress:0,certId:nextCertId(),certDate:"",certReady:false,pass:pass,recordingAccess:true,
     payment:{courseFee:DB.INSTITUTE.courseFee,recordingFee:DB.INSTITUTE.recordingFee,paid:paidAmt,mode:paidAmt?"UPI":"",ref:r.payRef||"",date:paidAmt?todayStr():""}};
   DB.STUDENTS[sid]=stu;
   markDirty();
