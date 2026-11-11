@@ -486,8 +486,11 @@ html[data-theme="dark"] .job-chip{background:rgba(255,255,255,.05)}
 .ld-cc{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
 .ld-cc-ic{font-size:30px;line-height:1}
 .ld-cc-body{flex:1}.ld-cc-body h4{font-size:16px;color:var(--ink);margin-bottom:5px;line-height:1.3}.ld-cc-body p{font-size:13px;color:var(--muted);line-height:1.5}
-.ld-cc-btn{align-self:flex-start;background:var(--accent-soft);color:var(--accent-2);border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.ld-cc-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ld-cc-btn{background:var(--accent-soft);color:var(--accent-2);border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
 .ld-cc-btn:hover{background:var(--accent);color:#3a2a05}
+.ld-cc-bro{font-size:12.5px;font-weight:700;color:var(--muted);text-decoration:none}
+.ld-cc-bro:hover{color:var(--accent-2)}
 @media (max-width:860px){.ld-courses{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:540px){.ld-courses{grid-template-columns:1fr}}
 .ld-journey{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;margin-top:28px;max-width:820px;margin-left:auto;margin-right:auto}
@@ -1308,6 +1311,9 @@ function courseSyllabus(name){
   if(name){ const lk=Object.keys(C).find(k=>k.toLowerCase()===String(name).toLowerCase()); if(lk && Array.isArray(C[lk].syllabus)) return C[lk].syllabus; }
   return (DB.SYLLABUS&&DB.SYLLABUS.length)?DB.SYLLABUS:[];
 }
+function courseObj(name){ const C=DB.COURSES||{}; if(name&&C[name])return C[name]; if(name){ const lk=Object.keys(C).find(k=>k.toLowerCase()===String(name).toLowerCase()); if(lk)return C[lk]; } return null; }
+function courseBrochure(name){ const o=courseObj(name); return (o&&o.brochure)?o.brochure:(DB.INSTITUTE.brochureUrl||""); }
+function courseOwnBrochure(name){ const o=courseObj(name); return (o&&o.brochure)?o.brochure:""; }
 const P = window.PORTAL_DATA || {};
 seedDB({
   INSTITUTE:P.INSTITUTE, ADMIN_HASH:P.adminHash, WELCOME:P.WELCOME, CERT:P.CERT, BATCHES:P.BATCHES,
@@ -1827,8 +1833,9 @@ function panelHome(){
     </div>
   </section>`;
 }
-function panelSyllabus(){ const bro=normUrl(DB.INSTITUTE.brochureUrl);
+function panelSyllabus(){
   const cname=(CURRENT&&CURRENT.course)||DB.INSTITUTE.course||"Your course";
+  const bro=normUrl(courseBrochure(cname));
   const syl=courseSyllabus(cname);
   return `<section class="tab-panel" data-tab="syllabus">
     <div class="topbar"><div><h1>Syllabus</h1><div class="sub">${esc(cname)} · ${syl.length} module${syl.length===1?"":"s"}</div></div>${bro?`<a class="pill" href="${esc(bro)}" target="_blank" rel="noopener">📄 Course brochure</a>`:""}</div>
@@ -3126,9 +3133,11 @@ function secCourses(){
   return `<div class="page-head"><h1>Courses &amp; Syllabus</h1><p>Each course has its own syllabus. A student sees the syllabus of the course set on their account (Students → Edit → Course).</p></div>
   <div class="sec-head"><h3>Courses</h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="renameCourse()">Rename</button><button class="btn btn-primary btn-sm" onclick="addCourse()">+ Add course</button></div></div>
   <div class="course-chips">${chips||'<span class="help">No courses yet — add one.</span>'}</div>
+  ${cur?`<div class="card" style="margin-top:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:13px;min-width:0"><b>📄 Brochure for ${esc(cur)}</b><br><span style="color:var(--muted);font-size:12px;word-break:break-all">${DB.COURSES[cur]&&DB.COURSES[cur].brochure?esc(DB.COURSES[cur].brochure):"Not set — students see the general brochure."}</span></div><button class="btn btn-ghost btn-sm" onclick="setCourseBrochure()">${DB.COURSES[cur]&&DB.COURSES[cur].brochure?"Change link":"Set brochure link"}</button></div>`:""}
   ${cur?`<div class="sec-head" style="margin-top:20px"><h3 style="min-width:0;overflow:hidden;text-overflow:ellipsis">${esc(cur)} — modules</h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm del" onclick="delCourse()">Delete course</button><button class="btn btn-primary btn-sm" onclick="editCMod(null)">+ Add module</button></div></div>${rows}`:""}`;
 }
 function adminPickCourse(n){ ADMIN_COURSE=n; aRender("courses"); }
+function setCourseBrochure(){ const cur=ADMIN_COURSE; if(!cur)return toast("No course selected"); openForm("Brochure — "+cur,[{k:"url",label:"Brochure link (PDF or Google Drive)",type:"text",val:(DB.COURSES[cur]&&DB.COURSES[cur].brochure)||"",ph:"https://drive.google.com/…"}],v=>{ DB.COURSES[cur].brochure=(v.url||"").trim(); markDirty(); closeAModal(); aRender("courses"); toast("Brochure saved"); }); }
 function addCourse(){ openForm("Add course",[{k:"name",label:"Course name",type:"text",val:"",ph:"e.g. Digital Marketing"}],v=>{ const n=(v.name||"").trim(); if(!n)return toast("Name required"); if(DB.COURSES[n])return toast("That course already exists"); DB.COURSES[n]={syllabus:[]}; ADMIN_COURSE=n; markDirty(); closeAModal(); aRender("courses"); toast("Course added"); }); }
 function renameCourse(){ const cur=ADMIN_COURSE; if(!cur)return toast("No course selected"); openForm("Rename course",[{k:"name",label:"Course name",type:"text",val:cur}],v=>{ const n=(v.name||"").trim(); if(!n)return toast("Name required"); if(n!==cur&&DB.COURSES[n])return toast("That course already exists"); if(n!==cur){ DB.COURSES[n]=DB.COURSES[cur]; delete DB.COURSES[cur]; ADMIN_COURSE=n; } markDirty(); closeAModal(); aRender("courses"); toast("Renamed"); }); }
 function delCourse(){ const cur=ADMIN_COURSE; if(!cur)return; confirmDel("Delete course \""+cur+"\" and its whole syllabus? Students already on this course keep their account; set them a new course in Students.",()=>{ delete DB.COURSES[cur]; ADMIN_COURSE=courseNames()[0]||""; markDirty(); aRender("courses"); }); }
@@ -3525,7 +3534,7 @@ function renderLanding(){
     const ic={"Business Analyst Certification":"\ud83d\udcbc","Data Analytics":"\ud83d\udcca","Python with AI":"\ud83d\udc0d","SAP FICO":"\ud83d\udcb0","SAP MM":"\ud83d\udce6","SAP PP":"\ud83c\udfed","Advanced Excel":"\ud83d\udcd7","Power BI":"\ud83d\udcc8","SQL":"\ud83d\uddc4\ufe0f"};
     let list=courseNames(); if(!list.length) list=Object.keys(tag);
     return `<section class="ld-sec"><div class="ld-head"><h2>Courses we offer</h2><p>Pick the career path that fits you \u2014 every course is live online with certification.</p></div>
-      <div class="ld-courses">${list.map(n=>`<div class="ld-cc"><div class="ld-cc-ic">${ic[n]||"\ud83c\udf93"}</div><div class="ld-cc-body"><h4>${esc(n)}</h4><p>${esc(tag[n]||"Live online training with hands-on practice and certification.")}</p></div><button class="ld-cc-btn" onclick="enqPick(${JSON.stringify(n).replace(/"/g,'&quot;')})">Enquire \u2192</button></div>`).join("")}</div>
+      <div class="ld-courses">${list.map(n=>{const ob=courseOwnBrochure(n);return `<div class="ld-cc"><div class="ld-cc-ic">${ic[n]||"\ud83c\udf93"}</div><div class="ld-cc-body"><h4>${esc(n)}</h4><p>${esc(tag[n]||"Live online training with hands-on practice and certification.")}</p></div><div class="ld-cc-foot"><button class="ld-cc-btn" onclick="enqPick(${JSON.stringify(n).replace(/"/g,'&quot;')})">Enquire \u2192</button>${ob?`<a class="ld-cc-bro" href="${esc(normUrl(ob))}" target="_blank" rel="noopener">\u2b07 Brochure</a>`:""}</div></div>`;}).join("")}</div>
     </section>`;
   })()}
 
