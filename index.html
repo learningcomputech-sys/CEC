@@ -525,8 +525,16 @@ html[data-theme="dark"] .job-chip{background:rgba(255,255,255,.05)}
 .ld-cc-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ld-cc-btn{background:var(--accent-soft);color:var(--accent-2);border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
 .ld-cc-btn:hover{background:var(--accent);color:#3a2a05}
-.ld-cc-bro{font-size:12.5px;font-weight:700;color:var(--muted);text-decoration:none}
-.ld-cc-bro:hover{color:var(--accent-2)}
+.ld-cc-bro{font-size:12.5px;font-weight:700;color:var(--accent-2);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface)}
+.ld-cc-bro:hover{border-color:var(--accent-2);background:var(--accent-soft)}
+.ld-annbar{max-width:1040px;margin:14px auto 0;padding:0 16px}
+.ld-annbar-in{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,var(--accent-soft),transparent);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:12px 16px;flex-wrap:wrap}
+.ld-annbar-tag{font-size:12px;font-weight:800;color:var(--accent-2);white-space:nowrap}
+.ld-annbar-body{flex:1;min-width:0;font-size:13.5px;color:var(--ink);line-height:1.45}
+.ld-annbar-body b{color:var(--ink)}
+.ld-annbar-time{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.ld-video{max-width:860px;margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 14px 44px rgba(20,32,61,.16);border:1px solid var(--line);background:#000;aspect-ratio:16/9;position:relative}
+.ld-video iframe,.ld-video video{position:absolute;inset:0;width:100%;height:100%;border:0}
 @media (max-width:860px){.ld-courses{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:540px){.ld-courses{grid-template-columns:1fr}}
 .ld-journey{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;margin-top:28px;max-width:820px;margin-left:auto;margin-right:auto}
@@ -1231,6 +1239,7 @@ function seedDB(src){
   if(DB.INSTITUTE.jobRelay===undefined) DB.INSTITUTE.jobRelay="";
   if(!DB.INSTITUTE.instagram) DB.INSTITUTE.instagram="computech_tumkur";
   if(!DB.INSTITUTE.nextBatch) DB.INSTITUTE.nextBatch={enabled:false,title:"New batch starting soon!",text:"Limited seats · Enroll now for our upcoming batch.",date:"",image:""};
+  if(DB.INSTITUTE.demoVideo===undefined) DB.INSTITUTE.demoVideo="";
   (DB.BATCHES||[]).forEach(b=>{ if(b.time===undefined) b.time=""; });
   const cd=DB.CERT;
   if(cd.roleLeft===undefined) cd.roleLeft="Director";
@@ -2854,6 +2863,11 @@ function secNextBatch(){
       ${n.image?`<div style="margin-bottom:8px"><img src="${n.image}" style="max-width:100%;max-height:180px;border-radius:10px;border:1px solid var(--line)"> <button class="linkbtn" onclick="DB.INSTITUTE.nextBatch.image='';markDirty();aRender('announcements')">remove</button></div>`:""}
       <input type="file" accept="image/*" onchange="uploadNextBatch(this.files[0])"><div class="help">Upload your batch poster/flyer. It shows on the enquiry page.</div></div>
     <a class="btn btn-ghost btn-sm" href="${esc((DB.INSTITUTE.verifyBase||'').replace(/\/+$/,'')+'/?join')}" target="_blank" rel="noopener">↗ Preview enquiry page</a>`:""}
+  </div>
+  <div class="card"><div class="sec-head"><h3>Demo class video (enquiry page)</h3></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Paste a YouTube or Google Drive link of a real class (e.g. a Day-1 session). It plays on your enquiry page so visitors can see how you teach.</p>
+    <div class="field"><label>Video link</label><input class="mono" value="${esc(DB.INSTITUTE.demoVideo||'')}" oninput="DB.INSTITUTE.demoVideo=this.value;markDirty()" placeholder="https://youtu.be/… or https://drive.google.com/file/d/…/view"></div>
+    ${(DB.INSTITUTE.demoVideo||'').trim()?`<div class="help" style="margin-bottom:8px">✓ Will show on the enquiry page. For Google Drive, set the file to “Anyone with the link can view”.</div><div class="ld-video" style="max-width:420px">${videoEmbed(DB.INSTITUTE.demoVideo)}</div>`:'<div class="help">Leave empty to hide the demo video section.</div>'}
   </div>`;
 }
 function uploadNextBatch(file){ if(!file)return; compressImage(file,1000,d=>{ DB.INSTITUTE.nextBatch.image=d; markDirty(); aRender("announcements"); toast("Banner image added"); }); }
@@ -3558,6 +3572,13 @@ function printResume(){
   w.document.close();
 }
 
+function videoEmbed(url){
+  if(!url) return ""; url=String(url).trim(); let m;
+  if((m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{6,})/))) return `<iframe src="https://www.youtube.com/embed/${m[1]}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+  if((m=url.match(/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/))) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview" allow="autoplay" allowfullscreen></iframe>`;
+  if(/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) return `<video src="${esc(url)}" controls playsinline style="width:100%;height:100%;background:#000"></video>`;
+  return `<iframe src="${esc(url)}" frameborder="0" allowfullscreen></iframe>`;
+}
 function renderLanding(){
   const I=DB.INSTITUTE, C=DB.CERT||{}, R=(DB.REVIEWS||[]), cur=I.currency||"\u20b9";
   const skills=(C.skills&&C.skills.length?C.skills:["Advanced Excel","SQL","Power BI","Tableau","AI Tools"]);
@@ -3569,6 +3590,8 @@ function renderLanding(){
   <div class="ld-strip">\ud83c\udf93 <b>New batch starting soon</b> \u00b7 Limited seats per batch \u00b7 <button class="ld-strip-btn" onclick="enqScroll()">Enquire now \u2192</button></div>
   <header class="ld-nav"><div class="ld-brand"><div class="logo-mark"><span>C</span></div><b>${esc(I.name)}</b></div>
     <div class="ld-navbtns"><a class="ld-navlink" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Brochure</a><button class="ld-login" onclick="hideLanding()">Login \u2192</button></div></header>
+
+  ${(()=>{const a=(DB.ANNOUNCEMENTS||[])[0]; if(!a||!(a.title||a.body))return ""; return `<section class="ld-annbar"><div class="ld-annbar-in"><span class="ld-annbar-tag">\ud83d\udce2 Announcement</span><div class="ld-annbar-body"><b>${esc(a.title||"")}</b>${a.body?` \u2014 ${esc(a.body)}`:""}</div>${a.time?`<span class="ld-annbar-time">${esc(a.time)}</span>`:""}</div></section>`;})()}
 
   <section class="ld-hero">
     <div class="ld-hero-in">
@@ -3616,6 +3639,9 @@ function renderLanding(){
     </section>`;
   })()}
 
+  ${(()=>{const dv=(I.demoVideo||"").trim(); if(!dv)return ""; const emb=videoEmbed(dv); if(!emb)return ""; return `<section class="ld-sec ld-alt"><div class="ld-head"><h2>See a real class \ud83c\udfac</h2><p>Watch a sample from one of our live sessions \u2014 exactly how you'll learn with us.</p></div>
+    <div class="ld-video">${emb}</div></section>`;})()}
+
   ${(()=>{const nb=I.nextBatch||{};if(!nb.enabled)return"";return `<section class="ld-sec"><div class="ld-nextbatch">
     ${nb.image?`<div class="ld-nb-img"><img src="${esc(nb.image)}" alt="Next batch"></div>`:""}
     <div class="ld-nb-body"><div class="ld-nb-tag">\ud83d\udce2 New Batch</div><h2>${esc(nb.title||"New batch starting soon!")}</h2>
@@ -3624,51 +3650,6 @@ function renderLanding(){
       <button class="ld-btn" onclick="enqScroll()">Reserve your seat \u2192</button></div>
   </div></section>`;})()}
 
-  <section class="ld-sec"><div class="ld-head"><h2>Here's what you get</h2></div>
-    <div class="ld-checks">
-      ${["6 job-ready modules \u2014 Excel, SQL, Power BI, Tableau & AI Tools","100% live online classes with real datasets & daily practice","Lifetime recordings \u2014 revise anytime, never miss a class","Practice questions & quizzes inside your student portal","Built-in ATS resume builder to apply with confidence","2 ISO-recognised certificates on completion","Lifetime doubt support even after the course","Placement & interview guidance"].map(c=>`<div class="ld-check"><span>\u2714</span>${esc(c)}</div>`).join("")}
-    </div>
-  </section>
-
-  <section class="ld-sec"><div class="ld-head"><h2>Why become a Business Analyst?</h2><p>It's one of the most in-demand and highest-paying career paths in India today.</p></div>
-    <div class="ld-why">
-      <div class="ld-whyc"><b>\u20b96\u201310 LPA</b><span>Average salary in India</span></div>
-      <div class="ld-whyc"><b>#1</b><span>Most in-demand data skill</span></div>
-      <div class="ld-whyc"><b>1000s</b><span>New openings every month</span></div>
-      <div class="ld-whyc"><b>Every industry</b><span>IT \u00b7 Finance \u00b7 E-commerce \u00b7 Healthcare</span></div>
-    </div>
-    <p class="ld-whytext">Every company today runs on data \u2014 and Business Analysts turn that data into decisions. That's why roles like <b>Business Analyst, Data Analyst, MIS Executive and BI Developer</b> are hiring faster than ever. Best part? <b>You don't need a coding or IT background to start.</b></p>
-    <div class="ld-salary">
-      <div class="ld-salary-title">Salary grows with experience</div>
-      <div class="ld-bars">
-        ${[{l:"Fresher",v:35,a:"\u20b93\u20134.5 LPA"},{l:"2\u20133 yrs",v:62,a:"\u20b96\u20138 LPA"},{l:"5+ yrs",v:100,a:"\u20b912\u201318 LPA"}].map(b=>`<div class="ld-bar"><div class="ld-bar-fill" style="height:${b.v}%"><span>${b.a}</span></div><div class="ld-bar-lbl">${b.l}</div></div>`).join("")}
-      </div>
-      <div class="ld-salary-note">*Indicative industry ranges for Business/Data Analyst roles in India</div>
-    </div>
-    <div class="ld-roles">
-      <div class="ld-role">\ud83d\udcbc Business Analyst</div><div class="ld-role">\ud83d\udcc8 Data Analyst</div>
-      <div class="ld-role">\ud83d\udcca MIS Executive</div><div class="ld-role">\ud83d\uddc2\ufe0f BI Developer</div>
-      <div class="ld-role">\ud83d\udd0d Reporting Analyst</div><div class="ld-role">\ud83d\udcc9 Data Visualization Analyst</div>
-    </div>
-  </section>
-
-  <section class="ld-sec ld-alt"><div class="ld-head"><h2>The Programme</h2><p>Six focused modules \u00b7 40 days \u00b7 from absolute basics to job-ready. Tap any module for the full day-by-day plan.</p></div>
-    <div class="ld-modules">
-      ${LD_MODULES.map((m,mi)=>`<details class="ld-mod" style="--mc:${MOD_COLORS[mi]}"><summary>
-        <div class="ld-mnum" style="background:${MOD_COLORS[mi]}">${esc(m.n)}</div>
-        <div class="ld-minfo"><div class="ld-mphase">Module ${esc(m.n)} \u00b7 ${esc(m.phase)}</div><h4>${esc(m.title)}</h4></div>
-        <div class="ld-mdays">${esc(m.count)}</div>
-        <svg class="ld-mchev" viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <ul class="ld-mtopics">${m.topics.map((t,ti)=>`<li><span class="ld-tday" style="background:${MOD_COLORS[mi]}">${ti+1}</span>${esc(t)}</li>`).join("")}</ul>
-      </details>`).join("")}
-    </div>
-    <div class="ld-syl"><a class="ld-btn" href="${esc(bro.dl)}" target="_blank" rel="noopener">\u2b07 Download full brochure (PDF)</a><a class="ld-btn2 ld-btn2-dark" href="${esc(bro.view)}" target="_blank" rel="noopener">\ud83d\udc41 View online</a></div>
-    <div class="ld-journey">
-      ${LD_MODULES.map((m,mi)=>`<div class="ld-jstep"><div class="ld-jdot" style="background:${MOD_COLORS[mi]}">${esc(m.n)}</div><div class="ld-jbody"><b>${esc(m.title)}</b><span>${esc(m.count)}</span></div></div>`).join('<div class="ld-jline"></div>')}
-    </div>
-  </section>
-
   <section class="ld-sec"><div class="ld-head"><h2>Why choose ${esc(I.name)}</h2><p>25 years of trusted training \u2014 here's what makes us different.</p></div>
     <div class="ld-cards">
       <div class="ld-card"><div class="ld-ci">\ud83c\udf96\ufe0f</div><h4>2 ISO Certifications</h4><p>Two globally recognised, valid ISO-standard certificates on completion.</p></div>
@@ -3676,7 +3657,7 @@ function renderLanding(){
       <div class="ld-card"><div class="ld-ci">\ud83e\udd1d</div><h4>Lifetime Support</h4><p>Doubts even after the course? We're always here to help.</p></div>
       <div class="ld-card"><div class="ld-ci">\ud83c\udfed</div><h4>Industrial Training</h4><p>Real-world, project-based industrial training \u2014 not just theory.</p></div>
       <div class="ld-card"><div class="ld-ci">\ud83c\udf10</div><h4>100% Live Online</h4><p>Interactive live sessions with real datasets & daily practice.</p></div>
-      <div class="ld-card"><div class="ld-ci">\ud83d\udcb0</div><h4>Course Fee</h4><p><b style="font-size:21px;color:var(--ink)">${feeMain}</b>${I.recordingFee?`<br><span style="font-size:12px">+ ${cur}${I.recordingFee} lifetime recordings (optional)</span>`:""}</p></div>
+      <div class="ld-card"><div class="ld-ci">\ud83d\udcb0</div><h4>Affordable Fees</h4><p>Pocket-friendly fees with easy options. <b>Enquire</b> for the exact fee &amp; offers on your chosen course.</p></div>
     </div>
   </section>
 
@@ -3702,18 +3683,9 @@ function renderLanding(){
     <div class="ld-globalnote">\ud83c\udf0d Students from the <b>USA, UK, South Africa, Malaysia, Singapore, Korea, Japan, Dubai & Saudi Arabia</b> have trained with Computech.</div>
   </section>
 
-  <section class="ld-sec"><div class="ld-head"><h2>Our courses</h2><p>Industry-focused programmes for every data & tech career path.</p></div>
-    <div class="ld-courses">${LD_COURSES.map(c=>`<div class="ld-course"><div class="ld-crow1"><div class="ld-cico">${c.ic}</div>${c.mrp&&c.fee?`<span class="ld-coff">${esc(offPct(c.mrp,c.fee))}</span>`:""}</div>
-      <div class="ld-cbody"><h4>${esc(c.name)}</h4><p>${esc(c.tag)}</p>
-        <div class="ld-cmeta"><span>\u23f1 ${esc(c.dur)}</span></div>
-        <div class="ld-cprice">${c.mrp?`<s>${esc(c.mrp)}</s>`:""}<b>${esc(c.fee||"Enquire")}</b>${c.mrp?`<em>only</em>`:""}</div></div>
-      <button class="ld-cbtn" onclick="enqScroll()">Enquire now \u2192</button></div>`).join("")}</div>
-    <p class="ld-whytext" style="margin-top:20px">Not sure which course fits you? <b>Tell us your goal</b> and we'll guide you to the right programme.</p>
-  </section>
-
   <section class="ld-sec ld-alt"><div class="ld-head"><h2>Who is this for?</h2></div>
     <div class="ld-who">
-      <div class="ld-whocard"><b>\ud83c\udf93 Fresh Graduates</b><p>Add job-ready BA skills and stand out in placements.</p></div>
+      <div class="ld-whocard"><b>\ud83c\udf93 Fresh Graduates</b><p>Add job-ready tech & data skills and stand out in placements.</p></div>
       <div class="ld-whocard"><b>\ud83d\udcbc Working Professionals</b><p>Upskill in data tools to get promoted or switch to analytics.</p></div>
       <div class="ld-whocard"><b>\ud83c\udf0d Career Switchers</b><p>Move into analytics from any background \u2014 no coding needed to start.</p></div>
     </div>
@@ -3782,12 +3754,14 @@ function landingLoadFresh(){
   Promise.all([
     fetch(base+"/portal/COURSES.json").then(r=>r.json()).catch(()=>null),
     fetch(base+"/portal/INSTITUTE.json").then(r=>r.json()).catch(()=>null),
-    fetch(base+"/portal/REVIEWS.json").then(r=>r.json()).catch(()=>null)
-  ]).then(([co,inst,rv])=>{
+    fetch(base+"/portal/REVIEWS.json").then(r=>r.json()).catch(()=>null),
+    fetch(base+"/portal/ANNOUNCEMENTS.json").then(r=>r.json()).catch(()=>null)
+  ]).then(([co,inst,rv,an])=>{
     let changed=false;
     if(co&&typeof co==="object"){ DB.COURSES=co; changed=true; }
     if(inst&&typeof inst==="object"){ Object.assign(DB.INSTITUTE,inst); changed=true; }
     if(Array.isArray(rv)){ DB.REVIEWS=rv; changed=true; }
+    if(Array.isArray(an)){ DB.ANNOUNCEMENTS=an; changed=true; }
     _landingFresh=true;
     if(changed && document.getElementById("landing").style.display==="block") renderLanding();
   }).catch(()=>{ _landingFresh=true; });
